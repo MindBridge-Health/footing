@@ -1,0 +1,51 @@
+### Post Storyteller 1
+POST http://localhost:8080/storytellers/
+Content-Type: application/json
+
+{
+  "name": "Tom"
+}
+
+### Post Storyteller 2
+
+POST http://localhost:8080/storytellers/
+Content-Type: application/json
+
+{
+  "name": "Chris",
+  "contactMethod": "phone"
+}
+
+### PUT (Update) Storyteller 2
+PUT http://localhost:8080/storytellers/
+Content-Type: application/json
+
+{
+"id": "c02ec7d0-34f2-4401-9746-932dbf756f4c",
+"name": "Chris",
+"contactMethod": "text"
+}
+
+### Post Storyteller 3
+
+POST http://localhost:8080/storytellers/
+Content-Type: application/json
+
+{
+  "name": "Carlos"
+}
+
+### Update Storyteller 2
+PUT http://localhost:8080/storytellers/
+Content-Type: application/json
+
+{
+  "id" : "86386737-fcf0-416d-8074-a140b992e27a",
+  "name": "Christopher"
+}
+
+### Get all the Storytellers
+GET http://localhost:8080/storytellers/
+
+### Delete all Storytellers
+DELETE http://localhost:8080/storytellers/all
