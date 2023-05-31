@@ -1,42 +1,34 @@
-package com.palaver.data.generated
+package com.palaver.data.entity
 
 import jakarta.persistence.*
 import java.util.*
 
 @Entity
 @Table(name = "question")
-class QuestionData {
-    @GeneratedValue
-    @Id
-    @Column(name = "id")
-    var id: UUID? = null
-
-    @Basic
-    @Column(name = "name")
-    var name: String = ""
-
+@PrimaryKeyJoinColumn(name="id")
+class QuestionEntity: ResourceEntity() {
     @Basic
     @Column(name = "text")
     var text: String = ""
 
     @Basic
     @Column(name = "custom")
-    var custom: Boolean = false
+    var isCustom: Boolean? = false
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as QuestionData
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as QuestionEntity
         if (id != that.id) return false
         if (name != that.name) return false
-        return if (text != that.text) false else custom == that.custom
+        return if (text != that.text) false else isCustom == that.isCustom
     }
 
     override fun hashCode(): Int {
         var result = if (id != null) id.hashCode() else 0
         result = 31 * result + if (name != null) name.hashCode() else 0
         result = 31 * result + if (text != null) text.hashCode() else 0
-        result = 31 * result + custom.hashCode()
+        result = 31 * result + isCustom.hashCode()
         return result
     }
 }

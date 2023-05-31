@@ -1,27 +1,22 @@
-package com.palaver.data.generated
+package com.palaver.data.entity
 
 import jakarta.persistence.*
 import java.util.*
 
 @Entity
 @Table(name = "story_group")
-class StoryGroupData {
-    @GeneratedValue
-    @Id
-    @Column(name = "id")
-    var id: UUID? = null
-
-    @Basic
-    @Column(name = "name")
-    var name: String? = null
+@PrimaryKeyJoinColumn(name="id")
+class StoryGroupEntity: ResourceEntity() {
 
     @ManyToOne
     @JoinColumn(name = "storyteller_id", referencedColumnName = "id")
-    var storyteller: StorytellerData? = null
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as StoryGroupData
+    var storyteller: StorytellerEntity? = null
+
+    //Todo Story Links
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as StoryGroupEntity
         return if (id != that.id) false else name != that.name
     }
 

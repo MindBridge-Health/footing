@@ -1,0 +1,24 @@
+### Post Question 1
+POST http://localhost:8080/questions/
+Content-Type: application/json
+
+{
+  "name": "Question 1",
+  "text": "What is your favorite color?",
+  "isCustom": true
+}
+> {% client.global.set("id", response.body) %}
+
+### GET Question
+GET http://localhost:8080/questions/{{id}}
+Content-Type: application/json
+
+### Update Question
+PUT http://localhost:8080/questions/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Question 1",
+  "text": "What is your favorite color?",
+  "isCustom": false
+}

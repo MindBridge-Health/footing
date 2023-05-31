@@ -1,19 +1,12 @@
-package com.palaver.data.generated
+package com.palaver.data.entity
 
 import jakarta.persistence.*
 import java.util.*
 
 @Entity
 @Table(name = "interview_question")
-class InterviewQuestionData {
-    @GeneratedValue
-    @Id
-    @Column(name = "id")
-    var id: UUID? = null
-
-    @Basic
-    @Column(name = "name")
-    var name: String = ""
+@PrimaryKeyJoinColumn(name="id")
+class InterviewQuestionEntity: ResourceEntity() {
 
     @Basic
     @Column(name = "completed")
@@ -25,20 +18,20 @@ class InterviewQuestionData {
 
     @ManyToOne
     @JoinColumn(name = "interview_id", referencedColumnName = "id")
-    lateinit var interview: InterviewData
+    lateinit var interview: InterviewEntity
 
     @ManyToOne
     @JoinColumn(name = "question_id", referencedColumnName = "id")
-    lateinit var question: QuestionData
+    lateinit var question: QuestionEntity
 
     @OneToOne
     @JoinColumn(name = "story_id", referencedColumnName = "id")
-    lateinit var story: StoryData
+    var story: StoryEntity? = null
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as InterviewQuestionData
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as InterviewQuestionEntity
         return id == that.id && name == that.name && completed == that.completed && skipped == that.skipped && interview == that.interview && question == that.question && story == that.story
     }
 

@@ -1,3 +1,6 @@
+### Health
+GET http://localhost:8080/
+
 ### Post Storyteller 1
 POST http://localhost:8080/storytellers/
 Content-Type: application/json
@@ -12,7 +15,8 @@ POST http://localhost:8080/storytellers/
 Content-Type: application/json
 
 {
-  "name": "Chris",
+  "firstname": "Chris",
+  "lastname": "Dufresne",
   "contactMethod": "phone"
 }
 
@@ -21,7 +25,7 @@ PUT http://localhost:8080/storytellers/
 Content-Type: application/json
 
 {
-"id": "c02ec7d0-34f2-4401-9746-932dbf756f4c",
+"id": "807d3571-4853-408d-8935-d8e88c08a234",
 "name": "Chris",
 "contactMethod": "text"
 }
@@ -49,3 +53,41 @@ GET http://localhost:8080/storytellers/
 
 ### Delete all Storytellers
 DELETE http://localhost:8080/storytellers/all
+
+### AWS Tests
+GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/health
+
+### Get all the Storytellers
+GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/
+# Comes back empty
+
+### Post Storyteller 2
+POST https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/
+Content-Type: application/json
+
+{
+  "name": "Chris",
+  "contactMethod": "phone"
+}
+
+### Get all the Storytellers
+GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/
+# Returns one storyteller (me)
+# Grab the id that is returned and paste it below
+
+### Update Storyteller
+PUT https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/
+Content-Type: application/json
+
+{
+  "id" : "{Paste the ID Here}",
+  "name": "Christopher",
+  "contactMethod": "text"
+}
+
+### Get all the Storytellers
+GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/
+# Returns the updated storyteller
+
+### Delete all Storytellers
+DELETE https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/all

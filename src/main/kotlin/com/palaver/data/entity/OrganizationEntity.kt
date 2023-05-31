@@ -1,11 +1,11 @@
-package com.palaver.data.generated
+package com.palaver.data.entity
 
 import jakarta.persistence.*
 import java.util.*
 
 @Entity
 @Table(name = "organization")
-class OrganizationData {
+class OrganizationEntity {
     @GeneratedValue
     @Id
     @Column(name = "id")
@@ -13,11 +13,11 @@ class OrganizationData {
 
     @Basic
     @Column(name = "name")
-    var name: Any? = null
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as OrganizationData
+    var name: String? = null
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as OrganizationEntity
         if (if (id != null) id != that.id else that.id != null) return false
         return if (if (name != null) name != that.name else that.name != null) false else true
     }

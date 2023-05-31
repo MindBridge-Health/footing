@@ -1,21 +1,14 @@
-package com.palaver.data.generated
+package com.palaver.data.entity
 
 import jakarta.persistence.*
 import java.sql.Timestamp
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Entity
 @Table(name = "interview")
-class InterviewData {
-    @GeneratedValue
-    @Id
-    @Column(name = "id")
-    var id: UUID? = null
-
-    @Basic
-    @Column(name = "name")
-    var name: String? = null
-
+@PrimaryKeyJoinColumn(name="id")
+class InterviewEntity: ResourceEntity {
     @Basic
     @Column(name = "time_completed")
     var timeCompleted: Timestamp? = null
@@ -26,29 +19,28 @@ class InterviewData {
 
     @ManyToOne
     @JoinColumn(name = "chronicler_id", referencedColumnName = "id")
-    var chroniclerId: ChroniclerData? = null
+    var chronicler: ChroniclerEntity? = null
 
     @ManyToOne
     @JoinColumn(name = "storyteller_id", referencedColumnName = "id")
-    var storytellerId: StorytellerData? = null
+    var storyteller: StorytellerEntity? = null
 
     @OneToMany
     @JoinColumn(name = "interview_id", referencedColumnName = "id")
-    var interviewQuestionData: MutableList<InterviewQuestionData> = Collections.emptyList()
+    var interviewQuestionData: MutableList<InterviewQuestionEntity>? = null
 
-    protected constructor()
-    constructor(name: String?, timeCompleted: Timestamp?, completed: Boolean?, chroniclerId: ChroniclerData?, storytellerId: StorytellerData?) {
-        this.name = name
+    constructor() : super()
+    constructor(name: String?, timeCompleted: Timestamp?, completed: Boolean?, chronicler: ChroniclerEntity?, storyteller: StorytellerEntity?): super(name) {
         this.timeCompleted = timeCompleted
         this.completed = completed
-        this.chroniclerId = chroniclerId
-        this.storytellerId = storytellerId
+        this.chronicler = chronicler
+        this.storyteller = storyteller
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as InterviewData
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as InterviewEntity
         if (id != that.id) return false
         if (name != that.name) return false
         return if (timeCompleted != that.timeCompleted) false else completed == that.completed

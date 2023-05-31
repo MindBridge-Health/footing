@@ -1,0 +1,17 @@
+### Post Interview 1
+POST http://localhost:8080/interviews/storytellers/22e3d133-ec73-4e0b-9651-c8cbd896045a/chroniclers/807d3571-4853-408d-8935-d8e88c08a234
+Content-Type: application/json
+
+{
+  "name": "Interview 2",
+  "interviewQuestions": [
+    {
+      "id": "7fad27f6-1a25-4563-b0f4-0bf173b2c2fb"
+    }
+  ]
+}
+> {% client.global.set("id", response.body) %}
+
+### GET Interview "2beb2eff-1035-401d-ba92-46d0232e606d"
+GET http://localhost:8080/interviews/{{id}}
+Content-Type: application/json
