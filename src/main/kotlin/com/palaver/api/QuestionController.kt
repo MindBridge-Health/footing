@@ -25,4 +25,7 @@ class QuestionController(val service: QuestionService) {
     fun put(@RequestBody question: Question, @PathVariable id: UUID): Question  {
         return service.update(id, question)
     }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: UUID) = service.delete(id)
 }

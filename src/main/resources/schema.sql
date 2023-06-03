@@ -70,9 +70,11 @@ CREATE TABLE IF NOT EXISTS story
 CREATE TABLE IF NOT EXISTS media
 (
     id   UUID PRIMARY KEY REFERENCES resource(id),
-    location VARCHAR,
+    location VARCHAR NOT NULL,
     type VARCHAR,
+    storyteller_id UUID,
     story_id UUID,
+    FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
     FOREIGN KEY (story_id) REFERENCES story(id)
 );
 

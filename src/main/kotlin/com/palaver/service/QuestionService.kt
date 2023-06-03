@@ -26,4 +26,5 @@ class QuestionService(val db: QuestionRepository, @Autowired val questionMapper:
         return questionMapper.entityToModel(db.save(questionEntity))
     }
 
+    fun delete(id: UUID) = db.deleteById(id)
 }

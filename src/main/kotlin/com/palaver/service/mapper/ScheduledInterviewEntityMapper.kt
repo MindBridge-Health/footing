@@ -8,7 +8,7 @@ import org.mapstruct.Mapping
 import java.sql.Timestamp
 import java.time.Instant
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses=[TimeMapper::class])
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD, uses=[TimeMapper::class])
 interface ScheduledInterviewEntityMapper {
 
     fun entityToModel(scheduledInterviewEntity: ScheduledInterviewEntity): ScheduledInterview

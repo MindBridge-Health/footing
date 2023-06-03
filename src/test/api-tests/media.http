@@ -1,0 +1,31 @@
+### Create Storyteler
+POST http://localhost:8080/storytellers/
+Content-Type: application/json
+
+{
+  "firstname": "Chris",
+  "lastname": "Dufresne",
+  "contactMethod": "phone"
+}
+> {% client.global.set("sid", response.body) %}
+
+### Post Media 1
+POST http://localhost:8080/media/storytellers/{{sid}}
+Content-Type: application/json
+
+{
+  "name": "Media 1",
+  "location": "http://localhost/somewhere",
+  "type": "mp4"
+}
+> {% client.global.set("mid", response.body) %}
+
+### GET Media "2beb2eff-1035-401d-ba92-46d0232e606d"
+GET http://localhost:8080/media/{{mid}}
+Content-Type: application/json
+
+### Delete Media
+DELETE http://localhost:8080/media/{{mid}}
+
+### Delete Storyteller
+DELETE http://localhost:8080/storytellers/{{sid}}

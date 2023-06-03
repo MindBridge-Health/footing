@@ -23,19 +23,23 @@ class StorytellerService(val db : com.palaver.data.StorytellerRepository, @Autow
         return Optional.empty()
     }
 
-    fun save(storyteller: ServiceStoryteller) {
+    fun save(storyteller: ServiceStoryteller): UUID {
         storyteller.id = null
 //        if (storyteller.contactMethod == null) {
 //            storyteller.contactMethod = ""
 //        }
-        db.save(storytellerMapper.modelToEntity(storyteller))
+        val id = db.save(storytellerMapper.modelToEntity(storyteller)).id
+            ?: throw Exception("Unable to save storyteller; DB returned null")
+        return id
     }
 
     fun update(storyteller: ServiceStoryteller) {
         db.save(storytellerMapper.modelToEntity(storyteller))
     }
 
-
+    fun deleteStoryteller(id: UUID) {
+        db.deleteById(id)
+    }
 
     fun <T : Any> Optional<out T>.toList(): List<T> =
             if (isPresent) listOf(get()) else emptyList()

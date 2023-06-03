@@ -27,7 +27,7 @@ class QuestionEntity: ResourceEntity() {
     override fun hashCode(): Int {
         var result = if (id != null) id.hashCode() else 0
         result = 31 * result + if (name != null) name.hashCode() else 0
-        result = 31 * result + if (text != null) text.hashCode() else 0
+        result = 31 * result + text.hashCode()
         result = 31 * result + isCustom.hashCode()
         return result
     }

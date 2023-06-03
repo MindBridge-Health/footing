@@ -2,6 +2,7 @@ package com.palaver.service
 
 import com.palaver.data.entity.ChroniclerEntity
 import com.palaver.data.entity.InterviewEntity
+import com.palaver.data.entity.InterviewQuestionEntity
 import com.palaver.data.entity.StorytellerEntity
 import com.palaver.service.mapper.*
 import com.palaver.service.model.*
@@ -19,6 +20,8 @@ class InterviewService(
     val storytellerService: StorytellerService,
     val questionService: QuestionService,
     val interviewMapper: InterviewEntityMapper,
+    val interviewQuestionService: InterviewQuestionService,
+    val interviewQuestionMapper: InterviewQuestionEntityMapper,
     val storytellerMapper: StorytellerEntityMapper,
     val chroniclerMapper: ChroniclerEntityMapper
 ) {
@@ -45,10 +48,11 @@ class InterviewService(
         val dbQuestions = questions.map { qid -> run {
             val q = questionService.findQuestionById(qid)
             val iq = InterviewQuestion(null, q.name, null, q, null, completed = false, skipped = false)
-            Mappers.getMapper(InterviewQuestionEntityMapper::class.java).modelToEntity(iq)
+            interviewQuestionMapper.modelToEntity(interviewQuestionService.save(iq))
         }}.toMutableList()
+
         val interview = InterviewEntity(name, null, false, null, storytellerMapper.modelToEntity(storyteller))
-        //interview.interviewQuestionData = dbQuestions //TODO Save these first
+        interview.interviewQuestionData = dbQuestions
         if (save) {
             return interviewMapper.entityToModel(interviewDb.save(interview))
         }
@@ -64,5 +68,7 @@ class InterviewService(
             Collections.emptyList()
         )
     }
+
+    fun deleteInterview(id: UUID) = interviewDb.deleteById(id)
 
 }

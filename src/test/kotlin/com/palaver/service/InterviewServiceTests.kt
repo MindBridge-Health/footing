@@ -5,6 +5,7 @@ import com.palaver.data.StorytellerRepository
 import com.palaver.data.entity.*
 import com.palaver.service.mapper.ChroniclerEntityMapper
 import com.palaver.service.mapper.InterviewEntityMapper
+import com.palaver.service.mapper.InterviewQuestionEntityMapper
 import com.palaver.service.mapper.StorytellerEntityMapper
 import com.palaver.service.model.*
 import io.mockk.every
@@ -24,6 +25,7 @@ class InterviewServiceTests {
         val mockInterviewDb = mockk<InterviewRepository>()
         val mockStorytellerDb = mockk<StorytellerService>()
         val mockQuestionService = mockk<QuestionService>()
+        val mockInterviewQuestionService = mockk<InterviewQuestionService>()
 
         //Ones
         val uuid1 = UUID.randomUUID()
@@ -134,7 +136,7 @@ class InterviewServiceTests {
 
         val expectedInterviews = listOf(expectedInterview1, expectedInterview2)
 
-        val service = InterviewService(mockInterviewDb, mockStorytellerDb, mockQuestionService, Mappers.getMapper(InterviewEntityMapper::class.java), Mappers.getMapper(StorytellerEntityMapper::class.java), Mappers.getMapper(ChroniclerEntityMapper::class.java))
+        val service = InterviewService(mockInterviewDb, mockStorytellerDb, mockQuestionService, Mappers.getMapper(InterviewEntityMapper::class.java), mockInterviewQuestionService, Mappers.getMapper(InterviewQuestionEntityMapper::class.java), Mappers.getMapper(StorytellerEntityMapper::class.java), Mappers.getMapper(ChroniclerEntityMapper::class.java))
         val interviews = service.findByStorytellerId(uuid1)
 
         val actualInterviews = ArrayList(interviews)

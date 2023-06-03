@@ -10,11 +10,15 @@ class MediaEntity: ResourceEntity() {
 
     @Basic
     @Column(name = "location")
-    private var location: String? = null
+    var location: String? = null
 
     @Basic
     @Column(name = "type")
-    private var type: String? = null
+    var type: String? = null
+
+    @ManyToOne
+    @JoinColumn(name = "storyteller_id", referencedColumnName = "id")
+    var storyteller: StorytellerEntity? = null
 
     @ManyToOne
     @JoinColumn(name = "story_id", referencedColumnName = "id")

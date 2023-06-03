@@ -1,12 +1,35 @@
-### Post Interview 1
-POST http://localhost:8080/interviews/storytellers/22e3d133-ec73-4e0b-9651-c8cbd896045a/chroniclers/807d3571-4853-408d-8935-d8e88c08a234
+### Create Storyteler
+POST http://localhost:8080/storytellers/
+Content-Type: application/json
+
+{
+  "firstname": "Chris",
+  "lastname": "Dufresne",
+  "contactMethod": "phone"
+}
+> {% client.global.set("sid", response.body) %}
+
+
+### Create Question 1
+POST http://localhost:8080/questions/
+Content-Type: application/json
+
+{
+  "name": "Question 1",
+  "text": "What is your favorite color?",
+  "isCustom": true
+}
+> {% client.global.set("qid", response.body.id) %}
+
+### Post Interview 1 (We ignore Chronicler for now so it can be any GUID)
+POST http://localhost:8080/interviews/storytellers/{{sid}}/chroniclers/807d3571-4853-408d-8935-d8e88c08a234
 Content-Type: application/json
 
 {
   "name": "Interview 2",
   "interviewQuestions": [
     {
-      "id": "7fad27f6-1a25-4563-b0f4-0bf173b2c2fb"
+      "id": "{{qid}}"
     }
   ]
 }
@@ -15,3 +38,12 @@ Content-Type: application/json
 ### GET Interview "2beb2eff-1035-401d-ba92-46d0232e606d"
 GET http://localhost:8080/interviews/{{id}}
 Content-Type: application/json
+
+### Delete Question
+DELETE http://localhost:8080/questions/{{qid}}
+
+### Delete Interview
+DELETE http://localhost:8080/interviews/{{id}}
+
+### Delete Storyteller
+DELETE http://localhost:8080/storytellers/{{sid}}

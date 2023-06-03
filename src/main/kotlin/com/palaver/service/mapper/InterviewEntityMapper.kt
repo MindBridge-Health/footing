@@ -13,10 +13,10 @@ import java.time.Instant
 
 
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD, uses=[TimeMapper::class])
 abstract class InterviewEntityMapper {
 
-    @Mapping(source = "timeCompleted", target = "timeCompleted", ignore = true)
+
     fun entityToModel(interviewEntity: InterviewEntity): Interview {
 
         val chronicler = if (interviewEntity.chronicler == null) null
@@ -45,7 +45,7 @@ abstract class InterviewEntityMapper {
         )
     }
 
-    @Mapping(source = "timeCompleted", target = "timeCompleted", ignore = true)
+
     abstract fun modelToEntity(interview: Interview): InterviewEntity
 
 }

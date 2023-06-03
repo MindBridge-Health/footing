@@ -1,12 +1,12 @@
 package com.palaver.service.mapper
 
-import org.mapstruct.InjectionStrategy
-import org.mapstruct.Mapper
+import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.Instant
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-open class TimeMapper {
+@Service
+ class TimeMapper {
 
     fun map(instant: Instant?): Timestamp? {
         return if (instant == null) null else Timestamp.from(instant)
