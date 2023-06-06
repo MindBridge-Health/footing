@@ -36,27 +36,16 @@ jobs:
         arguments: build
         
     - name: configure aws credentials
-      uses: aws-actions/configure-aws-credentials@v1.7.0
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: arn:aws:iam::732842978186:role/GitHubActionRole #change to reflect your IAM role’s ARN
         role-session-name: GitHub_to_AWS_via_FederatedOIDC
         aws-region: ${{ env.AWS_REGION }}
-    # Hello from AWS: WhoAmI
-    - name: Sts GetCallerIdentity
-      run: |
-        aws sts get-caller-identity
-#     - name: Configure AWS credentials
-#       uses: aws-actions/configure-aws-credentials@v2
-#       with:
-#         aws-access-key-id: ${{ secrets.ACCESS_KEY }}
-#         aws-secret-access-key: ${{ secrets.SECRET_KEY }}
-#         aws-region: us-east-1
         
     - name: Amazon ECR "Login" Action for GitHub Actions
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
       with:
-        # A comma-delimited list of AWS account IDs that are associated with the ECR Private registries. If you do not specify a registry, the default ECR Private registry is assumed. If 'public' is given as input to 'registry-type', this input is ignored.
         registries: 732842978186
         
     - name: Build, tag, and push the image to Amazon ECR
