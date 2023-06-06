@@ -31,18 +31,18 @@ jobs:
       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
       
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.SECRET_KEY }}
-        aws-region: us-west-2
+        aws-region: us-east-1
         
     - name: Amazon ECR "Login" Action for GitHub Actions
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
-      # with:
+      with:
         # A comma-delimited list of AWS account IDs that are associated with the ECR Private registries. If you do not specify a registry, the default ECR Private registry is assumed. If 'public' is given as input to 'registry-type', this input is ignored.
-        # registries: 732842978186
+        registries: 732842978186
         
     - name: Build, tag, and push the image to Amazon ECR
       id: build-image
