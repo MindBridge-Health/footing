@@ -1,0 +1,10 @@
+package com.mindbridgehealth.footing.data.entity
+
+import jakarta.persistence.*
+
+@Entity
+@Table(name = "benefactor")
+@PrimaryKeyJoinColumn(name="id")
+class BenefactorEntity : MbUserEntity() {
+
+}
