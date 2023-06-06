@@ -1,12 +1,11 @@
 package com.palaver.data.entity
 
 import jakarta.persistence.*
-import java.util.*
 
 @Entity
 @Table(name = "chronicler")
 @PrimaryKeyJoinColumn(name="id")
-class ChroniclerEntity: EcUserEntity() {
+class ChroniclerEntity: MbUserEntity() {
     @Basic
     @Column(name = "is_ai")
     var ai: Boolean? = null

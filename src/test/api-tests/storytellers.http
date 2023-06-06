@@ -1,15 +1,7 @@
 ### Health
 GET http://localhost:8080/
 
-### Post Storyteller 1
-POST http://localhost:8080/storytellers/
-Content-Type: application/json
-
-{
-  "name": "Tom"
-}
-
-### Post Storyteller 2
+### Post Storyteller
 
 POST http://localhost:8080/storytellers/
 Content-Type: application/json
@@ -19,40 +11,26 @@ Content-Type: application/json
   "lastname": "Dufresne",
   "contactMethod": "phone"
 }
+> {% client.global.set("cid", response.body) %}
 
 ### PUT (Update) Storyteller 2
 PUT http://localhost:8080/storytellers/
 Content-Type: application/json
 
 {
-"id": "807d3571-4853-408d-8935-d8e88c08a234",
-"name": "Chris",
+"id": "{{cid}}",
+"firstname": "Christopher",
+"lastname": "Dufresne",
 "contactMethod": "text"
 }
 
-### Post Storyteller 3
+### Get the Storyteller
+GET http://localhost:8080/storytellers/{{cid}}
 
-POST http://localhost:8080/storytellers/
-Content-Type: application/json
+### Delete the Storyteller
+DELETE http://localhost:8080/storytellers/{{cid}}
 
-{
-  "name": "Carlos"
-}
 
-### Update Storyteller 2
-PUT http://localhost:8080/storytellers/
-Content-Type: application/json
-
-{
-  "id" : "86386737-fcf0-416d-8074-a140b992e27a",
-  "name": "Christopher"
-}
-
-### Get all the Storytellers
-GET http://localhost:8080/storytellers/
-
-### Delete all Storytellers
-DELETE http://localhost:8080/storytellers/all
 
 ### AWS Tests
 GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/health

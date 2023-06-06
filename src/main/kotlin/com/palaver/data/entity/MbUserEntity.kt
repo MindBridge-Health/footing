@@ -1,16 +1,15 @@
 package com.palaver.data.entity
 
 import jakarta.persistence.*
-import java.util.*
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "ec_user")
-abstract class EcUserEntity {
-    @GeneratedValue
+@Table(name = "mb_user")
+abstract class MbUserEntity: EntityModel() {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    var id: UUID? = null
+    override var id: Int? = null
 
     @Version
     @Column(name = "version")
@@ -27,23 +26,38 @@ abstract class EcUserEntity {
     @Basic
     @Column(name = "middlename")
     var middlename: String? = null
+
+    @Basic
+    @Column(name = "email")
+    var email: String? = null
+
+    @Basic
+    @Column(name = "is_active")
+    var isActive: Boolean? = true
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as EcUserEntity
+        other as MbUserEntity
 
         if (id != other.id) return false
+        if (version != other.version) return false
         if (lastname != other.lastname) return false
         if (firstname != other.firstname) return false
-        return middlename == other.middlename
+        if (middlename != other.middlename) return false
+        return isActive == other.isActive
     }
 
     override fun hashCode(): Int {
         var result = id?.hashCode() ?: 0
+        result = 31 * result + version
         result = 31 * result + (lastname?.hashCode() ?: 0)
         result = 31 * result + (firstname?.hashCode() ?: 0)
         result = 31 * result + (middlename?.hashCode() ?: 0)
+        result = 31 * result + (isActive?.hashCode() ?: 0)
         return result
     }
+
+
 }

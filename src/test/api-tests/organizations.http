@@ -1,0 +1,11 @@
+### Post Org 1
+POST http://localhost:8080/organizations/
+Content-Type: application/json
+
+{
+  "name": "Organization 1"
+}
+> {% client.global.set("oid", response.body.id) %}
+
+### Get Org
+GET http://localhost:8080/organizations/{{oid}}

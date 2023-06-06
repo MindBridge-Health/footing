@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface InterviewRepository : JpaRepository<InterviewEntity, UUID> {
+interface InterviewRepository : JpaRepository<InterviewEntity, Int> {
     fun findByStorytellerId(storyteller: StorytellerEntity) : Collection<InterviewEntity>
 }
 

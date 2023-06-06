@@ -7,6 +7,7 @@ import org.mapstruct.factory.Mappers
 import java.sql.Timestamp
 import java.time.Instant
 import java.util.*
+import kotlin.math.floor
 import kotlin.test.assertEquals
 
 class InterviewMapperTests {
@@ -16,30 +17,30 @@ class InterviewMapperTests {
 
         val completedTime = Instant.now()
         val chronicler = ChroniclerEntity()
-        chronicler.id = UUID.randomUUID()
+        chronicler.id = floor(Math.random() * 1000).toInt()
         chronicler.lastname = "d"
         chronicler.middlename = "a"
         chronicler.firstname = "c"
         chronicler.ai = false
         val storyteller = StorytellerEntity()
-        storyteller.id = UUID.randomUUID()
+        storyteller.id = floor(Math.random() * 1000).toInt()
         storyteller.lastname = "d"
         storyteller.middlename = "a"
         storyteller.firstname = "c"
         storyteller.benefactors = mutableListOf()
         storyteller.preferredChronicler = chronicler
         val questionEntity = QuestionEntity()
-        questionEntity.id = UUID.randomUUID()
+        questionEntity.id = floor(Math.random() * 1000).toInt()
         questionEntity.name = "question 1"
         questionEntity.isCustom = false
         questionEntity.text = "What is your favorite color?"
         val storyEntity = StoryEntity()
-        storyEntity.id = UUID.randomUUID()
+        storyEntity.id = floor(Math.random() * 1000).toInt()
         storyEntity.name = "l"
         storyEntity.text = "t"
         storyEntity.storyteller = storyteller
         val interviewQuestionEntity = InterviewQuestionEntity()
-        interviewQuestionEntity.id = UUID.randomUUID()
+        interviewQuestionEntity.id = floor(Math.random() * 1000).toInt()
         interviewQuestionEntity.name = "c"
         interviewQuestionEntity.interview =
             InterviewEntity("interview 1", Timestamp.from(completedTime), true, chronicler, storyteller)
@@ -58,7 +59,8 @@ class InterviewMapperTests {
         )
         interviewEntity.interviewQuestionData = arrayListOf(interviewQuestionEntity)
 
-        val model = Mappers.getMapper(InterviewEntityMapper::class.java).entityToModel(interviewEntity)
+        var iem = InterviewEntityMapperImpl(TimeMapper(), StorytellerEntityMapperImpl(BenefactorEntityMapperImpl(), ChroniclerEntityMapperImpl()), ChroniclerEntityMapperImpl(), InterviewQuestionEntityMapperImpl(StorytellerEntityMapperImpl(BenefactorEntityMapperImpl(), ChroniclerEntityMapperImpl()), QuestionEntityMapperImpl()))
+        val model = iem.entityToModel(interviewEntity)
 
         assertEquals(completedTime, model.timeCompleted)
         assertEquals("Interview 1", model.name)

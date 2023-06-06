@@ -7,5 +7,7 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface StorytellerRepository : JpaRepository<StorytellerEntity, UUID>
+interface StorytellerRepository : JpaRepository<StorytellerEntity, Int> {
+    fun findByIdAndIsActive(id: Int, isActive: Boolean): Optional<StorytellerEntity>
+}
 

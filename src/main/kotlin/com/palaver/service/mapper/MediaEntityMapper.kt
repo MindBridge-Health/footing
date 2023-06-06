@@ -3,15 +3,18 @@ package com.palaver.service.mapper
 import com.palaver.data.entity.MediaEntity
 import com.palaver.service.model.Media
 import org.mapstruct.*
+import org.springframework.stereotype.Service
 import java.net.URI
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-abstract class MediaEntityMapper {
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses=[TimeMapper::class, StorytellerEntityMapper::class])
+abstract class MediaEntityMapper: IdMapper() {
 
     @Mapping(source = "location", target = "location", ignore = true)
+    @Mapping(source = "id", target = "id", ignore = true)
     abstract fun entityToModel(mediaEntity: MediaEntity): Media
 
     @Mapping(source = "location", target = "location", ignore = true)
+    @Mapping(source = "id", target = "id", ignore = true)
     abstract fun modelToEntity(media: Media): MediaEntity
 
     @AfterMapping

@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-class InterviewQuestionService(val interviewQuestionRepository: InterviewQuestionRepository, val interviewQuestionEntityMapper: InterviewQuestionEntityMapper) {
+class InterviewQuestionService(private val interviewQuestionRepository: InterviewQuestionRepository, private val interviewQuestionEntityMapper: InterviewQuestionEntityMapper) {
 
-    fun findById(id: UUID) {
-        interviewQuestionRepository.findById(id)
+    fun findById(id: String) {
+        interviewQuestionRepository.findById(id.toInt())
     }
     fun save(interviewQuestion: InterviewQuestion) : InterviewQuestion {
         val interviewQuestionEntity = interviewQuestionEntityMapper.modelToEntity(interviewQuestion)

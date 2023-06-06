@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface StoryRepository : JpaRepository<StoryEntity, UUID>
+interface StoryRepository : JpaRepository<StoryEntity, Int>
 

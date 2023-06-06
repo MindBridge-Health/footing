@@ -10,7 +10,7 @@ class ScheduledInterviewEntity {
     @GeneratedValue
     @Id
     @Column(name = "id")
-    var id: UUID? = null
+    var id: Int? = null
 
     @Basic
     @Column(name = "scheduled_time")

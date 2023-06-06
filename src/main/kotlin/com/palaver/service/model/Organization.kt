@@ -2,4 +2,4 @@ package com.palaver.service.model
 
 import java.util.UUID
 
-data class Organization(var id : UUID, val name : String)
+data class Organization(var id : String?, val name : String)

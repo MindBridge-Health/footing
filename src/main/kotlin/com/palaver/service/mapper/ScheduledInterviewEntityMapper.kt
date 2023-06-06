@@ -5,13 +5,15 @@ import com.palaver.service.model.ScheduledInterview
 import org.mapstruct.InjectionStrategy
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
+import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.Instant
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD, uses=[TimeMapper::class])
-interface ScheduledInterviewEntityMapper {
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD, uses=[TimeMapper::class, StorytellerEntityMapper::class, ChroniclerEntityMapper::class])
+abstract class ScheduledInterviewEntityMapper: IdMapper() {
 
-    fun entityToModel(scheduledInterviewEntity: ScheduledInterviewEntity): ScheduledInterview
-
-    fun modelToEntity(scheduledInterview: ScheduledInterview): ScheduledInterviewEntity
+    @Mapping(source="id", target = "id", ignore = true)
+    abstract fun entityToModel(scheduledInterviewEntity: ScheduledInterviewEntity): ScheduledInterview
+    @Mapping(source="id", target = "id", ignore = true)
+    abstract fun modelToEntity(scheduledInterview: ScheduledInterview): ScheduledInterviewEntity
 }

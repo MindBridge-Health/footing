@@ -6,7 +6,7 @@ import java.util.*
 @Entity
 @Table(name = "storyteller")
 @PrimaryKeyJoinColumn(name="id")
-class StorytellerEntity: EcUserEntity() {
+class StorytellerEntity: MbUserEntity() {
     @Basic
     @Column(name = "contact_method")
     var contactMethod: String = ""
@@ -19,6 +19,10 @@ class StorytellerEntity: EcUserEntity() {
     @JoinColumn(name = "preferred_chronicler_id", referencedColumnName = "id")
     var preferredChronicler: ChroniclerEntity? = null
 
+    @Basic
+    @Column(name = "onboarding_status")
+    var onboardingStatus: Int? = 0
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -28,7 +32,8 @@ class StorytellerEntity: EcUserEntity() {
 
         if (contactMethod != other.contactMethod) return false
         if (benefactors != other.benefactors) return false
-        return preferredChronicler == other.preferredChronicler
+        if (preferredChronicler != other.preferredChronicler) return false
+        return onboardingStatus == other.onboardingStatus
     }
 
     override fun hashCode(): Int {
@@ -36,6 +41,7 @@ class StorytellerEntity: EcUserEntity() {
         result = 31 * result + contactMethod.hashCode()
         result = 31 * result + (benefactors?.hashCode() ?: 0)
         result = 31 * result + (preferredChronicler?.hashCode() ?: 0)
+        result = 31 * result + onboardingStatus!!
         return result
     }
 

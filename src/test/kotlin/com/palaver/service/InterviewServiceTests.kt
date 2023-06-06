@@ -15,6 +15,7 @@ import org.mapstruct.factory.Mappers
 import java.sql.Timestamp
 import java.time.Instant
 import java.util.UUID
+import kotlin.math.floor
 import kotlin.test.assertEquals
 
 class InterviewServiceTests {
@@ -28,7 +29,7 @@ class InterviewServiceTests {
         val mockInterviewQuestionService = mockk<InterviewQuestionService>()
 
         //Ones
-        val uuid1 = UUID.randomUUID()
+        val uuid1 = floor(Math.random() * 1000).toInt()
         val questionEntity = QuestionEntity()
         questionEntity.id = uuid1
         questionEntity.name = "question 1"
@@ -71,7 +72,7 @@ class InterviewServiceTests {
         interviewEntity1.interviewQuestionData?.add(interviewQuestionEntity1)
 
         //Twos
-        val uuid2 = UUID.randomUUID()
+        val uuid2 = floor(Math.random() * 1000).toInt()
         val questionEntity2 = QuestionEntity()
         questionEntity2.id = uuid2
         questionEntity2.name = "question 2"
@@ -119,25 +120,25 @@ class InterviewServiceTests {
         every {mockInterviewDb.findByStorytellerId(any())} returns interviewResultList
 
         //Expected Ones
-        val expectedQuestion1 = Question(uuid1, "question 1", emptyList(), "What is your favorite color?", false)
-        val preferredChronicler1 = Chronicler(uuid1, "Chronicler 1","first", "middle", true)
-        val storyteller1 = Storyteller(uuid1, "Storyteller 1", "first", "middle","phone", ArrayList(), preferredChronicler1)
-        val expectedStory1 = Story(uuid1, "Story 1", emptyList(), "Once upon a time...", storyteller1)
-        val expectedInterviewQuestion1 = InterviewQuestion(uuid1, "question 1", emptyList(), expectedQuestion1, expectedStory1, completed = true, skipped = false)
-        val expectedInterview1 = Interview(uuid1, "interview 1", emptyList(), storyteller1, preferredChronicler1, timeCompleted, true, listOf(expectedInterviewQuestion1))
+        val expectedQuestion1 = Question(uuid1.toString(), "question 1", emptyList(), "What is your favorite color?", false)
+        val preferredChronicler1 = Chronicler(uuid1.toString(), "Chronicler 1","first", "middle", "", true)
+        val storyteller1 = Storyteller(uuid1.toString(), "Storyteller 1", "first", "middle","", "phone", ArrayList(), preferredChronicler1, OnboardingStatus.ONBOARDING_NOT_STARTED)
+        val expectedStory1 = Story(uuid1.toString(), "Story 1", emptyList(), "Once upon a time...", storyteller1)
+        val expectedInterviewQuestion1 = InterviewQuestion(uuid1.toString(), "question 1", emptyList(), expectedQuestion1, expectedStory1, completed = true, skipped = false)
+        val expectedInterview1 = Interview(uuid1.toString(), "interview 1", emptyList(), storyteller1, preferredChronicler1, timeCompleted, true, listOf(expectedInterviewQuestion1))
 
         //Expected Twos
-        val expectedQuestion2 = Question(uuid2, "question 2", emptyList(), "What is your favorite book?", false)
-        val preferredChronicler2 = Chronicler(uuid2, "Chronicler 2","first", "middle", false)
-        val storyteller2 = Storyteller(uuid2, "Storyteller 2", "first", "middle","phone", ArrayList(), preferredChronicler2)
-        val expectedStory2 = Story(uuid2, "Story 2", emptyList(), "Once upon a time...", storyteller2)
-        val expectedInterviewQuestion2 = InterviewQuestion(uuid2, "question 2", emptyList(), expectedQuestion2, expectedStory2, completed = true, skipped = false)
-        val expectedInterview2 = Interview(uuid2, "interview 2", emptyList(), storyteller2, preferredChronicler2, null, false, listOf(expectedInterviewQuestion2))
+        val expectedQuestion2 = Question(uuid2.toString(), "question 2", emptyList(), "What is your favorite book?", false)
+        val preferredChronicler2 = Chronicler(uuid2.toString(), "Chronicler 2","first", "middle","",  false)
+        val storyteller2 = Storyteller(uuid2.toString(), "Storyteller 2", "first", "middle","", "phone", ArrayList(), preferredChronicler2, OnboardingStatus.ONBOARDING_NOT_STARTED)
+        val expectedStory2 = Story(uuid2.toString(), "Story 2", emptyList(), "Once upon a time...", storyteller2)
+        val expectedInterviewQuestion2 = InterviewQuestion(uuid2.toString(), "question 2", emptyList(), expectedQuestion2, expectedStory2, completed = true, skipped = false)
+        val expectedInterview2 = Interview(uuid2.toString(), "interview 2", emptyList(), storyteller2, preferredChronicler2, null, false, listOf(expectedInterviewQuestion2))
 
         val expectedInterviews = listOf(expectedInterview1, expectedInterview2)
 
         val service = InterviewService(mockInterviewDb, mockStorytellerDb, mockQuestionService, Mappers.getMapper(InterviewEntityMapper::class.java), mockInterviewQuestionService, Mappers.getMapper(InterviewQuestionEntityMapper::class.java), Mappers.getMapper(StorytellerEntityMapper::class.java), Mappers.getMapper(ChroniclerEntityMapper::class.java))
-        val interviews = service.findByStorytellerId(uuid1)
+        val interviews = service.findByStorytellerId(uuid1.toString())
 
         val actualInterviews = ArrayList(interviews)
         assertEquals(expectedInterviews, actualInterviews)

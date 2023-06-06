@@ -13,8 +13,8 @@ class QuestionController(val service: QuestionService) {
 
     @GetMapping("/{id}")
 
-    fun get(@PathVariable id: UUID): Question {
-        return service.findQuestionById(id)
+    fun get(@PathVariable id: String): Question {
+        return service.findQuestionById(id).orElseThrow()
     }
     @PostMapping("/")
     fun post(@RequestBody question: Question): Question {
@@ -22,10 +22,10 @@ class QuestionController(val service: QuestionService) {
     }
 
     @PutMapping("/{id}")
-    fun put(@RequestBody question: Question, @PathVariable id: UUID): Question  {
+    fun put(@RequestBody question: Question, @PathVariable id: String): Question  {
         return service.update(id, question)
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: UUID) = service.delete(id)
+    fun delete(@PathVariable id: String) = service.delete(id)
 }

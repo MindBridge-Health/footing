@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface InterviewQuestionRepository : JpaRepository<InterviewQuestionEntity, UUID>
+interface InterviewQuestionRepository : JpaRepository<InterviewQuestionEntity, Int>
 

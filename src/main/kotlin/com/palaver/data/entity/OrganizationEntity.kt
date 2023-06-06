@@ -6,25 +6,29 @@ import java.util.*
 @Entity
 @Table(name = "organization")
 class OrganizationEntity {
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    var id: UUID? = null
+    var id: Int? = null
 
     @Basic
     @Column(name = "name")
     var name: String? = null
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val that = other as OrganizationEntity
-        if (if (id != null) id != that.id else that.id != null) return false
-        return if (if (name != null) name != that.name else that.name != null) false else true
+        if (javaClass != other?.javaClass) return false
+
+        other as OrganizationEntity
+
+        if (id != other.id) return false
+        return name == other.name
     }
 
     override fun hashCode(): Int {
-        var result = if (id != null) id.hashCode() else 0
-        result = 31 * result + if (name != null) name.hashCode() else 0
+        var result = id ?: 0
+        result = 31 * result + (name?.hashCode() ?: 0)
         return result
     }
+
+
 }

@@ -1,9 +1,8 @@
 package com.palaver.service.model
 
-import java.util.*
 
-interface Resource{
-    val id: UUID?
-    val name : String?
-    val tags : List<Tag>?
+abstract class Resource: DataModel() {
+    abstract override var id: String?
+    abstract val name : String?
+    abstract val tags : List<Tag>?
 }

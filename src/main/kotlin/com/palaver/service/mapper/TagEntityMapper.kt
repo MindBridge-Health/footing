@@ -4,11 +4,15 @@ import com.palaver.data.entity.TagEntity
 import com.palaver.service.model.Tag
 import org.mapstruct.InjectionStrategy
 import org.mapstruct.Mapper
+import org.mapstruct.Mapping
+import org.springframework.stereotype.Service
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-interface TagEntityMapper {
+abstract class TagEntityMapper: IdMapper() {
 
-    fun entityToModel(tagEntity: TagEntity): Tag
+    @Mapping(source="id", target = "id", ignore = true)
+    abstract fun entityToModel(tagEntity: TagEntity): Tag
 
-    fun modelToEntity(tag: Tag): TagEntity
+    @Mapping(source="id", target = "id", ignore = true)
+    abstract fun modelToEntity(tag: Tag): TagEntity
 }

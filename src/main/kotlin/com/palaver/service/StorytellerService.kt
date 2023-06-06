@@ -1,51 +1,44 @@
 package com.palaver.service
 
-import com.palaver.service.mapper.StoryGroupEntityMapper
+import com.palaver.service.mapper.ChroniclerEntityMapper
 import com.palaver.service.model.Storyteller as ServiceStoryteller
 import com.palaver.service.mapper.StorytellerEntityMapper
-import org.mapstruct.factory.Mappers
-import org.springframework.beans.factory.annotation.Autowired
+import com.palaver.service.util.Base36Encoder
 import org.springframework.stereotype.Service
 import java.util.*
-import kotlin.jvm.optionals.getOrNull
+import kotlin.jvm.optionals.getOrElse
+
 
 @Service
-class StorytellerService(val db : com.palaver.data.StorytellerRepository, @Autowired val storytellerMapper: StorytellerEntityMapper) {
-    fun findStorytellers(): List<ServiceStoryteller> = db.findAll().toList().map {
-        dbStoryteller -> storytellerMapper.entityToModel(dbStoryteller)
-    }
+class StorytellerService(private val db : com.palaver.data.StorytellerRepository, private val storytellerMapper: StorytellerEntityMapper,
+    private val chroniclerService: ChroniclerService, private val chroniclerMapper: ChroniclerEntityMapper) {
 
-    fun findStorytellerById(id: UUID): Optional<ServiceStoryteller> {
-        val optStoryteller = db.findById(id)
+    fun findStorytellerById(id: String): Optional<ServiceStoryteller> {
+        val optStoryteller = db.findByIdAndIsActive(Base36Encoder.decode(id).toInt(), true)
         if(optStoryteller.isPresent) {
             return Optional.of(storytellerMapper.entityToModel(optStoryteller.get()))
         }
         return Optional.empty()
     }
 
-    fun save(storyteller: ServiceStoryteller): UUID {
-        storyteller.id = null
-//        if (storyteller.contactMethod == null) {
-//            storyteller.contactMethod = ""
-//        }
-        val id = db.save(storytellerMapper.modelToEntity(storyteller)).id
-            ?: throw Exception("Unable to save storyteller; DB returned null")
-        return id
+    fun save(storyteller: ServiceStoryteller): String {
+        return storytellerMapper.entityToModel(db.save(storytellerMapper.modelToEntity(storyteller.copy(id = null)))).id ?: throw Exception()
     }
 
     fun update(storyteller: ServiceStoryteller) {
-        db.save(storytellerMapper.modelToEntity(storyteller))
+        if(storyteller.id == null) {
+            throw Exception()
+        }
+        val storedEntity = db.findByIdAndIsActive(Base36Encoder.decode(storyteller.id!!).toInt(), true).getOrElse { throw Exception() }
+        val storytellerEntity = storytellerMapper.modelToEntity(storyteller)
+        storytellerEntity.version = storedEntity.version
+        db.save(storytellerEntity)
     }
 
-    fun deleteStoryteller(id: UUID) {
-        db.deleteById(id)
+    fun deactivateStoryteller(id: String) {
+        val storyteller = db.findByIdAndIsActive(Base36Encoder.decode(id).toInt(), true).getOrElse { throw Exception() }
+        storyteller.isActive = false
+        db.save(storyteller)
     }
 
-    fun <T : Any> Optional<out T>.toList(): List<T> =
-            if (isPresent) listOf(get()) else emptyList()
-
-    //TODO: While handy for early testing, make sure this never sees anything close to production!
-    fun deleteAll() {
-        db.deleteAll()
-    }
 }

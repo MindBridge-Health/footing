@@ -8,11 +8,12 @@ import java.util.*
 @RestController
 @RequestMapping("/storytellers")
 class StorytellerController(val service: StorytellerService) {
-    @GetMapping("/")
-    fun index(): List<Storyteller> = service.findStorytellers()
+
+    @GetMapping("/{id}")
+    fun get(@PathVariable id: String) = service.findStorytellerById(id)
 
     @PostMapping("/")
-    fun post(@RequestBody storyteller: Storyteller): UUID {
+    fun post(@RequestBody storyteller: Storyteller): String {
         return service.save(storyteller)
     }
 
@@ -21,14 +22,9 @@ class StorytellerController(val service: StorytellerService) {
         service.update(storyteller)
     }
 
-
     @DeleteMapping("/{id}")
-    fun deleteStoryteller(@PathVariable id: UUID) {
-        service.deleteStoryteller(id)
-    }
-    @DeleteMapping("/all")
-    fun deleteAll() {
-        service.deleteAll()
+    fun deleteStoryteller(@PathVariable id: String) {
+        service.deactivateStoryteller(id)
     }
 
 }

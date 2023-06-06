@@ -9,7 +9,7 @@ class AccessPolicyEntity {
     @GeneratedValue
     @Id
     @Column(name = "id")
-    var id: UUID? = null
+    var id: Int? = null
 
     @Basic
     @Column(name = "name")
@@ -25,7 +25,7 @@ class AccessPolicyEntity {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "access_policy_user_link", joinColumns = [JoinColumn(name = "access_policy_id")], inverseJoinColumns = [JoinColumn(name = "user_id")])
-    var policyUserIds: MutableList<com.palaver.data.entity.EcUserEntity>? = Collections.emptyList()
+    var policyUserIds: MutableList<com.palaver.data.entity.MbUserEntity>? = Collections.emptyList()
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false

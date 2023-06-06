@@ -16,12 +16,12 @@ import java.util.UUID
 class MediaController(val mediaService: MediaService) {
 
     @GetMapping("/{id}")
-    fun get(@PathVariable id: UUID) = mediaService.getMedia(id)
+    fun get(@PathVariable id: String) = mediaService.findMediaById(id)
     @PostMapping("/storytellers/{id}")
-    fun postToStoryteller(@RequestBody media: Media, @PathVariable id: UUID): UUID = mediaService.associateMediaWithStoryteller(media, id)
+    fun postToStoryteller(@RequestBody media: Media, @PathVariable id: String): String = mediaService.associateMediaWithStoryteller(media, id)
 
     @DeleteMapping("/{id}")
-    fun deleteMedia(@PathVariable id: UUID) {
+    fun deleteMedia(@PathVariable id: String) {
         mediaService.deleteMedia(id)    }
 
 //    @PostMapping("/story/{id}")

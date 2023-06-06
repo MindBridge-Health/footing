@@ -1,0 +1,36 @@
+### Post Chronicler
+
+POST http://localhost:8080/chroniclers/
+Content-Type: application/json
+
+{
+  "firstname": "Chris",
+  "lastname": "Dufresne"
+}
+> {% client.global.set("cid", response.body) %}
+
+### Get Chronicler
+GET http://localhost:8080/chroniclers/{{cid}}
+Content-Type: application/json
+
+### Post Storyteller 2
+
+POST http://localhost:8080/storytellers/
+Content-Type: application/json
+
+{
+  "firstname": "Chris",
+  "lastname": "Dufresne",
+  "contactMethod": "phone",
+  "preferredChronicler": { "id":  "{{cid}}"}
+}
+> {% client.global.set("sid", response.body) %}
+
+### Get Storyteller
+GET http://localhost:8080/storytellers/{{sid}}
+
+### Delete Chronicler
+DELETE http://localhost:8080/chroniclers/{{cid}}
+
+### Delete Storyteller
+DELETE http://localhost:8080/storytellers/{{sid}}

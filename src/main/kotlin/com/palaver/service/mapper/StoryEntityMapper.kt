@@ -4,11 +4,15 @@ import com.palaver.data.entity.StoryEntity
 import com.palaver.service.model.Story
 import org.mapstruct.InjectionStrategy
 import org.mapstruct.Mapper
+import org.mapstruct.Mapping
+import org.springframework.stereotype.Service
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-interface StoryEntityMapper {
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses=[TimeMapper::class, StorytellerEntityMapper::class])
+abstract class StoryEntityMapper {
 
-    fun entityToModel(storyEntity: StoryEntity): Story
+    @Mapping(source="id", target = "id", ignore = true)
+    abstract fun entityToModel(storyEntity: StoryEntity): Story
 
-    fun modelToEntity(story: Story): StoryEntity
+    @Mapping(source="id", target = "id", ignore = true)
+    abstract fun modelToEntity(story: Story): StoryEntity
 }

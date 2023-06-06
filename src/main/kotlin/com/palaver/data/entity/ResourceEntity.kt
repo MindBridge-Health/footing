@@ -6,11 +6,11 @@ import java.util.*
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "resource")
-abstract class ResourceEntity() {
-    @GeneratedValue
+abstract class ResourceEntity(): EntityModel() {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    var id: UUID? = null
+    override var id: Int? = null
 
     @Basic
     @Column(name = "name")
@@ -19,6 +19,10 @@ abstract class ResourceEntity() {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name="resource_tag_link", joinColumns = [JoinColumn(name = "resource_id")], inverseJoinColumns = [JoinColumn(name = "tag_id")])
     var tags: MutableList<TagEntity>? = Collections.emptyList()
+
+    @Basic
+    @Column(name = "is_deleted")
+    var isDeleted: Boolean? = false
 
     constructor(name: String?) : this() {
         this.name = name
