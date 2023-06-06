@@ -6,8 +6,16 @@ on:
   pull_request:
     branches: [ "main" ]
 
-jobs:
+env:
+  AWS_REGION : "us-east-1"
 
+# Permission can be added at job level or workflow level    
+permissions:
+      id-token: write   # This is required for requesting the JWT
+      contents: read    # This is required for actions/checkout
+      
+jobs:
+          
   build:
 
     runs-on: ubuntu-latest
@@ -29,25 +37,31 @@ jobs:
     
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-      
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.SECRET_KEY }}
-        aws-region: us-east-1
         
-    - name: Amazon ECR "Login" Action for GitHub Actions
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v1.7.0
       with:
-        # A comma-delimited list of AWS account IDs that are associated with the ECR Private registries. If you do not specify a registry, the default ECR Private registry is assumed. If 'public' is given as input to 'registry-type', this input is ignored.
-        registries: 732842978186
+        role-to-assume: arn:aws:iam::732842978186:role/GitHubActionRole #change to reflect your IAM role’s ARN
+        role-session-name: GitHub_to_AWS_via_FederatedOIDC
+        aws-region: ${{ env.AWS_REGION }}
+#     - name: Configure AWS credentials
+#       uses: aws-actions/configure-aws-credentials@v2
+#       with:
+#         aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+#         aws-secret-access-key: ${{ secrets.SECRET_KEY }}
+#         aws-region: us-east-1
+        
+#     - name: Amazon ECR "Login" Action for GitHub Actions
+#       id: login-ecr
+#       uses: aws-actions/amazon-ecr-login@v1
+#       with:
+#         # A comma-delimited list of AWS account IDs that are associated with the ECR Private registries. If you do not specify a registry, the default ECR Private registry is assumed. If 'public' is given as input to 'registry-type', this input is ignored.
+#         registries: 732842978186
         
     - name: Build, tag, and push the image to Amazon ECR
       id: build-image
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REGISTRY: 732842978186
         ECR_REPOSITORY: ${{ vars.REPO_NAME }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
