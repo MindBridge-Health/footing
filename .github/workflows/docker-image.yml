@@ -52,17 +52,17 @@ jobs:
 #         aws-secret-access-key: ${{ secrets.SECRET_KEY }}
 #         aws-region: us-east-1
         
-#     - name: Amazon ECR "Login" Action for GitHub Actions
-#       id: login-ecr
-#       uses: aws-actions/amazon-ecr-login@v1
-#       with:
-#         # A comma-delimited list of AWS account IDs that are associated with the ECR Private registries. If you do not specify a registry, the default ECR Private registry is assumed. If 'public' is given as input to 'registry-type', this input is ignored.
-#         registries: 732842978186
+    - name: Amazon ECR "Login" Action for GitHub Actions
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        # A comma-delimited list of AWS account IDs that are associated with the ECR Private registries. If you do not specify a registry, the default ECR Private registry is assumed. If 'public' is given as input to 'registry-type', this input is ignored.
+        registries: 732842978186
         
     - name: Build, tag, and push the image to Amazon ECR
       id: build-image
       env:
-        ECR_REGISTRY: 732842978186
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ vars.REPO_NAME }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
