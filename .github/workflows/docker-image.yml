@@ -34,9 +34,6 @@ jobs:
       uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
       with:
         arguments: build
-    
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
         
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v1.7.0
@@ -44,6 +41,10 @@ jobs:
         role-to-assume: arn:aws:iam::732842978186:role/GitHubActionRole #change to reflect your IAM role’s ARN
         role-session-name: GitHub_to_AWS_via_FederatedOIDC
         aws-region: ${{ env.AWS_REGION }}
+    # Hello from AWS: WhoAmI
+    - name: Sts GetCallerIdentity
+      run: |
+        aws sts get-caller-identity
 #     - name: Configure AWS credentials
 #       uses: aws-actions/configure-aws-credentials@v2
 #       with:
