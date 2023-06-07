@@ -38,9 +38,10 @@ class StorytellerEntityMapperTests {
 
         storytellerEntity.benefactors = mutableListOf( benefactorEntity, benefactorEntity2 )
 
-        val storyteller =  com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapperImpl(
+        val storyteller =  StorytellerEntityMapperImpl(
             BenefactorEntityMapperImpl(),
-            com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl()
+            ChroniclerEntityMapperImpl(),
+            PreferredTimeMapperImpl()
         ).entityToModel(storytellerEntity)
 
         assertEquals(storytellerEntity.id, Base36Encoder.decode(storyteller.id!!).toInt())
@@ -52,15 +53,16 @@ class StorytellerEntityMapperTests {
 
     @Test
     fun storytellerToStorytellerData_validModel_validData() {
-        val benefactor = Benefactor( Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()), "someBenefactor1", "first", "middle", "")
-        val benefactor2 = Benefactor( Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()), "someBenefactor2", "first", "middle", "")
-        val chronicler = Chronicler( Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()), "d","a","c","", true)
+        val benefactor = Benefactor( Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()), "someBenefactor1", "first", "middle", "", "")
+        val benefactor2 = Benefactor( Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()), "someBenefactor2", "first", "middle", "", "")
+        val chronicler = Chronicler( Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()), "d","a","c","", "", true)
 
-        val storyteller = Storyteller( Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()),  "someName", "first", "middle","", "text", mutableListOf(benefactor, benefactor2), chronicler, OnboardingStatus.ONBOARDING_NOT_STARTED)
+        val storyteller = Storyteller( Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()),  "someName", "first", "middle","", "text", "", mutableListOf(benefactor, benefactor2), chronicler, OnboardingStatus.ONBOARDING_NOT_STARTED, null)
 
-        val mapper = com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapperImpl(
+        val mapper = StorytellerEntityMapperImpl(
             BenefactorEntityMapperImpl(),
-            com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl()
+            ChroniclerEntityMapperImpl(),
+            PreferredTimeMapperImpl()
         )
         val storytellerData = mapper.modelToEntity(storyteller)
 

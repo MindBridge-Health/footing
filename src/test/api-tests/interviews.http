@@ -19,10 +19,20 @@ Content-Type: application/json
   "text": "What is your favorite color?",
   "isCustom": true
 }
-> {% client.global.set("qid", response.body.id) %}
+> {% client.global.set("qid", response.body) %}
+
+### Create Chronicler
+POST http://localhost:8080/chroniclers/
+Content-Type: application/json
+
+{
+  "firstname": "Chat",
+  "lastname": "GPT"
+}
+> {% client.global.set("cid", response.body) %}
 
 ### Post Interview 1 (We ignore Chronicler for now)
-POST http://localhost:8080/interviews/storytellers/{{sid}}/chroniclers/5
+POST http://localhost:8080/interviews/storytellers/{{sid}}/chroniclers/{{cid}}
 Content-Type: application/json
 
 {

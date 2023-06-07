@@ -12,9 +12,7 @@ object Base36Encoder {
         if (string.length < 5) {
             string.padStart(4, '0')
         }
-        println(string)
         val saltyString = Random.nextInt(10, 99).toString() + string + Random.nextInt(10, 99).toString()
-        println(saltyString)
         val bytes: ByteArray = saltyString.toByteArray(StandardCharsets.UTF_8)
         return BigInteger(1, bytes).toString(36).reversed()
     }

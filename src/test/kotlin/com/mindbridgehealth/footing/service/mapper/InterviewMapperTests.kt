@@ -3,10 +3,8 @@ package com.mindbridgehealth.footing.service.mapper
 import com.mindbridgehealth.footing.data.entity.*
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-import org.mapstruct.factory.Mappers
 import java.sql.Timestamp
 import java.time.Instant
-import java.util.*
 import kotlin.math.floor
 import kotlin.test.assertEquals
 
@@ -59,17 +57,19 @@ class InterviewMapperTests {
         )
         interviewEntity.interviewQuestionData = arrayListOf(interviewQuestionEntity)
 
-        var iem = com.mindbridgehealth.footing.service.mapper.InterviewEntityMapperImpl(
+        var iem = InterviewEntityMapperImpl(
             TimeMapper(),
-            com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapperImpl(
+            StorytellerEntityMapperImpl(
                 BenefactorEntityMapperImpl(),
-                com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl()
+                com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
+                PreferredTimeMapperImpl()
             ),
             com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
-            com.mindbridgehealth.footing.service.mapper.InterviewQuestionEntityMapperImpl(
-                com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapperImpl(
+            InterviewQuestionEntityMapperImpl(
+                StorytellerEntityMapperImpl(
                     BenefactorEntityMapperImpl(),
-                    com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl()
+                    com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
+                    PreferredTimeMapperImpl()
                 ), com.mindbridgehealth.footing.service.mapper.QuestionEntityMapperImpl()
             )
         )

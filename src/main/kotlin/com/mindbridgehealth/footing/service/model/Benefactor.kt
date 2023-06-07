@@ -7,5 +7,6 @@ data class Benefactor(
     override var lastname: String?,
     override var firstname: String?,
     override var middlename: String?,
-    override var email: String?
+    override var email: String?,
+    override var mobile: String?
 ) : User()

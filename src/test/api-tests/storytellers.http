@@ -21,7 +21,10 @@ Content-Type: application/json
 "id": "{{cid}}",
 "firstname": "Christopher",
 "lastname": "Dufresne",
-"contactMethod": "text"
+"contactMethod": "text",
+"mobile": "123-123-1234",
+"email": "test@test.com",
+"preferredTimes": [{"time": "15:01:00", "dayOfWeek": "SATURDAY"}]
 }
 
 ### Get the Storyteller

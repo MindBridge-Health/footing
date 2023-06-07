@@ -8,8 +8,10 @@ data class Storyteller(
     override var firstname: String?,
     override var middlename: String?,
     override var email: String?,
+    override var mobile: String?,
     var contactMethod: String?,
     var benefactors: Collection<Benefactor>?,
     var preferredChronicler: Chronicler?,
-    var onboardingStatus: OnboardingStatus? = OnboardingStatus.ONBOARDING_NOT_STARTED
+    var onboardingStatus: OnboardingStatus? = OnboardingStatus.ONBOARDING_NOT_STARTED,
+    var preferredTimes: Collection<PreferredTime>?
 ) : User()

@@ -20,10 +20,10 @@ class QuestionService(private val db: QuestionRepository, private val questionMa
         return Optional.empty()
     }
 
-    fun save(question: Question) : Question {
+    fun save(question: Question) : String {
         val questionEntity = questionMapper.modelToEntity(question)
         questionEntity.id = null
-        return questionMapper.entityToModel(db.save(questionEntity))
+        return questionMapper.entityToModel(db.save(questionEntity)).id ?: throw Exception()
     }
 
     fun update(id: String, question: Question): Question {

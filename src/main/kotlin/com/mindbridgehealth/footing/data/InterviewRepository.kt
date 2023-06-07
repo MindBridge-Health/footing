@@ -8,6 +8,6 @@ import java.util.UUID
 
 @Repository
 interface InterviewRepository : JpaRepository<InterviewEntity, Int> {
-    fun findByStorytellerId(storyteller: StorytellerEntity) : Collection<InterviewEntity>
+    fun findByStorytellerId(storytellerId: Int) : Collection<InterviewEntity>
 }
 

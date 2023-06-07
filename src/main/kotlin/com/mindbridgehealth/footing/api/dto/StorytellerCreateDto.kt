@@ -9,6 +9,7 @@ data class StorytellerCreateDto(
     override var firstname: String?,
     override var middlename: String?,
     override var email: String?,
+    override var mobile: String?,
     var contactMethod: String?,
     var benefactors: Collection<String>?,
     var preferredChronicler: UUID?

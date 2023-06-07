@@ -1,3 +1,8 @@
+DROP DATABASE ECTEST;
+CREATE DATABASE IF NOT EXISTS ECTEST;
+
+USE ECTEST;
+
 CREATE TABLE IF NOT EXISTS organization
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -12,7 +17,8 @@ CREATE TABLE IF NOT EXISTS mb_user
     lastname VARCHAR(128) NOT NULL,
     firstname VARCHAR(128) NOT NULL,
     middlename VARCHAR(128),
-    email VARCHAR(128)
+    email VARCHAR(128),
+    mobile VARCHAR(32)
 );
 
 CREATE TABLE IF NOT EXISTS resource
@@ -24,7 +30,7 @@ CREATE TABLE IF NOT EXISTS resource
 
 CREATE TABLE IF NOT EXISTS tag
 (
-    id MEDIUMINT PRIMARY KEY,
+    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(128) NOT NULL,
     text VARCHAR(128)
 );
@@ -57,7 +63,6 @@ CREATE TABLE IF NOT EXISTS chronicler
 CREATE TABLE IF NOT EXISTS storyteller
 (
     id MEDIUMINT PRIMARY KEY REFERENCES mb_user(id),
-
     preferred_chronicler_id MEDIUMINT,
     contact_method VARCHAR(128),
     onboarding_status int,
@@ -71,6 +76,16 @@ CREATE TABLE IF NOT EXISTS storyteller_benefactor_link
     benefactor_id MEDIUMINT,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
     FOREIGN KEY (benefactor_id) REFERENCES  benefactor(id)
+);
+
+CREATE TABLE IF NOT EXISTS preferred_time
+(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    storyteller_id MEDIUMINT NOT NULL REFERENCES storyteller(id),
+    time time NOT NULL,
+    day varchar(16) NOT NULL,
+    INDEX (storyteller_id),
+    UNIQUE INDEX (storyteller_id, time, day)
 );
 
 CREATE TABLE IF NOT EXISTS story

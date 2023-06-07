@@ -32,6 +32,10 @@ abstract class MbUserEntity: EntityModel() {
     var email: String? = null
 
     @Basic
+    @Column(name = "mobile")
+    var mobile: String? = null
+
+    @Basic
     @Column(name = "is_active")
     var isActive: Boolean? = true
 

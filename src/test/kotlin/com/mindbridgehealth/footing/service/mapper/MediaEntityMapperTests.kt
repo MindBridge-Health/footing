@@ -16,10 +16,11 @@ class MediaEntityMapperTests {
     fun mediaToMediaEntity_validData_validData() {
         val media = Media(Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()), "name", null, URI("http://localhost/somewhere"),"MP4", null, null)
 
-        val mem = com.mindbridgehealth.footing.service.mapper.MediaEntityMapperImpl(
+        val mem =MediaEntityMapperImpl(
             StorytellerEntityMapperImpl(
                 BenefactorEntityMapperImpl(),
-                com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl()
+                ChroniclerEntityMapperImpl(),
+                PreferredTimeMapperImpl()
             )
         )
         val mediaEntity = mem.modelToEntity(media)
@@ -37,10 +38,11 @@ class MediaEntityMapperTests {
             type = "MP4"
         }
 
-        val mem = com.mindbridgehealth.footing.service.mapper.MediaEntityMapperImpl(
+        val mem = MediaEntityMapperImpl(
             StorytellerEntityMapperImpl(
                 BenefactorEntityMapperImpl(),
-                com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl()
+                com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
+                PreferredTimeMapperImpl()
             )
         )
         val media = mem.entityToModel(mediaEntity)

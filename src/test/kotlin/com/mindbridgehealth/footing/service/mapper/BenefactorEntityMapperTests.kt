@@ -29,7 +29,7 @@ class BenefactorEntityMapperTests {
 
     @Test
     fun benefactorToBenefactorEntity_validModel_validData() {
-        val benefactor = Benefactor( Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()), "someOtherBenefactor", "first", "middle", "")
+        val benefactor = Benefactor( Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()), "someOtherBenefactor", "first", "middle", "", "")
 
         val benefactorEntity = com.mindbridgehealth.footing.service.mapper.BenefactorEntityMapperImpl().modelToEntity(benefactor)
         assertEquals(Base36Encoder.decode(benefactor.id!!), benefactorEntity.id?.toString())

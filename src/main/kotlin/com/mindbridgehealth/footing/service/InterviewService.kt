@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service
 
-import com.mindbridgehealth.footing.data.entity.ChroniclerEntity
+import com.mindbridgehealth.footing.data.InterviewRepository
 import com.mindbridgehealth.footing.data.entity.InterviewEntity
 import com.mindbridgehealth.footing.data.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.mapper.*
@@ -10,17 +10,19 @@ import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
+import kotlin.jvm.optionals.getOrNull
 
 
 @Service
 class InterviewService(
-    private val db: com.mindbridgehealth.footing.data.InterviewRepository,
+    private val db: InterviewRepository,
     private val storytellerService: StorytellerService,
+    private val chroniclerService: ChroniclerService,
     private val questionService: QuestionService,
-    private val interviewMapper: InterviewEntityMapper,
     private val interviewQuestionService: InterviewQuestionService,
-    private val interviewQuestionMapper: InterviewQuestionEntityMapper,
+    private val interviewMapper: InterviewEntityMapper,
     private val storytellerMapper: StorytellerEntityMapper,
+    private val interviewQuestionMapper: InterviewQuestionEntityMapper,
     private val chroniclerMapper: ChroniclerEntityMapper
 ) {
 
@@ -31,7 +33,7 @@ class InterviewService(
     fun findByStorytellerId(storytellerId: String): Collection<Interview> {
         val storytellerQueryEntity = StorytellerEntity()
         storytellerQueryEntity.id = storytellerId.toInt()
-        val interviewResultData = db.findByStorytellerId(storytellerQueryEntity)
+        val interviewResultData = db.findByStorytellerId(storytellerId.toInt())
 
         return interviewResultData.stream()
             .map { i -> interviewMapper.entityToModel(i) }
@@ -48,8 +50,7 @@ class InterviewService(
     ): Interview {
         val storyteller = storytellerService.findStorytellerById(storytellerId)
             .getOrElse { throw Exception("Storyteller was not found; unable to create interview") }
-        val dbChronicler = ChroniclerEntity()
-        dbChronicler.id = chroniclerId.toInt()
+        val dbChronicler = chroniclerService.findChroniclerById(chroniclerId).getOrNull()
         val dbQuestions = questions
             .filter { qid -> questionService.findQuestionById(qid).isPresent }
             .map { qid ->
@@ -58,7 +59,11 @@ class InterviewService(
                 interviewQuestionMapper.modelToEntity(interviewQuestionService.save(iq))
             }.toMutableList()
 
-        val interview = InterviewEntity(name, null, false, null, storytellerMapper.modelToEntity(storyteller))
+        val chronicler = if(dbChronicler != null) {
+            chroniclerMapper.modelToEntity(dbChronicler)
+        } else null
+
+        val interview = InterviewEntity(name, null, false, chronicler, storytellerMapper.modelToEntity(storyteller))
         interview.interviewQuestionData = dbQuestions
         if (save) {
             return interviewMapper.entityToModel(db.save(interview))
@@ -69,7 +74,7 @@ class InterviewService(
             name,
             emptyList(),
             storyteller,
-            chroniclerMapper.entityToModel(dbChronicler),
+            dbChronicler,
             null,
             false,
             Collections.emptyList()

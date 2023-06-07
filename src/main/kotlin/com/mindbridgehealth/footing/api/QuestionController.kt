@@ -17,7 +17,7 @@ class QuestionController(val service: QuestionService) {
         return service.findQuestionById(id).orElseThrow()
     }
     @PostMapping("/")
-    fun post(@RequestBody question: Question): Question {
+    fun post(@RequestBody question: Question): String {
         return service.save(question)
     }
 
