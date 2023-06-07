@@ -24,7 +24,8 @@ Content-Type: application/json
 "contactMethod": "text",
 "mobile": "123-123-1234",
 "email": "test@test.com",
-"preferredTimes": [{"time": "15:01:00", "dayOfWeek": "SATURDAY"}]
+"preferredTimes": [{"time": "15:01:00", "dayOfWeek": "SATURDAY"}],
+"onboardingStatus": "ONBOARDING_STARTED"
 }
 
 ### Get the Storyteller

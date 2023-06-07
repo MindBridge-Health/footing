@@ -2,6 +2,7 @@ package com.mindbridgehealth.footing.service
 
 import com.mindbridgehealth.footing.data.PreferredTimeRepository
 import com.mindbridgehealth.footing.data.entity.PreferredTimeEntity
+import com.mindbridgehealth.footing.data.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapper
 import com.mindbridgehealth.footing.service.mapper.PreferredTimeMapper
 import com.mindbridgehealth.footing.service.model.Storyteller as ServiceStoryteller
@@ -28,10 +29,9 @@ class StorytellerService(private val db : com.mindbridgehealth.footing.data.Stor
     }
 
     fun save(storyteller: ServiceStoryteller): String {
-        if(storyteller.preferredTimes != null) {
-            storyteller.preferredTimes!!.forEach { preferredTimeRepository.save(preferredTimeMapper.modelToEntity(it)) }
-        }
-        return storytellerMapper.entityToModel(db.save(storytellerMapper.modelToEntity(storyteller.copy(id = null)))).id ?: throw Exception()
+        val storytellerEntity = storytellerMapper.modelToEntity(storyteller.copy(id = null))
+        savePreferredTimeEntities(storyteller, storytellerEntity)
+        return storytellerMapper.entityToModel(db.save(storytellerEntity)).id ?: throw Exception()
     }
 
     fun update(storyteller: ServiceStoryteller): Storyteller {
@@ -41,12 +41,27 @@ class StorytellerService(private val db : com.mindbridgehealth.footing.data.Stor
         val storedEntity = db.findByIdAndIsActive(Base36Encoder.decode(storyteller.id!!).toInt(), true).getOrElse { throw Exception() }
         val storytellerEntity = storytellerMapper.modelToEntity(storyteller)
 
-        //Todo: Gotta fill the preferredTime storytellerId and map it
+        val pfes = savePreferredTimeEntities(storyteller, storytellerEntity)
+
+        storytellerEntity.version = storedEntity.version
+        storytellerEntity.preferredTimes = pfes
+        return storytellerMapper.entityToModel(db.save(storytellerEntity))
+    }
+
+    //TODO Move this behind a PreferredTime Service
+    private fun savePreferredTimeEntities(
+        storyteller: Storyteller,
+        storytellerEntity: StorytellerEntity
+    ): ArrayList<PreferredTimeEntity> {
         val pfes = ArrayList<PreferredTimeEntity>()
-        if(storyteller.preferredTimes != null) {
+        if (storyteller.preferredTimes != null) {
             storyteller.preferredTimes!!.forEach {
-                val existingRecord = preferredTimeRepository.findByStorytellerAndDayOfWeekAndTime(storytellerEntity, it.dayOfWeek.name, it.time)
-                if(existingRecord.isEmpty) {
+                val existingRecord = preferredTimeRepository.findByStorytellerAndDayOfWeekAndTime(
+                    storytellerEntity,
+                    it.dayOfWeek.name,
+                    it.time
+                )
+                if (existingRecord.isEmpty) {
                     val preferredTimeEntity = preferredTimeMapper.modelToEntity(it)
                     preferredTimeEntity.storyteller = storytellerEntity
                     preferredTimeRepository.save(preferredTimeEntity)
@@ -54,10 +69,7 @@ class StorytellerService(private val db : com.mindbridgehealth.footing.data.Stor
                 }
             }
         }
-
-        storytellerEntity.version = storedEntity.version
-        storytellerEntity.preferredTimes = pfes
-        return storytellerMapper.entityToModel(db.save(storytellerEntity))
+        return pfes
     }
 
     fun deactivateStoryteller(id: String) {
