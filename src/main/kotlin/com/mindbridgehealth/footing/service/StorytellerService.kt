@@ -7,6 +7,7 @@ import com.mindbridgehealth.footing.service.mapper.PreferredTimeMapper
 import com.mindbridgehealth.footing.service.model.Storyteller as ServiceStoryteller
 import com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapper
 import com.mindbridgehealth.footing.service.model.PreferredTime
+import com.mindbridgehealth.footing.service.model.Storyteller
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.stereotype.Service
 import java.util.*
@@ -33,7 +34,7 @@ class StorytellerService(private val db : com.mindbridgehealth.footing.data.Stor
         return storytellerMapper.entityToModel(db.save(storytellerMapper.modelToEntity(storyteller.copy(id = null)))).id ?: throw Exception()
     }
 
-    fun update(storyteller: ServiceStoryteller) {
+    fun update(storyteller: ServiceStoryteller): Storyteller {
         if(storyteller.id == null) {
             throw Exception()
         }
@@ -56,7 +57,7 @@ class StorytellerService(private val db : com.mindbridgehealth.footing.data.Stor
 
         storytellerEntity.version = storedEntity.version
         storytellerEntity.preferredTimes = pfes
-        db.save(storytellerEntity)
+        return storytellerMapper.entityToModel(db.save(storytellerEntity))
     }
 
     fun deactivateStoryteller(id: String) {

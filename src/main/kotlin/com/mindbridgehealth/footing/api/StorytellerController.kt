@@ -18,8 +18,8 @@ class StorytellerController(val service: StorytellerService) {
     }
 
     @PutMapping("/")
-    fun put(@RequestBody storyteller: Storyteller) {
-        service.update(storyteller)
+    fun put(@RequestBody storyteller: Storyteller): Storyteller {
+        return service.update(storyteller)
     }
 
     @DeleteMapping("/{id}")
