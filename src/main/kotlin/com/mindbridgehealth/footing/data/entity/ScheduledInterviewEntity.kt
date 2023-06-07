@@ -6,11 +6,7 @@ import java.util.*
 
 @Entity
 @Table(name = "scheduled_interview")
-class ScheduledInterviewEntity {
-    @GeneratedValue
-    @Id
-    @Column(name = "id")
-    var id: Int? = null
+class ScheduledInterviewEntity: ResourceEntity() {
 
     @Basic
     @Column(name = "scheduled_time")

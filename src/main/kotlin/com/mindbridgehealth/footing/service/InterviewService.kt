@@ -1,13 +1,23 @@
 package com.mindbridgehealth.footing.service
 
+import com.fasterxml.jackson.databind.ser.Serializers.Base
 import com.mindbridgehealth.footing.data.InterviewRepository
+import com.mindbridgehealth.footing.data.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.data.entity.InterviewEntity
 import com.mindbridgehealth.footing.data.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.mapper.*
 import com.mindbridgehealth.footing.service.model.*
 import com.mindbridgehealth.footing.service.util.Base36Encoder
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
+import java.beans.ExceptionListener
+import java.sql.Time
+import java.sql.Timestamp
+import java.time.*
+import java.time.temporal.TemporalAdjusters
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
@@ -23,7 +33,9 @@ class InterviewService(
     private val interviewMapper: InterviewEntityMapper,
     private val storytellerMapper: StorytellerEntityMapper,
     private val interviewQuestionMapper: InterviewQuestionEntityMapper,
-    private val chroniclerMapper: ChroniclerEntityMapper
+    private val chroniclerMapper: ChroniclerEntityMapper,
+    private val scheduledInterviewRepository: ScheduledInterviewRepository,
+    private val scheduledInterviewEntityMapper: ScheduledInterviewEntityMapper
 ) {
 
     fun findInterviewById(interviewId: String): Interview {
@@ -79,6 +91,55 @@ class InterviewService(
             false,
             Collections.emptyList()
         )
+    }
+
+    fun scheduleInterview(storytellerId: String, interviewId: String, time: Instant?, name: String?): String {
+        //TODO: Can't schedule before onboarding has completed
+        val storyteller = storytellerService.findStorytellerById(storytellerId).getOrElse { throw Exception("Storyteller not found") }
+        val interview = findInterviewById(interviewId);
+
+        val scheduledTime: Instant = if(time == null ) {
+            if((storyteller.preferredTimes?.first()?.time == null || storyteller.preferredTimes?.first()?.dayOfWeek == null)) {
+                throw Exception("No specified time or preferred time set")
+            }
+
+            val preferredTime = storyteller.preferredTimes?.first()
+            val timeOfDay: LocalTime = LocalTime.from(preferredTime?.time?.toLocalTime())
+            val now: ZonedDateTime = ZonedDateTime.now()
+            val desiredDayOfWeek: DayOfWeek = preferredTime!!.dayOfWeek
+            val nextDayOfWeek: ZonedDateTime = now.with(TemporalAdjusters.next(desiredDayOfWeek))
+            val nextDateTime: ZonedDateTime = nextDayOfWeek.with(timeOfDay)
+            nextDateTime.toInstant()
+        } else {
+            time
+        }
+
+        val scheduledInterview = ScheduledInterview(null, name ?: "unnamed", emptyList(), scheduledTime, interview)
+
+        val existingInterview = scheduledInterviewRepository.findByStorytellerIdAndScheduledTime(
+            Base36Encoder.decode(storyteller.id!!).toInt(), Timestamp.from(time)
+        )
+        if(existingInterview != null) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Duplicate Scheduled Interview ID: " + Base36Encoder.encode(existingInterview.id.toString()))
+        }
+
+        return Base36Encoder.encode(scheduledInterviewRepository.save(scheduledInterviewEntityMapper.modelToEntity(scheduledInterview)).id.toString())
+    }
+
+    fun getNextInterview(storytellerId: String): ScheduledInterview? {
+        val next = scheduledInterviewRepository.findAllByStorytellerIdOrderByScheduledTimeAsc(Base36Encoder.decode(storytellerId).toInt())
+        if (next.isEmpty()) {
+            return null
+        }
+        return scheduledInterviewEntityMapper.entityToModel(next.first())
+    }
+
+    fun getAllScheduledInterviews(storytellerId: String): Collection<ScheduledInterview> {
+        return scheduledInterviewRepository.findAllByStorytellerIdOrderByScheduledTimeAsc(Base36Encoder.decode(storytellerId).toInt()).map { s -> scheduledInterviewEntityMapper.entityToModel(s) }
+    }
+
+    fun deleteScheduledInterview(scheduledInterviewId: String) {
+        return scheduledInterviewRepository.deleteById(Base36Encoder.decode(scheduledInterviewId).toInt())
     }
 
     fun deleteInterview(id: String) = db.deleteById(Base36Encoder.decode(id).toInt())

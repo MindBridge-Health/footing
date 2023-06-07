@@ -1,5 +1,5 @@
 ### Health
-GET http://localhost:8080/
+GET http://localhost:8080/health/
 
 ### Post Storyteller
 
@@ -37,39 +37,33 @@ DELETE http://localhost:8080/storytellers/{{cid}}
 
 
 ### AWS Tests
-GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/health
+GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/health/
 
-### Get all the Storytellers
-GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/
-# Comes back empty
-
-### Post Storyteller 2
+### Post Storyteller
 POST https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/
 Content-Type: application/json
 
 {
-  "name": "Chris",
+  "firstname": "Chris",
+  "lastname": "Dufresne",
   "contactMethod": "phone"
 }
+> {% client.global.set("cid", response.body) %}
 
-### Get all the Storytellers
-GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/
-# Returns one storyteller (me)
-# Grab the id that is returned and paste it below
-
-### Update Storyteller
+### PUT (Update) Storyteller 2
 PUT https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/
 Content-Type: application/json
 
 {
-  "id" : "{Paste the ID Here}",
-  "name": "Christopher",
-  "contactMethod": "text"
+"id": "{{cid}}",
+"firstname": "Christopher",
+"lastname": "Dufresne",
+"contactMethod": "text",
+"mobile": "123-123-1234",
+"email": "test@test.com",
+"preferredTimes": [{"time": "15:01:00", "dayOfWeek": "SATURDAY"}],
+"onboardingStatus": "ONBOARDING_STARTED"
 }
 
-### Get all the Storytellers
-GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/
-# Returns the updated storyteller
-
-### Delete all Storytellers
-DELETE https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/all
+### Get the Storyteller
+GET https://pb5a9nhpcb.us-east-1.awsapprunner.com/storytellers/{{cid}}

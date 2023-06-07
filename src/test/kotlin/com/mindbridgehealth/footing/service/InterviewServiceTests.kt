@@ -1,11 +1,9 @@
 package com.mindbridgehealth.footing.service
 
 import com.mindbridgehealth.footing.data.InterviewRepository
+import com.mindbridgehealth.footing.data.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.data.entity.*
-import com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapper
-import com.mindbridgehealth.footing.service.mapper.InterviewEntityMapper
-import com.mindbridgehealth.footing.service.mapper.InterviewQuestionEntityMapper
-import com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapper
+import com.mindbridgehealth.footing.service.mapper.*
 import com.mindbridgehealth.footing.service.model.*
 import io.mockk.every
 import io.mockk.mockk
@@ -25,6 +23,7 @@ class InterviewServiceTests {
         val mockQuestionService = mockk<QuestionService>()
         val mockInterviewQuestionService = mockk<InterviewQuestionService>()
         val mockChroniclerService = mockk<ChroniclerService>()
+        val mockScheduledInterviewRepository = mockk<ScheduledInterviewRepository>()
 
         //Ones
         val uuid1 = floor(Math.random() * 1000).toInt()
@@ -145,6 +144,9 @@ class InterviewServiceTests {
             Mappers.getMapper(StorytellerEntityMapper::class.java),
             Mappers.getMapper(InterviewQuestionEntityMapper::class.java),
             Mappers.getMapper(ChroniclerEntityMapper::class.java),
+            mockScheduledInterviewRepository,
+            Mappers.getMapper(ScheduledInterviewEntityMapper::class.java)
+
         )
         val interviews = service.findByStorytellerId(uuid1.toString())
 

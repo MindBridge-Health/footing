@@ -1,5 +1,6 @@
 package com.mindbridgehealth.footing.service.model
 
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import java.util.*
 
 data class Storyteller(

@@ -91,15 +91,6 @@ CREATE TABLE IF NOT EXISTS preferred_time
 CREATE TABLE IF NOT EXISTS story
 (
     id   MEDIUMINT PRIMARY KEY REFERENCES resource(id),
-    id_text varchar(36) generated always as
-             (insert(
-                insert(
-                        insert(
-                                insert(hex(id),9,0,'-'),
-                                14,0,'-'),
-                        19,0,'-'),
-                24,0,'-')
-             ) virtual,
     storyteller_id MEDIUMINT,
     text VARCHAR(128),
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id)
@@ -169,8 +160,8 @@ CREATE TABLE IF NOT EXISTS interview_question
 CREATE TABLE IF NOT EXISTS scheduled_interview
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
-    scheduled_time DATETIME,
-    interview_id MEDIUMINT,
+    scheduled_time DATETIME UNIQUE NOT NULL,
+    interview_id MEDIUMINT NOT NULL ,
     FOREIGN KEY (interview_id) REFERENCES interview(id)
 );
 

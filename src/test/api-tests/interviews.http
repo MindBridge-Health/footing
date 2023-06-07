@@ -15,7 +15,7 @@ POST http://localhost:8080/questions/
 Content-Type: application/json
 
 {
-  "name": "Question 1",
+  "name": "Question 2",
   "text": "What is your favorite color?",
   "isCustom": true
 }
@@ -27,7 +27,7 @@ Content-Type: application/json
 
 {
   "firstname": "Chat",
-  "lastname": "GPT"
+  "lastname": "GPT2.0"
 }
 > {% client.global.set("cid", response.body) %}
 
@@ -36,7 +36,7 @@ POST http://localhost:8080/interviews/storytellers/{{sid}}/chroniclers/{{cid}}
 Content-Type: application/json
 
 {
-  "name": "Interview 2",
+  "name": "Interview 3",
   "interviewQuestions": [
     {
       "id": "{{qid}}"
@@ -48,6 +48,18 @@ Content-Type: application/json
 ### GET Interview
 GET http://localhost:8080/interviews/{{id}}
 Content-Type: application/json
+
+###Schedule an interview
+POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?time=2023-06-08T12%3A34%3A00Z
+
+### GET Next Scheduled Interview
+GET http://localhost:8080/interviews/storytellers/{{sid}}/scheduled:next/
+
+### GET All Scheduled Interview
+GET http://localhost:8080/interviews/storytellers/{{sid}}/scheduled:all/
+
+### Delete Scheduled Interview
+DELETE http://localhost:8080/interviews/scheduled/5f5ztgjyj
 
 ### Delete Question
 DELETE http://localhost:8080/questions/{{qid}}
