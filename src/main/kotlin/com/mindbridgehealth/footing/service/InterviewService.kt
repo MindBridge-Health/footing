@@ -142,6 +142,7 @@ class InterviewService(
         return scheduledInterviewRepository.deleteById(Base36Encoder.decode(scheduledInterviewId).toInt())
     }
 
+    //TODO: What happens if you delete an interview that was scheduled?
     fun deleteInterview(id: String) = db.deleteById(Base36Encoder.decode(id).toInt())
 
 }

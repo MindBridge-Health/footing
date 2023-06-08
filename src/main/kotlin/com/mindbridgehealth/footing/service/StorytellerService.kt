@@ -30,8 +30,9 @@ class StorytellerService(private val db : com.mindbridgehealth.footing.data.Stor
 
     fun save(storyteller: ServiceStoryteller): String {
         val storytellerEntity = storytellerMapper.modelToEntity(storyteller.copy(id = null))
-        savePreferredTimeEntities(storyteller, storytellerEntity)
-        return storytellerMapper.entityToModel(db.save(storytellerEntity)).id ?: throw Exception()
+        val storytellerEntity1 = db.save(storytellerEntity)
+        savePreferredTimeEntities(storyteller, storytellerEntity1)
+        return storytellerMapper.entityToModel(storytellerEntity1).id ?: throw Exception()
     }
 
     fun update(storyteller: ServiceStoryteller): Storyteller {

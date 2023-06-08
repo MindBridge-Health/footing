@@ -16,6 +16,6 @@ abstract class IdMapper {
     @AfterMapping
     fun calledWithSourceAndTarget(source: DataModel, @MappingTarget target: EntityModel){
         //target.onboardingStatus = source.onboardingStatus?.value
-        target.id = if(source.id.isNullOrEmpty()) -1 else Base36Encoder.decode(source.id!!).toInt()
+        target.id = if(source.id.isNullOrEmpty()) null else Base36Encoder.decode(source.id!!).toInt()
     }
 }
