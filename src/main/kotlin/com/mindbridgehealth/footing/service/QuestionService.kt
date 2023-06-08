@@ -20,6 +20,10 @@ class QuestionService(private val db: QuestionRepository, private val questionMa
         return Optional.empty()
     }
 
+    fun getAllQuestions(): Collection<Question> {
+        return db.findAll().map { q -> questionMapper.entityToModel(q) }
+    }
+
     fun save(question: Question) : String {
         val questionEntity = questionMapper.modelToEntity(question)
         questionEntity.id = null

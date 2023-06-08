@@ -16,6 +16,11 @@ class QuestionController(val service: QuestionService) {
     fun get(@PathVariable id: String): Question {
         return service.findQuestionById(id).orElseThrow()
     }
+
+    @GetMapping("/")
+    fun getAll(): Collection<Question> {
+        return service.getAllQuestions()
+    }
     @PostMapping("/")
     fun post(@RequestBody question: Question): String {
         return service.save(question)

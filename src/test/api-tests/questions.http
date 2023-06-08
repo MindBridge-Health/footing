@@ -22,3 +22,7 @@ Content-Type: application/json
   "text": "What is your favorite color?",
   "isCustom": false
 }
+
+### Get All questions
+GET  http://localhost:8080/questions/
+Content-Type: application/json
