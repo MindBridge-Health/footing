@@ -1,20 +1,17 @@
 package com.mindbridgehealth.footing.service
 
-import com.fasterxml.jackson.databind.ser.Serializers.Base
 import com.mindbridgehealth.footing.data.InterviewRepository
 import com.mindbridgehealth.footing.data.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.data.entity.InterviewEntity
+import com.mindbridgehealth.footing.data.entity.ScheduledInterviewEntity
 import com.mindbridgehealth.footing.data.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.mapper.*
 import com.mindbridgehealth.footing.service.model.*
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
-import java.beans.ExceptionListener
-import java.sql.Time
 import java.sql.Timestamp
 import java.time.*
 import java.time.temporal.TemporalAdjusters
@@ -39,7 +36,7 @@ class InterviewService(
 ) {
 
     fun findInterviewById(interviewId: String): Interview {
-        return interviewMapper.entityToModel(db.findById(Base36Encoder.decode(interviewId).toInt()).orElseThrow()) //TODO: Revisit exception
+        return interviewMapper.entityToModel(db.findById(Base36Encoder.decode(interviewId).toInt()).orElseThrow()) //TODO: Footing-2 Revisit exception
     }
 
     fun findByStorytellerId(storytellerId: String): Collection<Interview> {
@@ -93,8 +90,9 @@ class InterviewService(
         )
     }
 
-    fun scheduleInterview(storytellerId: String, interviewId: String, time: Instant?, name: String?): String {
-        //TODO: Can't schedule before onboarding has completed
+    //TODO: Footing-1 Refactor to a scheduled interview service
+    fun scheduleInterview(storytellerId: String, interviewId: String, time: Instant?, name: String?, append: Boolean): String {
+        //TODO: Footing-3 Can't schedule before onboarding has completed
         val storyteller = storytellerService.findStorytellerById(storytellerId).getOrElse { throw Exception("Storyteller not found") }
         val interview = findInterviewById(interviewId);
 
@@ -102,14 +100,14 @@ class InterviewService(
             if((storyteller.preferredTimes?.first()?.time == null || storyteller.preferredTimes?.first()?.dayOfWeek == null)) {
                 throw Exception("No specified time or preferred time set")
             }
-
-            val preferredTime = storyteller.preferredTimes?.first()
-            val timeOfDay: LocalTime = LocalTime.from(preferredTime?.time?.toLocalTime())
-            val now: ZonedDateTime = ZonedDateTime.now()
-            val desiredDayOfWeek: DayOfWeek = preferredTime!!.dayOfWeek
-            val nextDayOfWeek: ZonedDateTime = now.with(TemporalAdjusters.next(desiredDayOfWeek))
-            val nextDateTime: ZonedDateTime = nextDayOfWeek.with(timeOfDay)
-            nextDateTime.toInstant()
+            if(append)
+            {
+                getNextAvailablePreferredTime(storyteller)
+            } else {
+                val preferredTime = storyteller.preferredTimes?.first()!!
+                val nextDateTime: ZonedDateTime = getNextPreferredTime(preferredTime)
+                nextDateTime.toInstant()
+            }
         } else {
             time
         }
@@ -117,13 +115,46 @@ class InterviewService(
         val scheduledInterview = ScheduledInterview(null, name ?: "unnamed", emptyList(), scheduledTime, interview)
 
         val existingInterview = scheduledInterviewRepository.findByStorytellerIdAndScheduledTime(
-            Base36Encoder.decode(storyteller.id!!).toInt(), Timestamp.from(time)
+            Base36Encoder.decode(storyteller.id!!).toInt(), Timestamp.from(scheduledTime)
         )
         if(existingInterview != null) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "Duplicate Scheduled Interview ID: " + Base36Encoder.encode(existingInterview.id.toString()))
         }
 
         return Base36Encoder.encode(scheduledInterviewRepository.save(scheduledInterviewEntityMapper.modelToEntity(scheduledInterview)).id.toString())
+    }
+
+    private fun getNextPreferredTime(preferredTime: PreferredTime): ZonedDateTime {
+        val timeOfDay: LocalTime = LocalTime.from(preferredTime.time.toLocalTime())
+        val now: ZonedDateTime = ZonedDateTime.now()
+        val desiredDayOfWeek: DayOfWeek = preferredTime.dayOfWeek
+        val nextDayOfWeek: ZonedDateTime = now.with(TemporalAdjusters.next(desiredDayOfWeek))
+        return nextDayOfWeek.with(timeOfDay)
+    }
+
+    private fun getNextAvailablePreferredTime(storyteller: Storyteller ): Instant {
+        var availablePreferredTimes: List<ZonedDateTime> = emptyList()
+        var daysToAdd = 0L
+        while (availablePreferredTimes.isEmpty()) {
+            val now: ZonedDateTime = ZonedDateTime.now()
+            val preferredTimes = storyteller.preferredTimes ?: throw Exception("null preferred times")
+            val nextPreferredTimes: List<ZonedDateTime> = preferredTimes.map { preferredTime ->
+                val nextDateTime: ZonedDateTime = now.plusDays(daysToAdd).with(TemporalAdjusters.nextOrSame(preferredTime.dayOfWeek))
+                    .with(LocalTime.from(preferredTime.time.toLocalTime()))
+                nextDateTime
+            }
+            val nextInterviews = scheduledInterviewRepository.findAllByStorytellerIdOrderByScheduledTimeAsc(Base36Encoder.decode(storyteller.id.toString()).toInt())
+            val scheduledTimes = nextInterviews.map { i -> i.scheduledTime }
+            availablePreferredTimes = nextPreferredTimes.filter { nextPreferredTime ->
+                val nextPreferredInstant: Instant = nextPreferredTime.toInstant()
+                scheduledTimes.none { scheduledTime -> scheduledTime?.toInstant() == nextPreferredInstant }
+            }
+            daysToAdd++
+        }
+        val earliestPreferredTime: ZonedDateTime = availablePreferredTimes.min()
+        return earliestPreferredTime.toInstant()
+
+
     }
 
     fun getNextInterview(storytellerId: String): ScheduledInterview? {

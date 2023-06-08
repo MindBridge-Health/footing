@@ -24,5 +24,5 @@ Content-Type: application/json
 }
 
 ### Get All questions
-GET  http://localhost:8080/questions/
+GET  https://pb5a9nhpcb.us-east-1.awsapprunner.com/questions/
 Content-Type: application/json
