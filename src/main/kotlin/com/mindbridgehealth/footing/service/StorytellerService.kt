@@ -7,15 +7,14 @@ import com.mindbridgehealth.footing.data.repository.MindBridgeUserRepository
 import com.mindbridgehealth.footing.data.repository.StorytellerRepository
 import com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapper
 import com.mindbridgehealth.footing.service.mapper.PreferredTimeMapper
-import com.mindbridgehealth.footing.service.model.Storyteller as ServiceStoryteller
 import com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapper
 import com.mindbridgehealth.footing.service.model.Storyteller
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.jvm.optionals.getOrElse
+import com.mindbridgehealth.footing.service.model.Storyteller as ServiceStoryteller
 
 
 @Service
@@ -61,7 +60,7 @@ class StorytellerService(private val db : StorytellerRepository, private val pre
         return storytellerMapper.entityToModel(storytellerEntity)
     }
 
-    //TODO Move this behind a PreferredTime Service
+    //TODO: Footing-4 Move this behind a PreferredTime Service
     private fun savePreferredTimeEntities(
         storyteller: Storyteller,
         storytellerEntity: StorytellerEntity
