@@ -1,12 +1,11 @@
 package com.mindbridgehealth.footing.service
 
-import com.mindbridgehealth.footing.data.MediaRepository
+import com.mindbridgehealth.footing.data.repository.MediaRepository
 import com.mindbridgehealth.footing.service.mapper.MediaEntityMapper
 import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.stereotype.Service
 import java.util.Optional
-import java.util.UUID
 import kotlin.jvm.optionals.getOrElse
 
 @Service

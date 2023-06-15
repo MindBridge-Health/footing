@@ -44,4 +44,31 @@ class Base36EncoderTests {
         assertEquals(originalString, decodedString)
         println()
     }
+
+    @Test
+    fun encodeIdProvider_decode_getBackValue() {
+        val originalString = "google-oauth2"
+
+        val encodedString = Base36Encoder.encode(originalString)
+        println(encodedString)
+        assertNotEquals(originalString, encodedString)
+
+        val decodedString = Base36Encoder.decode(encodedString)
+        assertEquals(originalString, decodedString)
+        println(decodedString)
+    }
+
+    @Test
+    fun encodeAltId_decode_getBackValue() {
+        val altId = "auth0|648a23ab6ee6f0aa87941142"
+
+        val encoded = Base36Encoder.encodeAltId(altId)
+        println(encoded)
+
+        val decoded = Base36Encoder.decodeAltId(encoded)
+        println(decoded)
+
+        assertEquals(altId, decoded)
+
+    }
 }

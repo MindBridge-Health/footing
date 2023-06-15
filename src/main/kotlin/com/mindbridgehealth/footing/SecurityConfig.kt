@@ -13,19 +13,13 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig() {
+class SecurityConfig(private val logoutHandler: LogoutHandler) {
 
     @Value("\${auth0.audience}")
     private val audience: String? = null
 
     @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private val issuer: String? = null
-
-    private lateinit var logoutHandler: LogoutHandler
-
-    constructor(logoutHandler: LogoutHandler?) : this() {
-        this.logoutHandler = logoutHandler!!
-    }
 
     @Bean
     @Throws(Exception::class)
@@ -34,21 +28,10 @@ class SecurityConfig() {
             authorize -> authorize
                 .requestMatchers("/", "/images/**").permitAll()
                 .anyRequest().authenticated()
-                .and().oauth2Login()
+                .and().oauth2Login().defaultSuccessUrl("/onboarding", true)
         }
             .cors().and().oauth2ResourceServer{oauth -> oauth.jwt { jwt -> jwt.decoder(jwtDecoder())}}
-//            .logout { logout -> logout.logoutUrl("/logout").addLogoutHandler(logoutHandler)}
-//        http.authorizeHttpRequests() // allow all users to access the home pages and the static images directory
-//            .requestMatchers("/", "/images/**").permitAll() // all other requests must be authenticated
-//            .oauth2ResourceServer((oauth2ResourceServer) ->
-//        // works, but not as clear:
-//        // oauth2ResourceServer.jwt());
-//        oauth2ResourceServer.jwt(jwt -> jwt.decoder(jwtDecoder())));
-//            .anyRequest().authenticated()
-//            .and().oauth2Login()
-//            .and().logout() // handle logout requests at /logout path
-//            .logoutRequestMatcher(AntPathRequestMatcher("/logout")) // customize logout handler to log out of Auth0
-//            .addLogoutHandler(logoutHandler)
+            .logout { logout -> logout.logoutUrl("/logout").addLogoutHandler(logoutHandler)}
         return http.build()
     }
 

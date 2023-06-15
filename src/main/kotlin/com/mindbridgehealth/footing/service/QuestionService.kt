@@ -1,11 +1,9 @@
 package com.mindbridgehealth.footing.service
 
-import com.mindbridgehealth.footing.data.QuestionRepository
+import com.mindbridgehealth.footing.data.repository.QuestionRepository
 import com.mindbridgehealth.footing.service.mapper.QuestionEntityMapper
 import com.mindbridgehealth.footing.service.model.Question
 import com.mindbridgehealth.footing.service.util.Base36Encoder
-import org.mapstruct.factory.Mappers
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 

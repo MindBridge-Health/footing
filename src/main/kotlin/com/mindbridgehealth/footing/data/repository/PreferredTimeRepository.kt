@@ -1,4 +1,4 @@
-package com.mindbridgehealth.footing.data
+package com.mindbridgehealth.footing.data.repository
 
 import com.mindbridgehealth.footing.data.entity.PreferredTimeEntity
 import com.mindbridgehealth.footing.data.entity.StorytellerEntity

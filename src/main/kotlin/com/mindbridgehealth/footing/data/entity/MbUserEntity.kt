@@ -5,11 +5,14 @@ import jakarta.persistence.*
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "mb_user")
-abstract class MbUserEntity: EntityModel() {
+class MbUserEntity: EntityModel() {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
     override var id: Int? = null
+
+    @Column(name="alt_id")
+    override var altId: String? = null
 
     @Version
     @Column(name = "version")

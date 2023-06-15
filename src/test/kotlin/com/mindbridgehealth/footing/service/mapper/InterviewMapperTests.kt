@@ -22,6 +22,7 @@ class InterviewMapperTests {
         chronicler.ai = false
         val storyteller = StorytellerEntity()
         storyteller.id = floor(Math.random() * 1000).toInt()
+        storyteller.altId = "auth0|648a23ab6ee6f0aa87941142"
         storyteller.lastname = "d"
         storyteller.middlename = "a"
         storyteller.firstname = "c"

@@ -3,6 +3,7 @@ package com.mindbridgehealth.footing.service.mapper
 import com.mindbridgehealth.footing.data.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.model.OnboardingStatus
 import com.mindbridgehealth.footing.service.model.Storyteller
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.mapstruct.*
 
 @Mapper(
