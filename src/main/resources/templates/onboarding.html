@@ -1,0 +1,70 @@
+<!-- src/main/resources/templates/onboarding.html -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head th:fragment="head">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Onboarding</title>
+
+    <meta name="_jwt" th:content="${jwt}"/>
+</head>
+<body>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const _token = /*[[${jwt}]]*/ 'empty';
+    /*]]>*/
+
+    window.onload = () => {
+        document.getElementById('myForm').addEventListener('submit', submitForm);
+    }
+    submitForm = (event) => {
+        event.preventDefault()
+        console.log('Calling Footing');
+        const myForm = document.getElementById("myForm");
+
+        const data = {
+            firstname: myForm.firstname.value,
+            lastname: myForm.lastname.value,
+            mobile: myForm.mobile.value,
+            contactMethod: myForm.contactMethod.value
+        };
+
+        console.log('data' + JSON.stringify(data));
+        fetch('/storytellers/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${_token}`
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then(response => console.log(response))
+    }
+
+</script>
+<div sec:authorize="!isAuthenticated()">
+    <a th:href="@{/oauth2/authorization/auth0}">Log In</a>
+</div>
+<div sec:authorize="isAuthenticated()">
+    <p>There would be a better onboarding form here</p>
+    <form id="myForm" name="myForm">
+        <label for="firstname">First name:</label><br>
+        <input type="text" id="firstname" name="firstname"><br>
+
+        <label for="lastname">Last name:</label><br>
+        <input type="text" id="lastname" name="lastname"><br>
+
+        <label for="mobile">Mobile:</label><br>
+        <input type="text" id="mobile" name="mobile"><br>
+
+        <label for="contactMethod">Contact Method:</label><br>
+        <input type="text" id="contactMethod" name="contactMethod"><br>
+
+        <button type="submit">Submit</button>
+    </form>
+    <a th:href="@{/logout}">Log Out</a>
+</div>
+</body>
+</html>

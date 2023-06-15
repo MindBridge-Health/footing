@@ -1,11 +1,10 @@
 package com.mindbridgehealth.footing.service
 
-import com.mindbridgehealth.footing.data.StoryRepository
+import com.mindbridgehealth.footing.data.repository.StoryRepository
 import com.mindbridgehealth.footing.service.mapper.StoryEntityMapper
 import com.mindbridgehealth.footing.service.model.Story
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import java.util.Optional
-import java.util.UUID
 
 class StoryService(private val db: StoryRepository, private val storyMapper: StoryEntityMapper) {
 

@@ -9,7 +9,7 @@ import java.util.*
 class StorytellerEntity: MbUserEntity() {
     @Basic
     @Column(name = "contact_method")
-    var contactMethod: String = ""
+    var contactMethod: String? = ""
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "storyteller_benefactor_link", joinColumns = [JoinColumn(name = "storyteller_id")], inverseJoinColumns = [JoinColumn(name = "benefactor_id")])

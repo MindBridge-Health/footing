@@ -1,7 +1,7 @@
 package com.mindbridgehealth.footing.service
 
-import com.mindbridgehealth.footing.data.InterviewRepository
-import com.mindbridgehealth.footing.data.ScheduledInterviewRepository
+import com.mindbridgehealth.footing.data.repository.InterviewRepository
+import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.data.entity.*
 import com.mindbridgehealth.footing.service.mapper.*
 import com.mindbridgehealth.footing.service.model.*

@@ -10,12 +10,12 @@ abstract class IdMapper {
     @AfterMapping
     fun calledWithSourceAndTarget(source: EntityModel, @MappingTarget target: DataModel){
         //target.onboardingStatus = OnboardingStatus.getByValue(source.onboardingStatus!!)
-        target.id = Base36Encoder.encode(source.id.toString())
+        target.id = if(source.altId.isNullOrEmpty()) null else Base36Encoder.encodeAltId(source.altId!!)
     }
 
     @AfterMapping
     fun calledWithSourceAndTarget(source: DataModel, @MappingTarget target: EntityModel){
         //target.onboardingStatus = source.onboardingStatus?.value
-        target.id = if(source.id.isNullOrEmpty()) null else Base36Encoder.decode(source.id!!).toInt()
+        target.altId = if(source.id.isNullOrEmpty()) null else Base36Encoder.decodeAltId(source.id!!)
     }
 }

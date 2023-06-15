@@ -2,8 +2,6 @@ package com.mindbridgehealth.footing.service.util
 
 import java.math.BigInteger
 import java.nio.charset.StandardCharsets
-import kotlin.math.floor
-import kotlin.random.Random
 
 
 object Base36Encoder {
@@ -12,15 +10,26 @@ object Base36Encoder {
         if (string.length < 5) {
             string.padStart(4, '0')
         }
-        val saltyString = Random.nextInt(10, 99).toString() + string + Random.nextInt(10, 99).toString()
-        val bytes: ByteArray = saltyString.toByteArray(StandardCharsets.UTF_8)
+        val bytes = string.toByteArray(StandardCharsets.UTF_8)
         return BigInteger(1, bytes).toString(36).reversed()
     }
 
     fun decode(string: String): String {
         val bytes = BigInteger(string.reversed(), 36).toByteArray()
         val zeroPrefixLength = zeroPrefixLength(bytes)
-        return String(bytes, zeroPrefixLength, bytes.size - zeroPrefixLength).drop(2).dropLast(2)
+        return String(bytes, zeroPrefixLength, bytes.size - zeroPrefixLength)
+    }
+
+    fun encodeAltId(altId: String): String {
+        val idTokens = altId.split('|')
+        val idProvider = encode(idTokens[0])
+        return idProvider + '.' + idTokens[1]
+    }
+
+    fun decodeAltId(externalId: String): String {
+        val idTokens = externalId.split('.')
+        val idProvider = decode(idTokens[0])
+        return idProvider + '|' + idTokens[1]
     }
 
     private fun zeroPrefixLength(bytes: ByteArray): Int {

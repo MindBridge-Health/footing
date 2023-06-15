@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service
 
-import com.mindbridgehealth.footing.data.ChroniclerRepository
+import com.mindbridgehealth.footing.data.repository.ChroniclerRepository
 import com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapper
 import com.mindbridgehealth.footing.service.model.Chronicler
 import com.mindbridgehealth.footing.service.util.Base36Encoder
@@ -32,7 +32,7 @@ class ChroniclerService(private val db: ChroniclerRepository, private val chroni
     }
 
     fun deactivateChronicler(id: String) {
-        val chronicler = db.findById(Base36Encoder.decode(id).toInt()).getOrElse { throw Exception() }
+        val chronicler = db.findById(Base36Encoder.decode(id).toInt()).getOrElse { throw Exception() } //TODO Fix altId
         chronicler.isActive = false
         db.save(chronicler)
     }
