@@ -32,83 +32,87 @@ import software.amazon.awssdk.services.sts.model.AssumeRoleRequest
 import java.util.*
 
 
-@Configuration
-@EnableSqs
-class SqsConfig(val userService: UserService) {
+// Unused for now. Not listening for Auth0 events
+// Instead we try to create a user when a POST happens to Storyteller or Benefactor
+// May revisit after pilot
 
-    @Value("\${cloud.aws.region:us-east-1}")
-    private val awsRegion: String? = null
-
-    @Value("\${aws.iam.role-arn}")
-    lateinit var iamRoleArn: String
-
-    @Primary
-    @Bean
-    fun sqsClient(awsCredentialsProvider: AwsCredentialsProvider): SqsClient {
-        return SqsClient.builder()
-            .region(Region.of(awsRegion))
-            .credentialsProvider(awsCredentialsProvider)
-            .build()
-    }
-
-    @Bean
-    fun credentialsProvider(): AwsCredentialsProvider {
-        val defaultCredentialsProvider = DefaultCredentialsProvider.create()
-        return AwsCredentialsProvider {
-            val stsClient = StsClient.builder()
-                .region(Region.of(awsRegion))
-                .credentialsProvider(defaultCredentialsProvider)
-                .build()
-
-            val assumeRoleRequest = AssumeRoleRequest.builder()
-                .roleArn(iamRoleArn)
-                .roleSessionName("auth-sqs-session")
-                .build()
-
-            val response = stsClient.assumeRole(assumeRoleRequest)
-            val credentials = response.credentials()
-
-            StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(
-                    credentials.accessKeyId(),
-                    credentials.secretAccessKey()
-                )
-            ).resolveCredentials()
-        }
-    }
-
-    @Bean
-    fun queueMessagingTemplate(
-        amazonSQSAsync: AmazonSQSAsync?
-    ): QueueMessagingTemplate? {
-        return QueueMessagingTemplate(amazonSQSAsync)
-    }
-
-    @Bean
-    fun simpleMessageListenerContainerFactory(amazonSQSAsync: AmazonSQSAsync?): SimpleMessageListenerContainerFactory? {
-        val factory = SimpleMessageListenerContainerFactory()
-        factory.setAmazonSqs(amazonSQSAsync)
-        factory.setAutoStartup(true)
-        factory.setMaxNumberOfMessages(10)
-        factory.setTaskExecutor(createDefaultTaskExecutor())
-        return factory
-    }
-
-    protected fun createDefaultTaskExecutor(): AsyncTaskExecutor? {
-        val threadPoolTaskExecutor = ThreadPoolTaskExecutor()
-        threadPoolTaskExecutor.setThreadNamePrefix("SQSExecutor - ")
-        threadPoolTaskExecutor.corePoolSize = 100
-        threadPoolTaskExecutor.maxPoolSize = 100
-        threadPoolTaskExecutor.queueCapacity = 2
-        threadPoolTaskExecutor.afterPropertiesSet()
-        return threadPoolTaskExecutor
-    }
-
-    @SqsListener("https://sqs.us-east-1.amazonaws.com/732842978186/Auth0Registration", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
-    fun receiveMessageFromQueue(message: Auth0User) {
-        // Process the received message
-        println("Received message from listener: $message")
-        userService.createUser(message)
-
-    }
-}
+//@Configuration
+//@EnableSqs
+//class SqsConfig(val userService: UserService) {
+//
+//    @Value("\${cloud.aws.region:us-east-1}")
+//    private val awsRegion: String? = null
+//
+//    @Value("\${aws.iam.role-arn}")
+//    lateinit var iamRoleArn: String
+//
+//    @Primary
+//    @Bean
+//    fun sqsClient(awsCredentialsProvider: AwsCredentialsProvider): SqsClient {
+//        return SqsClient.builder()
+//            .region(Region.of(awsRegion))
+//            .credentialsProvider(awsCredentialsProvider)
+//            .build()
+//    }
+//
+//    @Bean
+//    fun credentialsProvider(): AwsCredentialsProvider {
+//        val defaultCredentialsProvider = DefaultCredentialsProvider.create()
+//        return AwsCredentialsProvider {
+//            val stsClient = StsClient.builder()
+//                .region(Region.of(awsRegion))
+//                .credentialsProvider(defaultCredentialsProvider)
+//                .build()
+//
+//            val assumeRoleRequest = AssumeRoleRequest.builder()
+//                .roleArn(iamRoleArn)
+//                .roleSessionName("auth-sqs-session")
+//                .build()
+//
+//            val response = stsClient.assumeRole(assumeRoleRequest)
+//            val credentials = response.credentials()
+//
+//            StaticCredentialsProvider.create(
+//                AwsBasicCredentials.create(
+//                    credentials.accessKeyId(),
+//                    credentials.secretAccessKey()
+//                )
+//            ).resolveCredentials()
+//        }
+//    }
+//
+//    @Bean
+//    fun queueMessagingTemplate(
+//        amazonSQSAsync: AmazonSQSAsync?
+//    ): QueueMessagingTemplate? {
+//        return QueueMessagingTemplate(amazonSQSAsync)
+//    }
+//
+//    @Bean
+//    fun simpleMessageListenerContainerFactory(amazonSQSAsync: AmazonSQSAsync?): SimpleMessageListenerContainerFactory? {
+//        val factory = SimpleMessageListenerContainerFactory()
+//        factory.setAmazonSqs(amazonSQSAsync)
+//        factory.setAutoStartup(true)
+//        factory.setMaxNumberOfMessages(10)
+//        factory.setTaskExecutor(createDefaultTaskExecutor())
+//        return factory
+//    }
+//
+//    protected fun createDefaultTaskExecutor(): AsyncTaskExecutor? {
+//        val threadPoolTaskExecutor = ThreadPoolTaskExecutor()
+//        threadPoolTaskExecutor.setThreadNamePrefix("SQSExecutor - ")
+//        threadPoolTaskExecutor.corePoolSize = 100
+//        threadPoolTaskExecutor.maxPoolSize = 100
+//        threadPoolTaskExecutor.queueCapacity = 2
+//        threadPoolTaskExecutor.afterPropertiesSet()
+//        return threadPoolTaskExecutor
+//    }
+//
+//    @SqsListener("https://sqs.us-east-1.amazonaws.com/732842978186/Auth0Registration", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
+//    fun receiveMessageFromQueue(message: Auth0User) {
+//        // Process the received message
+//        println("Received message from listener: $message")
+//        userService.createUser(message)
+//
+//    }
+//}
