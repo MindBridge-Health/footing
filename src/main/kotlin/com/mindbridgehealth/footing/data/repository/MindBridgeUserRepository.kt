@@ -9,4 +9,5 @@ import java.util.*
 interface MindBridgeUserRepository: JpaRepository<MbUserEntity, Int> {
 
     fun findByAltIdAndIsActive(altId: String, isActive: Boolean): Optional<MbUserEntity>
+    fun findByAltId(altId: String): Optional<MbUserEntity>
 }

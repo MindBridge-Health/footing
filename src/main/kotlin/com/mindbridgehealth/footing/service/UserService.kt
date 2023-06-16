@@ -10,6 +10,13 @@ class UserService(val userDb: MindBridgeUserRepository, val userMapper: Auth0Use
 
     fun createUser(auth0User: Auth0User) {
         val entity = userMapper.auth0UserToMbUserEntity(auth0User)
-        userDb.save(entity)
+        val altId = entity.altId ?: throw Exception("Logged in user had null altId")
+        if(userDb.findByAltId(altId).isEmpty) {
+            println("DEBUG: Creating User")
+            userDb.save(entity)
+        } else {
+            println("DEBUG: User already exists")
+        }
+
     }
 }

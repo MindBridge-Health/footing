@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets
 
 object Base36Encoder {
 
+    enum class idProvi
     fun encode(string: String): String {
         if (string.length < 5) {
             string.padStart(4, '0')
