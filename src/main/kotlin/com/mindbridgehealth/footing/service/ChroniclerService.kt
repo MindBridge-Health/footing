@@ -27,7 +27,7 @@ class ChroniclerService(private val db: ChroniclerRepository, private val chroni
     }
 
     fun update(chronicler: Chronicler) {
-        if(chronicler.id != null) findChroniclerById(chronicler.id!!) else throw Exception() //TODO Exception
+        if(chronicler.id != null) findChroniclerById(chronicler.id!!) else throw Exception() //TODO: Footing-2 Exception
         db.save(chroniclerEntityMapper.modelToEntity(chronicler))
     }
 

@@ -5,6 +5,8 @@ import com.mindbridgehealth.footing.api.dto.mapper.ScheduledInterviewDtoMapper
 import com.mindbridgehealth.footing.service.InterviewService
 import com.mindbridgehealth.footing.service.model.Interview
 import com.mindbridgehealth.footing.service.model.ScheduledInterview
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 import java.util.*
 import kotlin.collections.Collection
@@ -33,8 +36,11 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
     }
 
     @PostMapping("/storytellers/{storytellerId}/scheduled/{id}")
-    fun assignInterview(@PathVariable storytellerId: String, @PathVariable id: String, @RequestParam time: Instant?, @RequestParam name: String?): String {
-        return service.scheduleInterview(storytellerId, id, time, name)
+    fun assignInterview(@PathVariable storytellerId: String, @PathVariable id: String, @RequestParam time: Instant?, @RequestParam name: String?, @RequestParam append: Boolean = false): String {
+        if(append && time != null) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't specify append and a time")
+        }
+        return service.scheduleInterview(storytellerId, id, time, name, append)
     }
 
     @GetMapping("/storytellers/{storytellerId}/scheduled:next/")
