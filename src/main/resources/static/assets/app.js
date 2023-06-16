@@ -12,7 +12,7 @@ $('document').ready(function() {
     const webAuth = new auth0.WebAuth({
         domain: "dev-7hxmzq06wywhbaqg.us.auth0.com",
         clientID: "4KBwlbVbIMpHuwjbWPedvx4iUfDbjtdf",
-        redirectUri: "http://localhost:8080/",
+        redirectUri: location.href,
         audience: "https://footing.mindbridgehealth.com",
         responseType: 'token id_token',
         scope: 'openid profile email read:userdata',
