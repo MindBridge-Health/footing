@@ -1,7 +1,6 @@
-package com.mindbridgehealth.footing;
+package com.mindbridgehealth.footing.configuration;
 
-import com.mindbridgehealth.footing.configuration.ApplicationProperties
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity

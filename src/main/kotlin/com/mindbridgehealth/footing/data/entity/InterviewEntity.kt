@@ -1,5 +1,6 @@
 package com.mindbridgehealth.footing.data.entity
 
+import com.mindbridgehealth.footing.service.model.Interview
 import jakarta.persistence.*
 import java.sql.Timestamp
 import java.util.*

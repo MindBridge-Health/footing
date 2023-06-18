@@ -54,25 +54,26 @@ class InterviewService(
         name: String,
         chroniclerId: String,
         storytellerId: String,
-        questions: List<String>,
+        questions: List<String>?,
         save: Boolean
     ): Interview {
         val storyteller = storytellerService.findStorytellerById(storytellerId)
             .getOrElse { throw Exception("Storyteller was not found; unable to create interview") }
-        val dbChronicler = chroniclerService.findChroniclerById(chroniclerId).getOrNull()
-        val dbQuestions = questions
-            .filter { qid -> questionService.findQuestionById(qid).isPresent }
-            .map { qid ->
-                val q = questionService.findQuestionById(qid)
-                val iq = InterviewQuestion(null, q.get().name, null, q.get(), null, completed = false, skipped = false)
-                interviewQuestionMapper.modelToEntity(interviewQuestionService.save(iq))
-            }.toMutableList()
 
+        val dbChronicler = chroniclerService.findChroniclerById(chroniclerId).getOrNull()
         val chronicler = if(dbChronicler != null) {
             chroniclerMapper.modelToEntity(dbChronicler)
         } else null
 
         val interview = InterviewEntity(name, null, false, chronicler, storytellerMapper.modelToEntity(storyteller))
+        val dbQuestions = questions
+            ?.filter { qid -> questionService.findQuestionById(qid).isPresent }
+            ?.map { qid ->
+                val q = questionService.findQuestionById(qid)
+                val iq = InterviewQuestion(null, q.get().name, null, null, q.get(), null, completed = false, skipped = false)
+                interviewQuestionMapper.modelToEntity(interviewQuestionService.save(iq))
+            }?.toMutableList()
+
         interview.interviewQuestionData = dbQuestions
         if (save) {
             return interviewMapper.entityToModel(db.save(interview))

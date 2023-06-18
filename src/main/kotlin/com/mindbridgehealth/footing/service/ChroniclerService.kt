@@ -12,10 +12,10 @@ import kotlin.jvm.optionals.getOrElse
 class ChroniclerService(private val db: ChroniclerRepository, private val chroniclerEntityMapper: ChroniclerEntityMapper) {
     
     fun findChroniclerById(id: String): Optional<Chronicler> {
-        val optionalChroniclerEntity = db.findById(Base36Encoder.decode(id).toInt())
-        if(optionalChroniclerEntity.isPresent){
-            return Optional.of(chroniclerEntityMapper.entityToModel(optionalChroniclerEntity.get()))
-        }
+//        val optionalChroniclerEntity = db.findByAltId(id)
+//        if(optionalChroniclerEntity.isPresent){
+//            return Optional.of(chroniclerEntityMapper.entityToModel(optionalChroniclerEntity.get()))
+//        }
         return Optional.empty()
     }
 

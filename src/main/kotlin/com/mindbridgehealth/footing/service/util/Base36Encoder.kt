@@ -24,13 +24,15 @@ object Base36Encoder {
     fun encodeAltId(altId: String): String {
         val idTokens = altId.split('|')
         val idProvider = encode(idTokens[0])
-        return idProvider + '.' + idTokens[1]
+        val externalId = if(idTokens.size > 1) idProvider + '.' + idTokens[1] else idProvider
+        return externalId
     }
 
     fun decodeAltId(externalId: String): String {
         val idTokens = externalId.split('.')
         val idProvider = decode(idTokens[0])
-        return idProvider + '|' + idTokens[1]
+        val altId = if(idTokens.size > 1) idProvider + '|' + idTokens[1] else idProvider
+        return altId
     }
 
     private fun zeroPrefixLength(bytes: ByteArray): Int {

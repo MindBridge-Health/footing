@@ -29,3 +29,92 @@ DELETE http://localhost:8080/media/{{mid}}
 
 ### Delete Storyteller
 DELETE http://localhost:8080/storytellers/{{sid}}
+
+
+
+//AddPipe Callback tests
+//eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImVFck12VHdpRUI0NXp4Rng4T3I1USJ9.eyJpc3MiOiJodHRwczovL2Rldi03aHhtenEwNnd5d2hiYXFnLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2NDhiNjVlOTg4NjBhMGM5NzZmNjFiZjciLCJhdWQiOlsiaHR0cHM6Ly9mb290aW5nLm1pbmRicmlkZ2VoZWFsdGguY29tIiwiaHR0cHM6Ly9kZXYtN2h4bXpxMDZ3eXdoYmFxZy51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNjg3MDUxNTM1LCJleHAiOjE2ODcwNTg3MzUsImF6cCI6IjRLQndsYlZiSU1wSHV3amJXUGVkdng0aVVmRGJqdGRmIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCByZWFkOnVzZXJkYXRhIiwicGVybWlzc2lvbnMiOlsicmVhZDp1c2VyZGF0YSJdfQ.MldVTYKzlgR79SlAQTR8SDtw2nl2kZBiDMLIy8EJ1r23e0DEwYD1wskNy4jAFoR5S-aJu-x4mfn8_1TCz8f8QcKqq2Pdakmbnw70TjT2EZeWsXf_T0TrgfDz1UBE5YW14NL2vG3l-l9ERHU-PclGIMIDVlKdhirpAdTRb_Hx_wB5toaGYVfeRrj9QqwTq0Pm6kMvumI-0jjIk4rYzYX2OhnmK1kSQrW0ScvThIQNDsVh1FWvZ6UyskT6HRNgs-9nWc-zzkyFLRFcKkbpGKYfQvGdtS6cI2YDHP5vBSBeO_J372pvJcup_prb7C036DpPBhLPRe8kYdGHJ7BEzw5RRA
+#### AddPipe Callback Create Storyteler
+POST http://localhost:8080/storytellers/
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chris",
+  "lastname": "Dufresne",
+  "contactMethod": "phone"
+}
+> {% client.global.set("sid", response.body) %}
+
+### AddPipe Callback Create Question 1
+POST http://localhost:8080/questions/
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "name": "Question 2",
+  "text": "What is your favorite color?",
+  "isCustom": true
+}
+> {% client.global.set("qid", response.body) %}
+
+### AddPipe Callback Create Chronicler
+POST http://localhost:8080/chroniclers/
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chat",
+  "lastname": "GPT2.0"
+}
+> {% client.global.set("cid", response.body) %}
+
+### AddPipe Callback Post Interview 1 (We ignore Chronicler for now)
+POST http://localhost:8080/interviews/storytellers/{{sid}}/chroniclers/8ub5lac5.648b65e98860a0c976f61bf7
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "name": "Interview 3",
+  "interviewQuestions": [
+    {
+      "id": "{{qid}}"
+    }
+  ]
+}
+> {% client.global.set("id", response.body) %}
+
+#### GET Interview
+GET http://localhost:8080/interviews/{{id}}
+Content-Type: application/json
+
+> {% client.global.set("iqid", response.body.in %}
+
+### AddPipe Callback
+POST http://localhost:8080/media/
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "version":"1.0",
+  "event":"video_copied_pipe_s3",
+  "data":{
+    "storedStatus":"stored successful",
+    "videoName":"STREAM_NAME",
+    "size":194373,
+    "checksum_md5":"968302a32f7c7ed67523274aa8a92717",
+    "checksum_sha1":"b733ec235ea57119172c8b044220e793446063fe",
+    "id":123,
+    "url":"https://addpipevideos.s3.amazonaws.com/b8e2f5bfd04a93b434bd8c740bff744d/STREAM_NAME.mp4",
+    "rawRecordingUrl":"https://addpipevideos.s3.amazonaws.com/b8e2f5bfd04a93b434bd8c740bff744d/STREAM_NAME_raw.EXTENSION",
+    "snapshotUrl":"https://addpipevideos.s3.amazonaws.com/b8e2f5bfd04a93b434bd8c740bff744d/STREAM_NAME.jpg",
+    "filmstripUrl":"https://addpipevideos.s3.amazonaws.com/b8e2f5bfd04a93b434bd8c740bff744d/STREAM_NAME_filmstrip.jpg",
+    "cdn":{"cdnRecordingUrl":"https://recordings-eu.addpipe.com/b8e2f5bfd04a93b434bd8c740bff744d/STREAM_NAME.mp4",
+      "cdnRawRecordingUrl":"https://recordings-eu.addpipe.com/b8e2f5bfd04a93b434bd8c740bff744d/STREAM_NAME_raw.EXTENSION",
+      "cdnSnapshotUrl":"https://recordings-eu.addpipe.com/b8e2f5bfd04a93b434bd8c740bff744d/STREAM_NAME.jpg",
+      "cdnFilmstripUrl":"https://recordings-eu.addpipe.com/b8e2f5bfd04a93b434bd8c740bff744d/STREAM_NAME_filmstrip.jpg"},
+    "bucket":"eu1-addpipe",
+    "region":"eu-central-1",
+    "payload":"{\"interview_question_id\":\"i1\"}"
+  }
+}

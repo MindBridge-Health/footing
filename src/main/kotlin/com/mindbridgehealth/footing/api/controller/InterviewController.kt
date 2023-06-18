@@ -1,12 +1,11 @@
-package com.mindbridgehealth.footing.api
+package com.mindbridgehealth.footing.api.controller
 
 import com.mindbridgehealth.footing.api.dto.ScheduleInterviewResponseDto
 import com.mindbridgehealth.footing.api.dto.mapper.ScheduledInterviewDtoMapper
 import com.mindbridgehealth.footing.service.InterviewService
 import com.mindbridgehealth.footing.service.model.Interview
-import com.mindbridgehealth.footing.service.model.ScheduledInterview
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -31,7 +30,7 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
 
     @PostMapping("/storytellers/{storytellerId}/chroniclers/{chroniclerId}")
     fun post(@RequestBody interview: Interview, @PathVariable(name = "storytellerId") sid: String, @PathVariable(name = "chroniclerId") cid: String): String {
-        val returnedInterview = service.createInterview(interview.name, cid, sid, interview.interviewQuestions.map { iq -> iq.id!! }.toList(),true)
+        val returnedInterview = service.createInterview(interview.name, Base36Encoder.decodeAltId(cid), Base36Encoder.decodeAltId(sid), interview.interviewQuestions?.map { iq -> iq.id!! }?.toList(),true)
         return returnedInterview.id ?: throw Exception()
     }
 

@@ -1,7 +1,8 @@
-package com.mindbridgehealth.footing.api
+package com.mindbridgehealth.footing.api.controller
 
 import com.mindbridgehealth.footing.service.ChroniclerService
 import com.mindbridgehealth.footing.service.model.Chronicler
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable

@@ -6,11 +6,11 @@ import java.util.*
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "resource")
-abstract class ResourceEntity() {
+abstract class ResourceEntity(): EntityModel() {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    var id: Int? = null
+    override var id: Int? = null
 
     @Basic
     @Column(name = "name")

@@ -1,5 +1,6 @@
 package com.mindbridgehealth.footing.data.entity
 
+import com.mindbridgehealth.footing.service.model.InterviewQuestion
 import jakarta.persistence.*
 import java.util.*
 

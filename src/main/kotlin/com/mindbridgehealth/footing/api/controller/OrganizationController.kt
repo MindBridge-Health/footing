@@ -1,4 +1,4 @@
-package com.mindbridgehealth.footing.api
+package com.mindbridgehealth.footing.api.controller
 
 import com.mindbridgehealth.footing.service.OrganizationService
 import com.mindbridgehealth.footing.service.model.Organization

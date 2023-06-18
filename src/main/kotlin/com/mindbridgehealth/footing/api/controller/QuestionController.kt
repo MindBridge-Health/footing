@@ -1,4 +1,4 @@
-package com.mindbridgehealth.footing.api
+package com.mindbridgehealth.footing.api.controller
 
 import com.mindbridgehealth.footing.api.dto.QuestionResponseDto
 import com.mindbridgehealth.footing.service.QuestionService

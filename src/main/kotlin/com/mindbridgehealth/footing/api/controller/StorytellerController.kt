@@ -1,4 +1,4 @@
-package com.mindbridgehealth.footing.api
+package com.mindbridgehealth.footing.api.controller
 
 import com.mindbridgehealth.footing.api.dto.StorytellerCreateDto
 import com.mindbridgehealth.footing.api.dto.mapper.StorytellerCreateDtoMapper

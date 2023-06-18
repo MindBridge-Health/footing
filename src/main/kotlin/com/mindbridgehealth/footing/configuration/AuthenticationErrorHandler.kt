@@ -22,7 +22,7 @@ class AuthenticationErrorHandler(val mapper: ObjectMapper) : AuthenticationEntry
         authException: AuthenticationException?
     ) {
         val errorMessage = ErrorMessage("Requires authentication")
-        val json = mapper!!.writeValueAsString(errorMessage)
+        val json = mapper.writeValueAsString(errorMessage)
         response.status = HttpStatus.UNAUTHORIZED.value()
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.writer.write(json)

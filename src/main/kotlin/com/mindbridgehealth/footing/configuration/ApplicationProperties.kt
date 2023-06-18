@@ -4,5 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 @ConfigurationProperties(prefix = "application")
 data class ApplicationProperties(
-    val audience: String) {
+    val audience: String,
+    val addPipeKey: String) {
 }

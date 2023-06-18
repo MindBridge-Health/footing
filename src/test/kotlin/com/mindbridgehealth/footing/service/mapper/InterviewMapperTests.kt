@@ -58,7 +58,7 @@ class InterviewMapperTests {
         )
         interviewEntity.interviewQuestionData = arrayListOf(interviewQuestionEntity)
 
-        var iem = InterviewEntityMapperImpl(
+        val iem = InterviewEntityMapperImpl(
             TimeMapper(),
             StorytellerEntityMapperImpl(
                 BenefactorEntityMapperImpl(),
@@ -82,7 +82,8 @@ class InterviewMapperTests {
         assertNotNull(model.chronicler)
         assertNotNull(model.storyteller)
         assertNotNull(model.interviewQuestions)
-        assert(model.interviewQuestions.isNotEmpty())
+        val interviewQuestions = model.interviewQuestions
+        assert(!interviewQuestions.isNullOrEmpty())
 
     }
 }

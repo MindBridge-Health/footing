@@ -5,11 +5,12 @@ import com.mindbridgehealth.footing.service.mapper.MediaEntityMapper
 import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.stereotype.Service
+import java.net.URI
 import java.util.Optional
 import kotlin.jvm.optionals.getOrElse
 
 @Service
-class MediaService(private val db: MediaRepository, private val mediaMapper: MediaEntityMapper, private val storytellerService: StorytellerService) { //, private val storyService: StoryService) {
+class MediaService(private val db: MediaRepository, private val mediaMapper: MediaEntityMapper, private val storytellerService: StorytellerService, private val interviewQuestionService: InterviewQuestionService) { //, private val storyService: StoryService) {
 
     fun findMediaById(id: String): Optional<Media> {
         val optionalMedia = db.findById(Base36Encoder.decode(id).toInt())
@@ -25,6 +26,15 @@ class MediaService(private val db: MediaRepository, private val mediaMapper: Med
         val newMedia = media.copy(storyteller=storyteller)
         return db.save(mediaMapper.modelToEntity(newMedia)).id.toString()
     }
+
+    fun associateMediaWithStorytellerFromInterviewQuestion(media: Media, interviewQuestionId: String) {
+        val id = Base36Encoder.decodeAltId(interviewQuestionId).toInt()
+        val optionalIq = interviewQuestionService.findById(id)
+        val storyteller = optionalIq.getOrElse { throw Exception("InterviewQuestion not found. Could not associate with Storyteller") }.interview?.storyteller
+        val internalMedia = media.copy(storyteller = storyteller)
+        db.save(mediaMapper.modelToEntity(internalMedia))
+    }
+
     //fun associateMediaWithStory(media: Media, id: UUID) = mediaRepository.save(mediaMapper.modelToEntity(media))
 
     fun deleteMedia(id: String) {
