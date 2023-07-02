@@ -1,37 +1,3 @@
-### Create Storyteler
-POST http://localhost:8080/api/v1/storytellers/
-Content-Type: application/json
-
-{
-  "firstname": "Chris",
-  "lastname": "Dufresne",
-  "contactMethod": "phone"
-}
-> {% client.global.set("sid", response.body) %}
-
-### Post Media 1
-POST http://localhost:8080/api/v1/media/storytellers/{{sid}}
-Content-Type: application/json
-
-{
-  "name": "Media 1",
-  "location": "http://localhost/somewhere",
-  "type": "mp4"
-}
-> {% client.global.set("mid", response.body) %}
-
-### GET Media "2beb2eff-1035-401d-ba92-46d0232e606d"
-GET http://localhost:8080/api/v1/media/{{mid}}
-Content-Type: application/json
-
-### Delete Media
-DELETE http://localhost:8080/api/v1/media/{{mid}}
-
-### Delete Storyteller
-DELETE http://localhost:8080/api/v1/storytellers/{{sid}}
-
-
-
 //AddPipe Callback tests
 #### AddPipe Callback Create Storyteler
 POST http://localhost:8080/api/v1/storytellers/
@@ -58,18 +24,19 @@ Authorization: Bearer {{JWT}}
 > {% client.global.set("qid", response.body) %}
 
 ### AddPipe Callback Create Chronicler
-POST http://localhost:8080/api/v1/chroniclers/
+POST http://localhost:8080/api/v1/chroniclers/c1
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
 {
   "firstname": "Chat",
-  "lastname": "GPT2.0"
+  "lastname": "GPT2.0",
+  "isAi" : true
 }
 > {% client.global.set("cid", response.body) %}
 
-### AddPipe Callback Post Interview 1 (We ignore Chronicler for now)
-POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/chroniclers/8ub5lac5.648b65e98860a0c976f61bf7
+### AddPipe Callback Post Interview 1
+POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/chroniclers/{{cid}}
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
@@ -93,7 +60,7 @@ Content-Type: application/json
 POST http://localhost:8080/api/v1/media/
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
-X-Pipe-Signature: Fq8t+Gj59/czdjdHGJxATpnVD1k=
+X-Pipe-Signature: lXvRNKamkr/K04l61ICpwVAxD0w=
 
 {
   "version":"1.0",

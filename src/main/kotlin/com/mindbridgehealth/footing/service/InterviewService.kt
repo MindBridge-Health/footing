@@ -3,7 +3,7 @@ package com.mindbridgehealth.footing.service
 import com.mindbridgehealth.footing.data.repository.InterviewRepository
 import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.service.entity.InterviewEntity
-import com.mindbridgehealth.footing.service.entity.ScheduledInterviewEntity
+import com.mindbridgehealth.footing.service.entity.InterviewQuestionEntity
 import com.mindbridgehealth.footing.service.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.mapper.*
 import com.mindbridgehealth.footing.service.model.*
@@ -15,7 +15,6 @@ import org.springframework.web.server.ResponseStatusException
 import java.sql.Timestamp
 import java.time.*
 import java.time.temporal.TemporalAdjusters
-import java.util.*
 import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
@@ -54,41 +53,30 @@ class InterviewService(
         name: String,
         chroniclerId: String,
         storytellerId: String,
-        questions: List<String>?,
-        save: Boolean
+        questions: List<String>?
     ): Interview {
-        val storyteller = storytellerService.findStorytellerEntityById(storytellerId)
+        val storyteller = storytellerService.findStorytellerEntityByAltId(storytellerId)
             .getOrElse { throw Exception("Storyteller was not found; unable to create interview") }
 
-        val dbChronicler = chroniclerService.findChroniclerById(chroniclerId).getOrNull()
-        val chronicler = if(dbChronicler != null) {
-            chroniclerMapper.modelToEntity(dbChronicler)
-        } else null
+        val chronicler = chroniclerService.findChroniclerEntityById(chroniclerId)
+            .getOrElse { throw Exception("Chronicler was not found; unable to create interview") }
 
-        val interview = InterviewEntity(name, null, false, chronicler, storyteller)
+        val interviewEntity = db.save(InterviewEntity(name, null, false, chronicler, storyteller))
+
         val dbQuestions = questions
             ?.filter { qid -> questionService.findQuestionById(qid).isPresent }
             ?.map { qid ->
-                val q = questionService.findQuestionById(qid)
-                val iq = InterviewQuestion(null, q.get().name, null, null, q.get(), null, completed = false, skipped = false)
+                val q = questionService.findQuestionEntityById(qid)
+                val iq = InterviewQuestionEntity()
+                iq.interview = interviewEntity
+                iq.question = q.getOrElse { throw Exception("Question not found") }
+                iq.name = interviewEntity.name + "_" + q.getOrNull()?.name
                 interviewQuestionService.save(iq)
             }?.toMutableList()
 
-        interview.interviewQuestionData = dbQuestions
-        if (save) {
-            return interviewMapper.entityToModel(db.save(interview))
-        }
+        interviewEntity.interviewQuestionData = dbQuestions
 
-        return Interview(
-            null,
-            name,
-            emptyList(),
-            storytellerMapper.entityToModel(storyteller),
-            dbChronicler,
-            null,
-            false,
-            Collections.emptyList()
-        )
+        return interviewMapper.entityToModel(interviewEntity)
     }
 
     //TODO: Footing-1 Refactor to a scheduled interview service

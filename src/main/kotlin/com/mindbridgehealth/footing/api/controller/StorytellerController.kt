@@ -48,23 +48,22 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
         return service.update(mapper.storytellerCreateDtoToStoryteller(storyteller), altId)
     }
 
-    //These operations below expect the original (e.g. not encoded) auth0 user ID
     @PostMapping("/{id}")
     fun postOnBehalf(
         @RequestBody storytellerCreateDto: StorytellerCreateDto,
         @PathVariable id: String,
     ): String {
-        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), id).id ?: throw HttpServerErrorException(HttpStatusCode.valueOf(500))
+        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), Base36Encoder.decodeAltId(id)).id ?: throw HttpServerErrorException(HttpStatusCode.valueOf(500))
     }
 
     @PutMapping("/{id}")
     fun putOnBehalf(@RequestBody storyteller: StorytellerCreateDto,@PathVariable id: String,): Storyteller {
-        return service.update(mapper.storytellerCreateDtoToStoryteller(storyteller), id)
+        return service.update(mapper.storytellerCreateDtoToStoryteller(storyteller), Base36Encoder.decodeAltId(id))
     }
 
     @DeleteMapping("/{id}")
     fun deleteOnBehalf(@PathVariable id: String) {
-        service.deactivateStoryteller(id)
+        service.deactivateStoryteller(Base36Encoder.decodeAltId(id))
     }
 
 }

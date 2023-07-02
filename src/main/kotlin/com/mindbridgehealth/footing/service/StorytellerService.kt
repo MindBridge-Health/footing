@@ -9,6 +9,7 @@ import com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapper
 import com.mindbridgehealth.footing.service.mapper.PreferredTimeMapper
 import com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapper
 import com.mindbridgehealth.footing.service.model.Storyteller
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
@@ -21,15 +22,23 @@ class StorytellerService(private val db : StorytellerRepository, private val pre
 ) {
 
     fun findStorytellerById(id: String): Optional<Storyteller> {
-        val optStoryteller = db.findByAltIdAndIsActive(id, true)
+        val optStoryteller = db.findByAltIdAndIsActive(Base36Encoder.decodeAltId(id), true)
         if(optStoryteller.isPresent) {
             return Optional.of(storytellerMapper.entityToModel(optStoryteller.get()))
         }
         return Optional.empty()
     }
 
-    fun findStorytellerEntityById(id: String): Optional<StorytellerEntity> {
-        val optStoryteller = db.findByAltIdAndIsActive(id, true)
+    fun findStorytellerEntityByAltId(id: String): Optional<StorytellerEntity> {
+        val optStoryteller = db.findByAltIdAndIsActive(Base36Encoder.decodeAltId(id), true)
+        if(optStoryteller.isPresent) {
+            return Optional.of(optStoryteller.get())
+        }
+        return Optional.empty()
+    }
+
+    fun findStorytellerEntityById(id: Int): Optional<StorytellerEntity> {
+        val optStoryteller = db.findByIdAndIsActive(id, true)
         if(optStoryteller.isPresent) {
             return Optional.of(optStoryteller.get())
         }

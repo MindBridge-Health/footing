@@ -34,4 +34,8 @@ class InterviewQuestionService(private val interviewQuestionRepository: Intervie
         interviewQuestionEntity.id = null
         return interviewQuestionRepository.save(interviewQuestionEntity)
     }
+
+    fun save(interviewQuestionEntity: InterviewQuestionEntity): InterviewQuestionEntity {
+        return interviewQuestionRepository.save(interviewQuestionEntity)
+    }
 }

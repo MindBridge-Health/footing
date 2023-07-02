@@ -5,7 +5,6 @@ import com.mindbridgehealth.footing.service.mapper.MediaEntityMapper
 import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.stereotype.Service
-import java.net.URI
 import java.util.Optional
 import kotlin.jvm.optionals.getOrElse
 
@@ -26,12 +25,12 @@ class MediaService(
     }
 
     fun findMediaByStorytellerId(id: String): Collection<Media> {
-        val storytellerId = storytellerService.findStorytellerEntityById(Base36Encoder.decodeAltId(id)).getOrElse { throw Exception("Storyteller not found") }.id ?: throw Exception("Storyteller not found")
+        val storytellerId = storytellerService.findStorytellerEntityByAltId(id).getOrElse { throw Exception("Storyteller not found") }.id ?: throw Exception("Storyteller not found")
         return  db.findByStorytellerId(storytellerId).map { mediaMapper.entityToModel(it) }
     }
 
     fun associateMediaWithStoryteller(media: Media, storytellerId: String): String {
-        val storyteller = storytellerService.findStorytellerById(Base36Encoder.decode(storytellerId))
+        val storyteller = storytellerService.findStorytellerById(storytellerId)
             .getOrElse { throw Exception("Could not find storyteller; unable to associate media") }
         val newMedia = media.copy(storyteller = storyteller)
         return db.save(mediaMapper.modelToEntity(newMedia)).id.toString()
@@ -42,7 +41,7 @@ class MediaService(
         val optionalIq = interviewQuestionService.findEntityById(id)
         val storytellerId =
             optionalIq.getOrElse { throw Exception("InterviewQuestion not found. Could not associate with Storyteller") }
-                .interview.storyteller?.altId
+                .interview.storyteller?.id
                 ?: throw Exception("Unable to find storyteller")
         val storyteller = storytellerService.findStorytellerEntityById(storytellerId).getOrElse { throw Exception("Unable to find storyteller") }
         val mediaEntity = mediaMapper.modelToEntity(media)
