@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.*
+import com.mindbridgehealth.footing.service.entity.*
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import java.sql.Timestamp
@@ -58,7 +58,7 @@ class InterviewMapperTests {
         )
         interviewEntity.interviewQuestionData = arrayListOf(interviewQuestionEntity)
 
-        var iem = InterviewEntityMapperImpl(
+        val iem = InterviewEntityMapperImpl(
             TimeMapper(),
             StorytellerEntityMapperImpl(
                 BenefactorEntityMapperImpl(),
@@ -71,7 +71,8 @@ class InterviewMapperTests {
                     BenefactorEntityMapperImpl(),
                     com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
                     PreferredTimeMapperImpl()
-                ), com.mindbridgehealth.footing.service.mapper.QuestionEntityMapperImpl()
+                ),
+                com.mindbridgehealth.footing.service.mapper.QuestionEntityMapperImpl()
             )
         )
         val model = iem.entityToModel(interviewEntity)
@@ -82,7 +83,8 @@ class InterviewMapperTests {
         assertNotNull(model.chronicler)
         assertNotNull(model.storyteller)
         assertNotNull(model.interviewQuestions)
-        assert(model.interviewQuestions.isNotEmpty())
+        val interviewQuestions = model.interviewQuestions
+        assert(!interviewQuestions.isNullOrEmpty())
 
     }
 }

@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.StoryGroupEntity
+import com.mindbridgehealth.footing.service.entity.StoryGroupEntity
 import com.mindbridgehealth.footing.service.model.StoryGroup
 import org.mapstruct.InjectionStrategy
 import org.mapstruct.Mapper

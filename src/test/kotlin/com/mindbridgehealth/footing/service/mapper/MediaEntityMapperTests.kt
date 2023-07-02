@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.MediaEntity
+import com.mindbridgehealth.footing.service.entity.MediaEntity
 import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.junit.jupiter.api.Test
@@ -14,7 +14,7 @@ import kotlin.test.assertEquals
 class MediaEntityMapperTests {
     @Test
     fun mediaToMediaEntity_validData_validData() {
-        val media = Media(Base36Encoder.encode(floor(Math.random() * 1000).toInt().toString()), "name", null, URI("http://localhost/somewhere"),"MP4", null, null)
+        val media = Media(Base36Encoder.encodeAltId("123"), "name", null, URI("http://localhost/somewhere"),"MP4", null, null, "state")
 
         val mem =MediaEntityMapperImpl(
             StorytellerEntityMapperImpl(
@@ -36,6 +36,7 @@ class MediaEntityMapperTests {
             name = "name"
             location = "http://localhost/somewhere"
             type = "MP4"
+            state = "unknown"
         }
 
         val mem = MediaEntityMapperImpl(

@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.data.repository
 
-import com.mindbridgehealth.footing.data.entity.OrganizationEntity
+import com.mindbridgehealth.footing.service.entity.OrganizationEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

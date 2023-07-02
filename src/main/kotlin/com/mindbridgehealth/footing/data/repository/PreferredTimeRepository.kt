@@ -1,7 +1,7 @@
 package com.mindbridgehealth.footing.data.repository
 
-import com.mindbridgehealth.footing.data.entity.PreferredTimeEntity
-import com.mindbridgehealth.footing.data.entity.StorytellerEntity
+import com.mindbridgehealth.footing.service.entity.PreferredTimeEntity
+import com.mindbridgehealth.footing.service.entity.StorytellerEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import java.sql.Time
 import java.time.DayOfWeek

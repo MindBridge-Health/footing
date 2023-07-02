@@ -1,5 +1,5 @@
 ### Create Storyteler
-POST http://localhost:8080/storytellers/
+POST http://localhost:8080/api/v1/storytellers/
 Content-Type: application/json
 
 {
@@ -11,7 +11,7 @@ Content-Type: application/json
 
 
 ### Create Question 1
-POST http://localhost:8080/questions/
+POST http://localhost:8080/api/v1/questions/
 Content-Type: application/json
 
 {
@@ -22,7 +22,7 @@ Content-Type: application/json
 > {% client.global.set("qid", response.body) %}
 
 ### Create Chronicler
-POST http://localhost:8080/chroniclers/
+POST http://localhost:8080/api/v1/chroniclers/
 Content-Type: application/json
 
 {
@@ -32,7 +32,7 @@ Content-Type: application/json
 > {% client.global.set("cid", response.body) %}
 
 ### Post Interview 1 (We ignore Chronicler for now)
-POST http://localhost:8080/interviews/storytellers/{{sid}}/chroniclers/{{cid}}
+POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/chroniclers/{{cid}}
 Content-Type: application/json
 
 {
@@ -46,14 +46,14 @@ Content-Type: application/json
 > {% client.global.set("id", response.body) %}
 
 ### GET Interview
-GET http://localhost:8080/interviews/{{id}}
+GET http://localhost:8080/api/v1/interviews/{{id}}
 Content-Type: application/json
 
 ### Delete Question
-DELETE http://localhost:8080/questions/{{qid}}
+DELETE http://localhost:8080/api/v1/questions/{{qid}}
 
 ### Delete Interview
-DELETE http://localhost:8080/interviews/{{id}}
+DELETE http://localhost:8080/api/v1/interviews/{{id}}
 
 ### Delete Storyteller
-DELETE http://localhost:8080/storytellers/{{sid}}
+DELETE http://localhost:8080/api/v1/storytellers/{{sid}}

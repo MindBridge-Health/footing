@@ -2,7 +2,7 @@ package com.mindbridgehealth.footing.service
 
 import com.mindbridgehealth.footing.data.repository.InterviewRepository
 import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
-import com.mindbridgehealth.footing.data.entity.*
+import com.mindbridgehealth.footing.service.entity.*
 import com.mindbridgehealth.footing.service.mapper.*
 import com.mindbridgehealth.footing.service.model.*
 import io.mockk.every
@@ -121,7 +121,7 @@ class InterviewServiceTests {
         val preferredChronicler1 = Chronicler(uuid1.toString(), "Chronicler 1","first", "middle", "", "", true)
         val storyteller1 = Storyteller(uuid1.toString(), "Storyteller 1", "first", "middle","", "", "phone", ArrayList(), preferredChronicler1, OnboardingStatus.ONBOARDING_NOT_STARTED, null)
         val expectedStory1 = Story(uuid1.toString(), "Story 1", emptyList(), "Once upon a time...", storyteller1)
-        val expectedInterviewQuestion1 = InterviewQuestion(uuid1.toString(), "question 1", emptyList(), expectedQuestion1, expectedStory1, completed = true, skipped = false)
+        val expectedInterviewQuestion1 = InterviewQuestion(uuid1.toString(), "question 1", emptyList(), null, expectedQuestion1, expectedStory1, completed = true, skipped = false)
         val expectedInterview1 = Interview(uuid1.toString(), "interview 1", emptyList(), storyteller1, preferredChronicler1, timeCompleted, true, listOf(expectedInterviewQuestion1))
 
         //Expected Twos
@@ -129,7 +129,7 @@ class InterviewServiceTests {
         val preferredChronicler2 = Chronicler(uuid2.toString(), "Chronicler 2","first", "middle","",  "", false)
         val storyteller2 = Storyteller(uuid2.toString(), "Storyteller 2", "first", "middle","", "", "phone", ArrayList(), preferredChronicler2, OnboardingStatus.ONBOARDING_NOT_STARTED, null)
         val expectedStory2 = Story(uuid2.toString(), "Story 2", emptyList(), "Once upon a time...", storyteller2)
-        val expectedInterviewQuestion2 = InterviewQuestion(uuid2.toString(), "question 2", emptyList(), expectedQuestion2, expectedStory2, completed = true, skipped = false)
+        val expectedInterviewQuestion2 = InterviewQuestion(uuid2.toString(), "question 2", emptyList(), null, expectedQuestion2, expectedStory2, completed = true, skipped = false)
         val expectedInterview2 = Interview(uuid2.toString(), "interview 2", emptyList(), storyteller2, preferredChronicler2, null, false, listOf(expectedInterviewQuestion2))
 
         val expectedInterviews = listOf(expectedInterview1, expectedInterview2)

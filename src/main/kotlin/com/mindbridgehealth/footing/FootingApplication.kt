@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @SpringBootApplication(exclude = [SecurityAutoConfiguration::class])
 @EnableJpaRepositories(basePackages =["com.mindbridgehealth.footing.*"])
-@EntityScan("com.mindbridgehealth.footing.data.*")
+@EntityScan("com.mindbridgehealth.footing.service.entity")
 @ConfigurationPropertiesScan
 class FootingApplication
 

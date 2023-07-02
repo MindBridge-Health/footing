@@ -1,7 +1,7 @@
 package com.mindbridgehealth.footing.api.dto.mapper
 
 import com.mindbridgehealth.footing.api.dto.Auth0User
-import com.mindbridgehealth.footing.data.entity.MbUserEntity
+import com.mindbridgehealth.footing.service.entity.MbUserEntity
 import org.mapstruct.InjectionStrategy
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping

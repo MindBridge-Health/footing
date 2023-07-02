@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets
 
 object Base36Encoder {
 
-    enum class idProvi
     fun encode(string: String): String {
         if (string.length < 5) {
             string.padStart(4, '0')
@@ -24,13 +23,15 @@ object Base36Encoder {
     fun encodeAltId(altId: String): String {
         val idTokens = altId.split('|')
         val idProvider = encode(idTokens[0])
-        return idProvider + '.' + idTokens[1]
+        val externalId = if(idTokens.size > 1) idProvider + '.' + idTokens[1] else idProvider
+        return externalId
     }
 
     fun decodeAltId(externalId: String): String {
         val idTokens = externalId.split('.')
         val idProvider = decode(idTokens[0])
-        return idProvider + '|' + idTokens[1]
+        val altId = if(idTokens.size > 1) idProvider + '|' + idTokens[1] else idProvider
+        return altId
     }
 
     private fun zeroPrefixLength(bytes: ByteArray): Int {

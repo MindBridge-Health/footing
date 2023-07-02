@@ -1,5 +1,5 @@
 ### Post Org 1
-POST http://localhost:8080/organizations/
+POST http://localhost:8080/api/v1/organizations/
 Content-Type: application/json
 
 {
@@ -8,4 +8,4 @@ Content-Type: application/json
 > {% client.global.set("oid", response.body.id) %}
 
 ### Get Org
-GET http://localhost:8080/organizations/{{oid}}
+GET http://localhost:8080/api/v1/organizations/{{oid}}

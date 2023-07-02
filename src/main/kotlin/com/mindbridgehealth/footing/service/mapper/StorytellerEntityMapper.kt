@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.StorytellerEntity
+import com.mindbridgehealth.footing.service.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.model.OnboardingStatus
 import com.mindbridgehealth.footing.service.model.Storyteller
 import com.mindbridgehealth.footing.service.util.Base36Encoder
@@ -22,12 +22,12 @@ abstract class StorytellerEntityMapper : IdMapper() {
     abstract fun modelToEntity(storyteller: Storyteller): StorytellerEntity
 
     @AfterMapping
-    fun calledWithSourceAndTarget(source: Storyteller, @MappingTarget target: StorytellerEntity) {
+    fun storytellerAfterMapping(source: Storyteller, @MappingTarget target: StorytellerEntity) {
         target.onboardingStatus = source.onboardingStatus?.value
     }
 
     @AfterMapping
-    fun calledWithSourceAndTarget(source: StorytellerEntity, @MappingTarget target: Storyteller) {
+    fun storytellerAfterMapping(source: StorytellerEntity, @MappingTarget target: Storyteller) {
         target.onboardingStatus = OnboardingStatus.getByValue(source.onboardingStatus ?: 0)
     }
 

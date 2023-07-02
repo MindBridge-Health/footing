@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.TagEntity
+import com.mindbridgehealth.footing.service.entity.TagEntity
 import com.mindbridgehealth.footing.service.model.Tag
 import org.mapstruct.InjectionStrategy
 import org.mapstruct.Mapper

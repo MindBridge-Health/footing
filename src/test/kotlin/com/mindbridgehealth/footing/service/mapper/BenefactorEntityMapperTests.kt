@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.BenefactorEntity
+import com.mindbridgehealth.footing.service.entity.BenefactorEntity
 import com.mindbridgehealth.footing.service.model.Benefactor
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.junit.jupiter.api.Test

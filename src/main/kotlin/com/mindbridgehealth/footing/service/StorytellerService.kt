@@ -1,7 +1,7 @@
 package com.mindbridgehealth.footing.service
 
-import com.mindbridgehealth.footing.data.entity.PreferredTimeEntity
-import com.mindbridgehealth.footing.data.entity.StorytellerEntity
+import com.mindbridgehealth.footing.service.entity.PreferredTimeEntity
+import com.mindbridgehealth.footing.service.entity.StorytellerEntity
 import com.mindbridgehealth.footing.data.repository.MindBridgeUserRepository
 import com.mindbridgehealth.footing.data.repository.PreferredTimeRepository
 import com.mindbridgehealth.footing.data.repository.StorytellerRepository
@@ -12,7 +12,6 @@ import com.mindbridgehealth.footing.service.model.Storyteller
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
-import com.mindbridgehealth.footing.service.model.Storyteller as ServiceStoryteller
 
 
 @Service
@@ -21,7 +20,7 @@ class StorytellerService(private val db : StorytellerRepository, private val pre
                          private val userDb: MindBridgeUserRepository
 ) {
 
-    fun findStorytellerById(id: String): Optional<ServiceStoryteller> {
+    fun findStorytellerById(id: String): Optional<Storyteller> {
         val optStoryteller = db.findByAltIdAndIsActive(id, true)
         if(optStoryteller.isPresent) {
             return Optional.of(storytellerMapper.entityToModel(optStoryteller.get()))
@@ -29,18 +28,34 @@ class StorytellerService(private val db : StorytellerRepository, private val pre
         return Optional.empty()
     }
 
-    fun save(storyteller: ServiceStoryteller, altId: String): String {
+    fun findStorytellerEntityById(id: String): Optional<StorytellerEntity> {
+        val optStoryteller = db.findByAltIdAndIsActive(id, true)
+        if(optStoryteller.isPresent) {
+            return Optional.of(optStoryteller.get())
+        }
+        return Optional.empty()
+    }
+
+    fun save(storyteller: Storyteller, altId: String): Storyteller {
+        return storytellerMapper.entityToModel(saveEntity(storyteller, altId))
+    }
+
+    fun saveEntity(storyteller: Storyteller, altId: String): StorytellerEntity {
         if(userDb.findByAltId(altId).isPresent) {
-            return "User Already Exists"
+            throw Exception("User Already Exists")
         }
         val storytellerEntity = storytellerMapper.modelToEntity(storyteller.copy(id = null))
         storytellerEntity.altId = altId
         val savedEntity = db.save(storytellerEntity)
         savePreferredTimeEntities(storyteller, savedEntity)
-        return storytellerMapper.entityToModel(savedEntity).id ?: throw Exception()
+        return savedEntity
     }
 
-    fun update(storyteller: ServiceStoryteller, altId: String): Storyteller {
+    fun update(storyteller: Storyteller, altId: String): Storyteller {
+        return storytellerMapper.entityToModel(updateEntity(storyteller, altId))
+    }
+
+    fun updateEntity(storyteller: Storyteller, altId: String): StorytellerEntity {
         val storedEntity = db.findByAltIdAndIsActive(altId, true).getOrElse { throw Exception() }
         val storytellerEntity = storytellerMapper.modelToEntity(storyteller)
 
@@ -61,7 +76,7 @@ class StorytellerService(private val db : StorytellerRepository, private val pre
         storytellerEntity.preferredTimes = pfes
         db.save(storedEntity)
 
-        return storytellerMapper.entityToModel(storytellerEntity)
+        return storytellerEntity
     }
 
     //TODO: Footing-4 Move this behind a PreferredTime Service

@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.OrganizationEntity
+import com.mindbridgehealth.footing.service.entity.OrganizationEntity
 import com.mindbridgehealth.footing.service.model.Organization
 import org.mapstruct.*
 import org.springframework.stereotype.Service

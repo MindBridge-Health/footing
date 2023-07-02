@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.ScheduledInterviewEntity
+import com.mindbridgehealth.footing.service.entity.ScheduledInterviewEntity
 import com.mindbridgehealth.footing.service.model.ScheduledInterview
 import org.mapstruct.InjectionStrategy
 import org.mapstruct.Mapper
