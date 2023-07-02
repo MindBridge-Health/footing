@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/questions")
+@RequestMapping("/api/v1/questions")
 class QuestionController(val service: QuestionService) {
 
 

@@ -1,8 +1,8 @@
 package com.mindbridgehealth.footing.data.repository
 
-import com.mindbridgehealth.footing.data.entity.InterviewEntity
-import com.mindbridgehealth.footing.data.entity.ScheduledInterviewEntity
-import com.mindbridgehealth.footing.data.entity.StorytellerEntity
+import com.mindbridgehealth.footing.service.entity.InterviewEntity
+import com.mindbridgehealth.footing.service.entity.ScheduledInterviewEntity
+import com.mindbridgehealth.footing.service.entity.StorytellerEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

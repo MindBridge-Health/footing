@@ -1,5 +1,6 @@
 package com.mindbridgehealth.footing.service
 
+import com.mindbridgehealth.footing.service.entity.InterviewQuestionEntity
 import com.mindbridgehealth.footing.data.repository.InterviewQuestionRepository
 import com.mindbridgehealth.footing.service.mapper.InterviewQuestionEntityMapper
 import com.mindbridgehealth.footing.service.model.Interview
@@ -12,7 +13,12 @@ import java.util.*
 class InterviewQuestionService(private val interviewQuestionRepository: InterviewQuestionRepository, private val interviewQuestionEntityMapper: InterviewQuestionEntityMapper) {
 
     fun findById(id: Int): Optional<InterviewQuestion> {
-        return Optional.of(interviewQuestionEntityMapper.entityToModel(interviewQuestionRepository.findById(id).get()))
+        val interviewQuestionEntity = interviewQuestionRepository.findById(id).get()
+        return Optional.of(interviewQuestionEntityMapper.entityToModel(interviewQuestionEntity))
+    }
+
+    fun findEntityById(id: Int): Optional<InterviewQuestionEntity> {
+        return interviewQuestionRepository.findById(id)
     }
 
     fun findByAltId(altId: String): Optional<InterviewQuestion> {
@@ -23,9 +29,9 @@ class InterviewQuestionService(private val interviewQuestionRepository: Intervie
         }
         return Optional.of(interviewQuestionEntityMapper.entityToModel(interviewQuestionEntity.get()))
     }
-    fun save(interviewQuestion: InterviewQuestion) : InterviewQuestion {
+    fun save(interviewQuestion: InterviewQuestion) : InterviewQuestionEntity {
         val interviewQuestionEntity = interviewQuestionEntityMapper.modelToEntity(interviewQuestion)
         interviewQuestionEntity.id = null
-        return interviewQuestionEntityMapper.entityToModel(interviewQuestionRepository.save(interviewQuestionEntity))
+        return interviewQuestionRepository.save(interviewQuestionEntity)
     }
 }

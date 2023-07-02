@@ -1,7 +1,7 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.InterviewEntity
-import com.mindbridgehealth.footing.data.entity.InterviewQuestionEntity
+import com.mindbridgehealth.footing.service.entity.InterviewEntity
+import com.mindbridgehealth.footing.service.entity.InterviewQuestionEntity
 import com.mindbridgehealth.footing.service.model.Interview
 import com.mindbridgehealth.footing.service.model.InterviewQuestion
 import org.mapstruct.*

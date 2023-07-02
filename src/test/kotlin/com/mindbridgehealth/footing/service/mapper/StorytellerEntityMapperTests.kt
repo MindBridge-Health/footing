@@ -1,7 +1,7 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.BenefactorEntity
-import com.mindbridgehealth.footing.data.entity.StorytellerEntity
+import com.mindbridgehealth.footing.service.entity.BenefactorEntity
+import com.mindbridgehealth.footing.service.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.model.Benefactor
 import com.mindbridgehealth.footing.service.model.Chronicler
 import com.mindbridgehealth.footing.service.model.OnboardingStatus

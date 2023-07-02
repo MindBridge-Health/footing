@@ -5,7 +5,7 @@ import com.mindbridgehealth.footing.service.model.Organization
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/organizations")
+@RequestMapping("/api/v1/organizations")
 class OrganizationController(val organizationService: OrganizationService) {
 
     @PostMapping("/")

@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.QuestionEntity
+import com.mindbridgehealth.footing.service.entity.QuestionEntity
 import com.mindbridgehealth.footing.service.model.Question
 import org.mapstruct.InjectionStrategy
 import org.mapstruct.Mapper

@@ -1,5 +1,5 @@
 ### Create Storyteler
-POST http://localhost:8080/storytellers/
+POST http://localhost:8080/api/v1/storytellers/
 Content-Type: application/json
 
 {
@@ -10,7 +10,7 @@ Content-Type: application/json
 > {% client.global.set("sid", response.body) %}
 
 ### Post Media 1
-POST http://localhost:8080/media/storytellers/{{sid}}
+POST http://localhost:8080/api/v1/media/storytellers/{{sid}}
 Content-Type: application/json
 
 {
@@ -21,21 +21,20 @@ Content-Type: application/json
 > {% client.global.set("mid", response.body) %}
 
 ### GET Media "2beb2eff-1035-401d-ba92-46d0232e606d"
-GET http://localhost:8080/media/{{mid}}
+GET http://localhost:8080/api/v1/media/{{mid}}
 Content-Type: application/json
 
 ### Delete Media
-DELETE http://localhost:8080/media/{{mid}}
+DELETE http://localhost:8080/api/v1/media/{{mid}}
 
 ### Delete Storyteller
-DELETE http://localhost:8080/storytellers/{{sid}}
+DELETE http://localhost:8080/api/v1/storytellers/{{sid}}
 
 
 
 //AddPipe Callback tests
-//eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImVFck12VHdpRUI0NXp4Rng4T3I1USJ9.eyJpc3MiOiJodHRwczovL2Rldi03aHhtenEwNnd5d2hiYXFnLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2NDhiNjVlOTg4NjBhMGM5NzZmNjFiZjciLCJhdWQiOlsiaHR0cHM6Ly9mb290aW5nLm1pbmRicmlkZ2VoZWFsdGguY29tIiwiaHR0cHM6Ly9kZXYtN2h4bXpxMDZ3eXdoYmFxZy51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNjg3MDUxNTM1LCJleHAiOjE2ODcwNTg3MzUsImF6cCI6IjRLQndsYlZiSU1wSHV3amJXUGVkdng0aVVmRGJqdGRmIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCByZWFkOnVzZXJkYXRhIiwicGVybWlzc2lvbnMiOlsicmVhZDp1c2VyZGF0YSJdfQ.MldVTYKzlgR79SlAQTR8SDtw2nl2kZBiDMLIy8EJ1r23e0DEwYD1wskNy4jAFoR5S-aJu-x4mfn8_1TCz8f8QcKqq2Pdakmbnw70TjT2EZeWsXf_T0TrgfDz1UBE5YW14NL2vG3l-l9ERHU-PclGIMIDVlKdhirpAdTRb_Hx_wB5toaGYVfeRrj9QqwTq0Pm6kMvumI-0jjIk4rYzYX2OhnmK1kSQrW0ScvThIQNDsVh1FWvZ6UyskT6HRNgs-9nWc-zzkyFLRFcKkbpGKYfQvGdtS6cI2YDHP5vBSBeO_J372pvJcup_prb7C036DpPBhLPRe8kYdGHJ7BEzw5RRA
 #### AddPipe Callback Create Storyteler
-POST http://localhost:8080/storytellers/
+POST http://localhost:8080/api/v1/storytellers/
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
@@ -47,7 +46,7 @@ Authorization: Bearer {{JWT}}
 > {% client.global.set("sid", response.body) %}
 
 ### AddPipe Callback Create Question 1
-POST http://localhost:8080/questions/
+POST http://localhost:8080/api/v1/questions/
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
@@ -59,7 +58,7 @@ Authorization: Bearer {{JWT}}
 > {% client.global.set("qid", response.body) %}
 
 ### AddPipe Callback Create Chronicler
-POST http://localhost:8080/chroniclers/
+POST http://localhost:8080/api/v1/chroniclers/
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
@@ -70,7 +69,7 @@ Authorization: Bearer {{JWT}}
 > {% client.global.set("cid", response.body) %}
 
 ### AddPipe Callback Post Interview 1 (We ignore Chronicler for now)
-POST http://localhost:8080/interviews/storytellers/{{sid}}/chroniclers/8ub5lac5.648b65e98860a0c976f61bf7
+POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/chroniclers/8ub5lac5.648b65e98860a0c976f61bf7
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
@@ -85,15 +84,16 @@ Authorization: Bearer {{JWT}}
 > {% client.global.set("id", response.body) %}
 
 #### GET Interview
-GET http://localhost:8080/interviews/{{id}}
+GET http://localhost:8080/api/v1/interviews/{{id}}
 Content-Type: application/json
 
-> {% client.global.set("iqid", response.body.in %}
+> {% client.global.set("iqid", response.body.interviewQuestions[0].id) %}
 
 ### AddPipe Callback
-POST http://localhost:8080/media/
+POST http://localhost:8080/api/v1/media/
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
+X-Pipe-Signature: Fq8t+Gj59/czdjdHGJxATpnVD1k=
 
 {
   "version":"1.0",
@@ -115,6 +115,14 @@ Authorization: Bearer {{JWT}}
       "cdnFilmstripUrl":"https://recordings-eu.addpipe.com/b8e2f5bfd04a93b434bd8c740bff744d/STREAM_NAME_filmstrip.jpg"},
     "bucket":"eu1-addpipe",
     "region":"eu-central-1",
-    "payload":"{\"interview_question_id\":\"i1\"}"
+    "payload":"{\"interview_question_id\":\"{{iqid}}\"}"
   }
 }
+
+> {% client.global.set("mid", response.body) %}
+
+
+### Find Media By Storyteler
+GET http://localhost:8080/api/v1/media/storytellers/{{sid}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}

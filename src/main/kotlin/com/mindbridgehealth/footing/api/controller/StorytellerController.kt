@@ -5,13 +5,17 @@ import com.mindbridgehealth.footing.api.dto.mapper.StorytellerCreateDtoMapper
 import com.mindbridgehealth.footing.service.model.Storyteller
 import com.mindbridgehealth.footing.service.StorytellerService
 import com.mindbridgehealth.footing.service.util.Base36Encoder
+import org.springframework.http.HttpStatusCode
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.HttpStatusCodeException
 import java.util.*
 
 @RestController
-@RequestMapping("/storytellers")
+@RequestMapping("/api/v1/storytellers")
 class StorytellerController(val service: StorytellerService, val mapper: StorytellerCreateDtoMapper) {
 
     @GetMapping("/")
@@ -35,7 +39,7 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
         @AuthenticationPrincipal principal: Jwt
     ): String {
         val altId = principal.subject
-        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId)
+        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId).id ?: throw HttpClientErrorException(HttpStatusCode.valueOf(404), "Not Found")
     }
 
     @PutMapping("/")
@@ -50,7 +54,7 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
         @RequestBody storytellerCreateDto: StorytellerCreateDto,
         @PathVariable id: String,
     ): String {
-        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), id)
+        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), id).id ?: throw HttpServerErrorException(HttpStatusCode.valueOf(500))
     }
 
     @PutMapping("/{id}")

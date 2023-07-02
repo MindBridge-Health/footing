@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/benefactors")
+@RequestMapping("/api/v1/benefactors")
 class BenefactorController(val service: BenefactorService, val mapper: BenefactorCreateDtoMapper) {
 
     @GetMapping("/")

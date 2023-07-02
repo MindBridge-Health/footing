@@ -1,6 +1,6 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.PreferredTimeEntity
+import com.mindbridgehealth.footing.service.entity.PreferredTimeEntity
 import com.mindbridgehealth.footing.service.model.PreferredTime
 import org.mapstruct.AfterMapping
 import org.mapstruct.InjectionStrategy

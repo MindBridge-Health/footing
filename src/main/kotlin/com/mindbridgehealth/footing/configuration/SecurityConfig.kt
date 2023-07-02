@@ -21,8 +21,8 @@ class SecurityConfig(
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.authorizeHttpRequests()
-            .requestMatchers("/health/**", "/", "/images/**").permitAll()
-            .requestMatchers("/storytellers/{id}").hasAuthority("SCOPE_read:userdata")
+            .requestMatchers("/api/v1/health/**", "/", "/images/**").permitAll()
+            .requestMatchers("/api/v1/storytellers/{id}").hasAuthority("SCOPE_read:userdata")
             .anyRequest().permitAll()
             .and().cors()
             .and().oauth2ResourceServer().jwt();

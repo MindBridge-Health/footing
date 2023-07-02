@@ -1,5 +1,5 @@
 ### Create Storyteler
-POST http://localhost:8080/storytellers/
+POST http://localhost:8080/api/v1/storytellers/
 Content-Type: application/json
 
 {
@@ -12,7 +12,7 @@ Content-Type: application/json
 
 
 ### Create Question 1
-POST http://localhost:8080/questions/
+POST http://localhost:8080/api/v1/questions/
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 > {% client.global.set("qid", response.body) %}
 
 ### Create Chronicler
-POST http://localhost:8080/chroniclers/
+POST http://localhost:8080/api/v1/chroniclers/
 Content-Type: application/json
 
 {
@@ -33,7 +33,7 @@ Content-Type: application/json
 > {% client.global.set("cid", response.body) %}
 
 ### Post Interview 1 (We ignore Chronicler for now)
-POST http://localhost:8080/interviews/storytellers/{{sid}}/chroniclers/{{cid}}
+POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/chroniclers/{{cid}}
 Content-Type: application/json
 
 {
@@ -47,7 +47,7 @@ Content-Type: application/json
 > {% client.global.set("id", response.body) %}
 
 ###Schedule an interview use preferred time and no append
-POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?name=noAppend
+POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?name=noAppend
 
 > {%
     client.global.set("siid1", response.body)
@@ -63,7 +63,7 @@ POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?name
 %}
 
 ###Schedule an interview w/time
-POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?time=2030-06-14T12%3A34%3A00Z&name=scheduled
+POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?time=2030-06-14T12%3A34%3A00Z&name=scheduled
 
 > {%
     client.global.set("siid2", response.body)
@@ -79,7 +79,7 @@ POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?time
 %}
 
 ###Schedule an interview use preferred time and no append should error
-POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?name=shouldError
+POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?name=shouldError
 
 > {%
     client.test("Request executed successfully", function() {
@@ -94,7 +94,7 @@ POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?name
 %}
 
 ###Schedule an interview with scheduled time and append should error
-POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?time=2030-06-17T12%3A34%3A00Z&append=true&name=shouldError
+POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?time=2030-06-17T12%3A34%3A00Z&append=true&name=shouldError
 
 > {%
     client.test("Request executed successfully", function() {
@@ -109,7 +109,7 @@ POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?time
 %}
 
 ###Schedule an interview use preferred time and append
-POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?append=true&name=appended2
+POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?append=true&name=appended2
 
 > {%
     client.global.set("siid3", response.body)
@@ -125,7 +125,7 @@ POST http://localhost:8080/interviews/storytellers/{{sid}}/scheduled/{{id}}?appe
 %}
 
 ### GET All Scheduled Interview should be three TODO Pipe to JS test
-GET http://localhost:8080/interviews/storytellers/{{sid}}/scheduled:all/
+GET http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled:all/
 
 > {%
     client.test("Request executed successfully", function() {
@@ -141,22 +141,22 @@ GET http://localhost:8080/interviews/storytellers/{{sid}}/scheduled:all/
 %}
 
 ### GET Next Scheduled Interview
-GET http://localhost:8080/interviews/storytellers/{{sid}}/scheduled:next/
+GET http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled:next/
 
 ### Delete Scheduled Interview 1
-DELETE http://localhost:8080/interviews/scheduled/{{siid1}}
+DELETE http://localhost:8080/api/v1/interviews/scheduled/{{siid1}}
 
 ### Delete Scheduled Interview 2
-DELETE http://localhost:8080/interviews/scheduled/{{siid2}}
+DELETE http://localhost:8080/api/v1/interviews/scheduled/{{siid2}}
 
 ### Delete Scheduled Interview 3
-DELETE http://localhost:8080/interviews/scheduled/{{siid3}}
+DELETE http://localhost:8080/api/v1/interviews/scheduled/{{siid3}}
 
 ### Delete Question
-DELETE http://localhost:8080/questions/{{qid}}
+DELETE http://localhost:8080/api/v1/questions/{{qid}}
 
 ### Delete Interview
-DELETE http://localhost:8080/interviews/{{id}}
+DELETE http://localhost:8080/api/v1/interviews/{{id}}
 
 ### Delete Storyteller
-DELETE http://localhost:8080/storytellers/{{sid}}
+DELETE http://localhost:8080/api/v1/storytellers/{{sid}}

@@ -1,4 +1,4 @@
-package com.mindbridgehealth.footing.data.entity
+package com.mindbridgehealth.footing.service.entity
 
 import jakarta.persistence.*
 

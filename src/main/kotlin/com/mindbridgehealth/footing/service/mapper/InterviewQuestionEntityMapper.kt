@@ -1,7 +1,7 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.InterviewEntity
-import com.mindbridgehealth.footing.data.entity.InterviewQuestionEntity
+import com.mindbridgehealth.footing.service.entity.InterviewEntity
+import com.mindbridgehealth.footing.service.entity.InterviewQuestionEntity
 import com.mindbridgehealth.footing.service.model.Interview
 import com.mindbridgehealth.footing.service.model.InterviewQuestion
 import org.mapstruct.*
@@ -21,15 +21,22 @@ abstract class InterviewQuestionEntityMapper(): IdMapper() {
     abstract fun modelToEntity(interviewQuestion: InterviewQuestion): InterviewQuestionEntity
 
     @AfterMapping
+    fun mapInterviewEntity(interviewQuestionEntity: InterviewQuestionEntity, @MappingTarget interviewQuestion: InterviewQuestion) {
+        val interviewEntity = interviewQuestionEntity.interview
+
+
+    }
+    @AfterMapping
     fun mapInterviewQuestionEntities(interviewEntity: InterviewEntity, @MappingTarget interview: Interview) {
         val interviewQuestions = interview.interviewQuestions
         if(interviewQuestions == null) {
-            interview.interviewQuestions = interviewEntity.interviewQuestionData?.map { mapInterviewQuestionEntitiesToInterviewQuestions(it) }?.toList() ?: emptyList()
+            interview.interviewQuestions = interviewEntity.interviewQuestionData?.map { mapInterviewQuestionEntitiesToInterviewQuestions(it, interview) }?.toList() ?: emptyList()
         }
     }
 
-    fun mapInterviewQuestionEntitiesToInterviewQuestions(interviewQuestionEntity: InterviewQuestionEntity): InterviewQuestion {
+    fun mapInterviewQuestionEntitiesToInterviewQuestions(interviewQuestionEntity: InterviewQuestionEntity, interview: Interview): InterviewQuestion {
         val interviewQuestion = entityToModel(interviewQuestionEntity)
+        interviewQuestion.interview = interview
         return interviewQuestion
     }
 

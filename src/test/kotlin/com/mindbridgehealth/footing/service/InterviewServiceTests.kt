@@ -3,6 +3,7 @@ package com.mindbridgehealth.footing.service
 import com.mindbridgehealth.footing.data.repository.InterviewRepository
 import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.data.entity.*
+import com.mindbridgehealth.footing.service.entity.*
 import com.mindbridgehealth.footing.service.mapper.*
 import com.mindbridgehealth.footing.service.model.*
 import io.mockk.every

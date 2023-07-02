@@ -1,6 +1,6 @@
 ### Post Chronicler
 
-POST http://localhost:8080/chroniclers/
+POST http://localhost:8080/api/v1/chroniclers/
 Content-Type: application/json
 
 {
@@ -10,12 +10,12 @@ Content-Type: application/json
 > {% client.global.set("cid", response.body) %}
 
 ### Get Chronicler
-GET http://localhost:8080/chroniclers/{{cid}}
+GET http://localhost:8080/api/v1/chroniclers/{{cid}}
 Content-Type: application/json
 
 ### Post Storyteller 2
 
-POST http://localhost:8080/storytellers/
+POST http://localhost:8080/api/v1/storytellers/
 Content-Type: application/json
 
 {
@@ -27,10 +27,10 @@ Content-Type: application/json
 > {% client.global.set("sid", response.body) %}
 
 ### Get Storyteller
-GET http://localhost:8080/storytellers/{{sid}}
+GET http://localhost:8080/api/v1/storytellers/{{sid}}
 
 ### Delete Chronicler
-DELETE http://localhost:8080/chroniclers/{{cid}}
+DELETE http://localhost:8080/api/v1/chroniclers/{{cid}}
 
 ### Delete Storyteller
-DELETE http://localhost:8080/storytellers/{{sid}}
+DELETE http://localhost:8080/api/v1/storytellers/{{sid}}

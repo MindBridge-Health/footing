@@ -1,9 +1,10 @@
 package com.mindbridgehealth.footing.service.mapper
 
-import com.mindbridgehealth.footing.data.entity.EntityModel
-import com.mindbridgehealth.footing.data.entity.MbUserEntity
-import com.mindbridgehealth.footing.data.entity.ResourceEntity
+import com.mindbridgehealth.footing.service.entity.EntityModel
+import com.mindbridgehealth.footing.service.entity.MbUserEntity
+import com.mindbridgehealth.footing.service.entity.ResourceEntity
 import com.mindbridgehealth.footing.service.model.DataModel
+import com.mindbridgehealth.footing.service.model.Resource
 import com.mindbridgehealth.footing.service.model.User
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.mapstruct.AfterMapping
@@ -23,12 +24,12 @@ abstract class IdMapper {
     }
 
     @AfterMapping
-    fun entityToModelId(source: EntityModel, @MappingTarget target: DataModel) {
+    fun entityToModelId(source: ResourceEntity, @MappingTarget target: Resource) {
         target.id = Base36Encoder.encode(source.id.toString())
     }
 
     @AfterMapping
-    fun modelToEntityId(source: DataModel, @MappingTarget target: EntityModel) {
+    fun modelToEntityId(source: Resource, @MappingTarget target: ResourceEntity) {
         val id = source.id
         target.id = if(id != null) Base36Encoder.decode(id).toInt() else null
     }

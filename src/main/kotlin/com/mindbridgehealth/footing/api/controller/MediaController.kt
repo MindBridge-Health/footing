@@ -1,27 +1,55 @@
 package com.mindbridgehealth.footing.api.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.mindbridgehealth.footing.api.dto.addpipe.AddPipeEvent
 import com.mindbridgehealth.footing.api.dto.addpipe.VideoConvertedEvent
 import com.mindbridgehealth.footing.api.dto.addpipe.VideoCopiedPipeS3Event
 import com.mindbridgehealth.footing.api.dto.addpipe.VideoRecordedEvent
 import com.mindbridgehealth.footing.service.MediaService
 import com.mindbridgehealth.footing.service.model.Media
+import com.mindbridgehealth.footing.service.util.WebhookSignatureValidator
+import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.HttpStatusCode
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletRequestAttributes
 import java.net.URL
+import java.util.*
 
 
 @RestController
-@RequestMapping("/media")
-class MediaController(val mediaService: MediaService) {
+@RequestMapping("/api/v1/media")
+class MediaController(val mediaService: MediaService, val webhookSignatureValidator: WebhookSignatureValidator) {
 
     @GetMapping("/{id}")
     fun get(@PathVariable id: String) = mediaService.findMediaById(id)
+
+    @GetMapping("/storytellers/{id}")
+    fun getMediaForStoryteller(@PathVariable id: String): Collection<Media> {
+        return mediaService.findMediaByStorytellerId(id)
+    }
     @PostMapping("/storytellers/{id}")
     fun postToStoryteller(@RequestBody media: Media, @PathVariable id: String): String = mediaService.associateMediaWithStoryteller(media, id)
 
+    private val objectMapper = jacksonObjectMapper()
+
     @PostMapping("/")
-    fun addPipeCallback(@RequestBody event: AddPipeEvent): String {
+    fun addPipeCallback(@RequestBody jsonString: String): String {
+        val request: HttpServletRequest =
+            (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes).request
+        val xPipeSignature = request.getHeader("X-Pipe-Signature")
+        val event: AddPipeEvent = try {objectMapper.readValue(jsonString, AddPipeEvent::class.java)}
+        catch (e: Exception) { throw HttpClientErrorException( //TODO: Logging
+            HttpStatusCode.valueOf(400))}
+        val signature = webhookSignatureValidator.generateSignature(request.requestURI, jsonString)
+        if (xPipeSignature.isNullOrEmpty() || !xPipeSignature.equals(signature)) {
+            println(xPipeSignature)
+            println(signature)
+            throw Exception("Signature did not match!")
+        }
+
         return when (event) {
             is VideoRecordedEvent -> handleVideoRecordedEvent(event)
             is VideoConvertedEvent -> handleVideoConvertedEvent(event)

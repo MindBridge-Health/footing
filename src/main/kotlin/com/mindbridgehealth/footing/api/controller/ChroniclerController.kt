@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/chroniclers")
+@RequestMapping("/api/v1/chroniclers")
 class ChroniclerController(val chroniclerService: ChroniclerService) {
 
     @GetMapping("/{id}")

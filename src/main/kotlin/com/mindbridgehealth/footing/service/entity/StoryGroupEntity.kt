@@ -1,26 +1,23 @@
-package com.mindbridgehealth.footing.data.entity
+package com.mindbridgehealth.footing.service.entity
 
 import jakarta.persistence.*
 import java.util.*
 
 @Entity
-@Table(name = "story")
+@Table(name = "story_group")
 @PrimaryKeyJoinColumn(name="id")
-class StoryEntity: ResourceEntity() {
-
-    @Basic
-    @Column(name = "text")
-    var text: String? = null
+class StoryGroupEntity: ResourceEntity() {
 
     @ManyToOne
     @JoinColumn(name = "storyteller_id", referencedColumnName = "id")
     var storyteller: StorytellerEntity? = null
+
+    //Todo Story Links
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
-        val storyEntity = other as StoryEntity
-        if (id != storyEntity.id) return false
-        return name == storyEntity.name
+        val that = other as StoryGroupEntity
+        return if (id != that.id) false else name != that.name
     }
 
     override fun hashCode(): Int {

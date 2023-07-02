@@ -1,4 +1,4 @@
-package com.mindbridgehealth.footing.data.entity
+package com.mindbridgehealth.footing.service.entity
 
 import jakarta.persistence.*
 import java.util.*
@@ -17,19 +17,19 @@ class AccessPolicyEntity {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "access_policy_allowed_resource_link", joinColumns = [JoinColumn(name = "access_policy_id")], inverseJoinColumns = [JoinColumn(name = "resource_id")])
-    var allowedResources: MutableList<com.mindbridgehealth.footing.data.entity.ResourceEntity>? = Collections.emptyList()
+    var allowedResources: MutableList<ResourceEntity>? = Collections.emptyList()
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "access_policy_denied_resource_link", joinColumns = [JoinColumn(name = "access_policy_id")], inverseJoinColumns = [JoinColumn(name = "resource_id")])
-    var deniedResources: MutableList<com.mindbridgehealth.footing.data.entity.ResourceEntity>? = Collections.emptyList()
+    var deniedResources: MutableList<ResourceEntity>? = Collections.emptyList()
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "access_policy_user_link", joinColumns = [JoinColumn(name = "access_policy_id")], inverseJoinColumns = [JoinColumn(name = "user_id")])
-    var policyUserIds: MutableList<com.mindbridgehealth.footing.data.entity.MbUserEntity>? = Collections.emptyList()
+    var policyUserIds: MutableList<MbUserEntity>? = Collections.emptyList()
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
-        val that = other as com.mindbridgehealth.footing.data.entity.AccessPolicyEntity
+        val that = other as AccessPolicyEntity
         return if (id != that.id) false else name == that.name
     }
 

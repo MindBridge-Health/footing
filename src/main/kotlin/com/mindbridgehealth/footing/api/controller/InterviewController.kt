@@ -20,7 +20,7 @@ import java.util.*
 import kotlin.collections.Collection
 
 @RestController
-@RequestMapping("/interviews")
+@RequestMapping("/api/v1/interviews")
 class InterviewController(val service: InterviewService, val dtoMapper: ScheduledInterviewDtoMapper) {
 
     @GetMapping("/{id}")

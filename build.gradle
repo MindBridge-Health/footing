@@ -50,6 +50,10 @@ dependencies {
 
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     testImplementation('io.mockk:mockk:1.13.5')
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-test
+    testImplementation 'org.springframework.security:spring-security-test:6.1.1'
+    testImplementation('com.h2database:h2:2.1.214')
+
 }
 
 tasks.withType(KotlinCompile) {
