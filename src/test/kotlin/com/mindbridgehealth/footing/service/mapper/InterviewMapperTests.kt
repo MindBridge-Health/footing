@@ -72,8 +72,7 @@ class InterviewMapperTests {
                     com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
                     PreferredTimeMapperImpl()
                 ),
-                com.mindbridgehealth.footing.service.mapper.QuestionEntityMapperImpl(),
-                TimeMapper()
+                com.mindbridgehealth.footing.service.mapper.QuestionEntityMapperImpl()
             )
         )
         val model = iem.entityToModel(interviewEntity)
