@@ -4,13 +4,14 @@ import com.mindbridgehealth.footing.service.entity.InterviewEntity
 import com.mindbridgehealth.footing.service.entity.InterviewQuestionEntity
 import com.mindbridgehealth.footing.service.model.Interview
 import com.mindbridgehealth.footing.service.model.InterviewQuestion
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.mapstruct.*
 import org.springframework.stereotype.Service
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses=[StorytellerEntityMapper::class, QuestionEntityMapper::class, TimeMapper::class])
 abstract class InterviewQuestionEntityMapper(): IdMapper() {
 
-    @Mapping(target="interview", ignore = true)
+    @Mapping(target="interviewId", ignore = true)
     @Mapping(source = "story", target = "response")
     @Mapping(source = "id", target = "id", ignore = true)
     abstract fun entityToModel(interviewQuestionEntity: InterviewQuestionEntity): InterviewQuestion
@@ -22,9 +23,8 @@ abstract class InterviewQuestionEntityMapper(): IdMapper() {
 
     @AfterMapping
     fun mapInterviewEntity(interviewQuestionEntity: InterviewQuestionEntity, @MappingTarget interviewQuestion: InterviewQuestion) {
-        val interviewEntity = interviewQuestionEntity.interview
-
-
+        interviewQuestion.interviewId = Base36Encoder.encodeAltId(interviewQuestionEntity.interview.id.toString())
+        interviewQuestion.questionId = Base36Encoder.encodeAltId(interviewQuestionEntity.question.id.toString())
     }
     @AfterMapping
     fun mapInterviewQuestionEntities(interviewEntity: InterviewEntity, @MappingTarget interview: Interview) {
@@ -36,7 +36,7 @@ abstract class InterviewQuestionEntityMapper(): IdMapper() {
 
     fun mapInterviewQuestionEntitiesToInterviewQuestions(interviewQuestionEntity: InterviewQuestionEntity, interview: Interview): InterviewQuestion {
         val interviewQuestion = entityToModel(interviewQuestionEntity)
-        interviewQuestion.interview = interview
+        interviewQuestion.interviewId = interview.id
         return interviewQuestion
     }
 

@@ -30,7 +30,7 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
 
     @PostMapping("/storytellers/{storytellerId}/chroniclers/{chroniclerId}")
     fun post(@RequestBody interview: Interview, @PathVariable(name = "storytellerId") sid: String, @PathVariable(name = "chroniclerId") cid: String): String {
-        val returnedInterview = service.createInterview(interview.name, Base36Encoder.decodeAltId(cid), Base36Encoder.decodeAltId(sid), interview.interviewQuestions?.map { iq -> iq.id!! }?.toList(),true)
+        val returnedInterview = service.createInterview(interview.name, cid, sid, interview.interviewQuestions?.map { iq -> iq.id!! }?.toList())
         return returnedInterview.id ?: throw Exception()
     }
 

@@ -1,6 +1,7 @@
 package com.mindbridgehealth.footing.service
 
 import com.mindbridgehealth.footing.data.repository.QuestionRepository
+import com.mindbridgehealth.footing.service.entity.QuestionEntity
 import com.mindbridgehealth.footing.service.mapper.QuestionEntityMapper
 import com.mindbridgehealth.footing.service.model.Question
 import com.mindbridgehealth.footing.service.util.Base36Encoder
@@ -18,6 +19,9 @@ class QuestionService(private val db: QuestionRepository, private val questionMa
         return Optional.empty()
     }
 
+    fun findQuestionEntityById(id: String): Optional<QuestionEntity> {
+        return db.findById(Base36Encoder.decode(id).toInt())
+    }
     fun getAllQuestions(): Collection<Question> {
         return db.findAll().map { q -> questionMapper.entityToModel(q) }
     }
