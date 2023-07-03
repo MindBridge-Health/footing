@@ -4,10 +4,13 @@ import com.mindbridgehealth.footing.service.entity.InterviewEntity
 import com.mindbridgehealth.footing.service.entity.StorytellerEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.util.Optional
 import java.util.UUID
 
 @Repository
 interface InterviewRepository : JpaRepository<InterviewEntity, Int> {
     fun findByStorytellerId(storytellerId: Int) : Collection<InterviewEntity>
+
+    fun findByAltId(altId: String) : Optional<InterviewEntity>
 }
 

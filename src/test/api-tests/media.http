@@ -56,11 +56,63 @@ Content-Type: application/json
 
 > {% client.global.set("iqid", response.body.interviewQuestions[0].id) %}
 
-### AddPipe Callback
+
+### AddPipe Video Recorded Callback
 POST http://localhost:8080/api/v1/media/
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
-X-Pipe-Signature: lXvRNKamkr/K04l61ICpwVAxD0w=
+X-Pipe-Signature: xpFgTJ+/xRkd2MoXpaSkXaKPOw4=
+
+{
+  "version":"1.0",
+  "event":"video_recorded",
+  "data":{
+    "videoName":"STREAM_NAME",
+    "audioCodec":"NellyMoser ASAO",
+    "videoCodec":"H.264",
+    "type":"flv",
+    "id":123,
+    "dateTime":"2016-03-03 15:51:44",
+    "timeZone":"Europe/Bucharest",
+    "payload":"{\"interview_question_id\":\"{{iqid}}\"}",
+    "httpReferer":"http://site_from_where_video_was_recorded.com",
+    "cam_name":"Logitech HD Pro Webcam C920 (046d:082d)",
+    "mic_name":"Default",
+    "ip":"91.16.93.181",
+    "ua":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Mobile Safari/537.36"
+  }
+}
+
+### AddPipe Video Converted Callback
+POST http://localhost:8080/api/v1/media/
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+X-Pipe-Signature: zR8wT8cy8+tOvh3NAwX6cGHZ3MM=
+
+{
+  "version":"1.0",
+  "event":"video_converted",
+  "data":{
+    "videoName":"STREAM_NAME",
+    "duration":7,
+    "audioCodec":"AAC",
+    "videoCodec":"H.264",
+    "type":"mp4",
+    "size":194373,
+    "width":"320",
+    "height":"240",
+    "orientation":"landscape",
+    "id":123,
+    "dateTime": "2015-10-10 16:00:36",
+    "timeZone":"Europe/Bucharest",
+    "payload":"{\"interview_question_id\":\"{{iqid}}\"}"
+  }
+}
+### AddPipe Video Copied Callback
+POST http://localhost:8080/api/v1/media/
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+X-Pipe-Signature: 6g04T9Y+8HZgd+dIuh8QvQXG3sM=
 
 {
   "version":"1.0",

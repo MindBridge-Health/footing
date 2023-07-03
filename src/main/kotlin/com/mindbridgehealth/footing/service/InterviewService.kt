@@ -35,7 +35,7 @@ class InterviewService(
 ) {
 
     fun findInterviewById(interviewId: String): Interview {
-        return interviewMapper.entityToModel(db.findById(Base36Encoder.decode(interviewId).toInt()).orElseThrow()) //TODO: Footing-2 Revisit exception
+        return interviewMapper.entityToModel(db.findByAltId(Base36Encoder.decode(interviewId)).orElseThrow()) //TODO: Footing-2 Revisit exception
     }
 
     fun findByStorytellerId(storytellerId: String): Collection<Interview> {
@@ -61,12 +61,12 @@ class InterviewService(
         val chronicler = chroniclerService.findChroniclerEntityById(chroniclerId)
             .getOrElse { throw Exception("Chronicler was not found; unable to create interview") }
 
-        val interviewEntity = db.save(InterviewEntity(name, null, false, chronicler, storyteller))
+        val interviewEntity = db.save(InterviewEntity(name, null, null, false, chronicler, storyteller))
 
         val dbQuestions = questions
-            ?.filter { qid -> questionService.findQuestionById(qid).isPresent }
+            ?.filter { qid -> questionService.findQuestionByAltId(qid).isPresent }
             ?.map { qid ->
-                val q = questionService.findQuestionEntityById(qid)
+                val q = questionService.findQuestionEntityByAltId(qid)
                 val iq = InterviewQuestionEntity()
                 iq.interview = interviewEntity
                 iq.question = q.getOrElse { throw Exception("Question not found") }

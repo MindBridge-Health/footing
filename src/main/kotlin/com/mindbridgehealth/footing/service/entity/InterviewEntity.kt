@@ -31,7 +31,7 @@ class InterviewEntity: ResourceEntity {
     var interviewQuestionData: MutableList<InterviewQuestionEntity>? = null
 
     constructor() : super()
-    constructor(name: String?, timeCompleted: Timestamp?, completed: Boolean?, chronicler: ChroniclerEntity?, storyteller: StorytellerEntity?): super(name) {
+    constructor(name: String?, altId: String?, timeCompleted: Timestamp?, completed: Boolean?, chronicler: ChroniclerEntity?, storyteller: StorytellerEntity?): super(name, altId) {
         this.timeCompleted = timeCompleted
         this.completed = completed
         this.chronicler = chronicler

@@ -42,7 +42,7 @@ class InterviewMapperTests {
         interviewQuestionEntity.id = floor(Math.random() * 1000).toInt()
         interviewQuestionEntity.name = "c"
         interviewQuestionEntity.interview =
-            InterviewEntity("interview 1", Timestamp.from(completedTime), true, chronicler, storyteller)
+            InterviewEntity("interview 1", null, Timestamp.from(completedTime), true, chronicler, storyteller)
         interviewQuestionEntity.question = questionEntity
         interviewQuestionEntity.story = storyEntity
         interviewQuestionEntity.skipped = false
@@ -51,6 +51,7 @@ class InterviewMapperTests {
 
         val interviewEntity = InterviewEntity(
             "Interview 1",
+            null,
             Timestamp.from(completedTime),
             true,
             chronicler,
