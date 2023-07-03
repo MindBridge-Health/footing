@@ -14,7 +14,7 @@ class QuestionController(val service: QuestionService) {
     @GetMapping("/{id}")
 
     fun get(@PathVariable id: String): Question {
-        return service.findQuestionById(id).orElseThrow()
+        return service.findQuestionByAltId(id).orElseThrow()
     }
 
     @GetMapping("/")

@@ -37,8 +37,8 @@ class MediaService(
     }
 
     fun associateMediaWithStorytellerFromInterviewQuestion(media: Media, interviewQuestionId: String) {
-        val id = Base36Encoder.decodeAltId(interviewQuestionId).toInt()
-        val optionalIq = interviewQuestionService.findEntityById(id)
+        val altId = Base36Encoder.decodeAltId(interviewQuestionId)
+        val optionalIq = interviewQuestionService.findEntityByAltId(altId)
         val storytellerId =
             optionalIq.getOrElse { throw Exception("InterviewQuestion not found. Could not associate with Storyteller") }
                 .interview.storyteller?.id
@@ -47,6 +47,20 @@ class MediaService(
         val mediaEntity = mediaMapper.modelToEntity(media)
         mediaEntity.storyteller = storyteller
         db.save(mediaEntity)
+    }
+
+    fun updateMediaStatus(media: Media, interviewQuestionId: String) {
+        val mediaEntityOptional = db.findByAltId(Base36Encoder.decodeAltId(media.id!!)) //TODO: Error Checking
+        if (mediaEntityOptional.isPresent) {
+            val mediaEntity = mediaEntityOptional.get()
+            val incomingMedia =  mediaMapper.modelToEntity(media)
+            mediaEntity.type = incomingMedia.type
+            mediaEntity.location = incomingMedia.location
+            mediaEntity.state = incomingMedia.state
+            db.save(mediaEntity)
+        } else {
+            associateMediaWithStorytellerFromInterviewQuestion(media, interviewQuestionId)
+        }
     }
 
     //fun associateMediaWithStory(media: Media, id: UUID) = mediaRepository.save(mediaMapper.modelToEntity(media))

@@ -12,7 +12,7 @@ class MbUserEntity: EntityModel() {
     override var id: Int? = null
 
     @Column(name="alt_id")
-    var altId: String? = null
+    override var altId: String? = null
 
     @Version
     @Column(name = "version")

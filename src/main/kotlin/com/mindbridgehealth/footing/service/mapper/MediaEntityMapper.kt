@@ -2,6 +2,7 @@ package com.mindbridgehealth.footing.service.mapper
 
 import com.mindbridgehealth.footing.service.entity.MediaEntity
 import com.mindbridgehealth.footing.service.model.Media
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.mapstruct.*
 import org.springframework.stereotype.Service
 import java.net.URI
@@ -23,7 +24,7 @@ abstract class MediaEntityMapper: IdMapper() {
     }
 
     @AfterMapping
-    fun afterMappingEntity(source: MediaEntity, @MappingTarget target: Media,) {
+    fun afterMappingModel(source: MediaEntity, @MappingTarget target: Media) {
         source.location?.let { target.location = URI.create(it) }
     }
 

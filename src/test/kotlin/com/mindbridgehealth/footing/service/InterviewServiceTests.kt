@@ -64,7 +64,7 @@ class InterviewServiceTests {
         interviewQuestionEntity1.story = storyEntity1
 
         val timeCompleted = Instant.now()
-        val interviewEntity1 = InterviewEntity("interview 1", Timestamp.from(timeCompleted), true, chroniclerEntity1, storytellerEntity1)
+        val interviewEntity1 = InterviewEntity("interview 1", null, Timestamp.from(timeCompleted), true, chroniclerEntity1, storytellerEntity1)
         interviewEntity1.id = uuid1
         interviewEntity1.interviewQuestionData?.add(interviewQuestionEntity1)
 
@@ -104,7 +104,7 @@ class InterviewServiceTests {
         interviewQuestionEntity2.skipped = false
 
 
-        val interviewEntity2 = InterviewEntity("interview 2", null, false, chroniclerEntity2, storytellerEntity2)
+        val interviewEntity2 = InterviewEntity("interview 2", null, null, false, chroniclerEntity2, storytellerEntity2)
         interviewEntity2.id = uuid2
         interviewEntity2.interviewQuestionData?.add(interviewQuestionEntity2)
 

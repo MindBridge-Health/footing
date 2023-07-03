@@ -19,8 +19,19 @@ class QuestionService(private val db: QuestionRepository, private val questionMa
         return Optional.empty()
     }
 
+    fun findQuestionByAltId(altId: String): Optional<Question> {
+        val optionalQuestion = db.findByAltId(Base36Encoder.decode(altId))
+        if(optionalQuestion.isPresent){
+            return Optional.of(questionMapper.entityToModel(optionalQuestion.get()))
+        }
+        return Optional.empty()
+    }
     fun findQuestionEntityById(id: String): Optional<QuestionEntity> {
         return db.findById(Base36Encoder.decode(id).toInt())
+    }
+
+    fun findQuestionEntityByAltId(altId: String): Optional<QuestionEntity> {
+        return db.findByAltId(Base36Encoder.decode(altId))
     }
     fun getAllQuestions(): Collection<Question> {
         return db.findAll().map { q -> questionMapper.entityToModel(q) }

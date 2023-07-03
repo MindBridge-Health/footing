@@ -13,6 +13,10 @@ abstract class ResourceEntity(): EntityModel() {
     override var id: Int? = null
 
     @Basic
+    @Column(name = "alt_id")
+    override var altId: String? = UUID.randomUUID().toString().replace("-", "").substring(0, 8)
+
+    @Basic
     @Column(name = "name")
     var name: String? = null
 
@@ -24,8 +28,9 @@ abstract class ResourceEntity(): EntityModel() {
     @Column(name = "is_deleted")
     var isDeleted: Boolean? = false
 
-    constructor(name: String?) : this() {
+    constructor(name: String?, altId: String?) : this() {
         this.name = name
+        this.altId = altId ?: UUID.randomUUID().toString().replace("-", "").substring(0, 8)
     }
 
     override fun equals(other: Any?): Boolean {

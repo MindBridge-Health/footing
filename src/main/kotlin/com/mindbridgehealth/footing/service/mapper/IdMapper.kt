@@ -9,6 +9,7 @@ import com.mindbridgehealth.footing.service.model.User
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.mapstruct.AfterMapping
 import org.mapstruct.MappingTarget
+import java.util.*
 
 abstract class IdMapper {
     @AfterMapping
@@ -26,11 +27,17 @@ abstract class IdMapper {
     @AfterMapping
     fun entityToModelId(source: ResourceEntity, @MappingTarget target: Resource) {
         target.id = Base36Encoder.encode(source.id.toString())
+        target.id = if(source.altId != null)
+            Base36Encoder.encode(source.altId.toString())
+        else
+            Base36Encoder.encode(source.id.toString())
     }
 
     @AfterMapping
     fun modelToEntityId(source: Resource, @MappingTarget target: ResourceEntity) {
-        val id = source.id
-        target.id = if(id != null) Base36Encoder.decode(id).toInt() else null
+        target.altId = if (source.id != null)
+            Base36Encoder.decodeAltId(source.id!!)
+        else
+            UUID.randomUUID().toString().replace("-", "").substring(0, 8)
     }
 }

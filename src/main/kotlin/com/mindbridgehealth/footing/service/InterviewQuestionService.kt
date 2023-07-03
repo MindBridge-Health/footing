@@ -17,10 +17,6 @@ class InterviewQuestionService(private val interviewQuestionRepository: Intervie
         return Optional.of(interviewQuestionEntityMapper.entityToModel(interviewQuestionEntity))
     }
 
-    fun findEntityById(id: Int): Optional<InterviewQuestionEntity> {
-        return interviewQuestionRepository.findById(id)
-    }
-
     fun findByAltId(altId: String): Optional<InterviewQuestion> {
         val id = Base36Encoder.decode(altId).toInt()
         val interviewQuestionEntity = interviewQuestionRepository.findById(id)
@@ -29,6 +25,16 @@ class InterviewQuestionService(private val interviewQuestionRepository: Intervie
         }
         return Optional.of(interviewQuestionEntityMapper.entityToModel(interviewQuestionEntity.get()))
     }
+
+    fun findEntityById(id: Int): Optional<InterviewQuestionEntity> {
+        return interviewQuestionRepository.findById(id)
+    }
+
+    fun findEntityByAltId(altId: String): Optional<InterviewQuestionEntity> {
+        return interviewQuestionRepository.findByAltId(altId)
+    }
+
+
     fun save(interviewQuestion: InterviewQuestion) : InterviewQuestionEntity {
         val interviewQuestionEntity = interviewQuestionEntityMapper.modelToEntity(interviewQuestion)
         interviewQuestionEntity.id = null

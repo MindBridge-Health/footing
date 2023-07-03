@@ -8,6 +8,7 @@ import com.mindbridgehealth.footing.api.dto.addpipe.VideoCopiedPipeS3Event
 import com.mindbridgehealth.footing.api.dto.addpipe.VideoRecordedEvent
 import com.mindbridgehealth.footing.service.MediaService
 import com.mindbridgehealth.footing.service.model.Media
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.mindbridgehealth.footing.service.util.WebhookSignatureValidator
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatusCode
@@ -59,25 +60,25 @@ class MediaController(val mediaService: MediaService, val webhookSignatureValida
     }
 
     private fun handleVideoRecordedEvent(event: VideoRecordedEvent): String {
-        handleEventCommon(event, event.data.payload, event.data.videoName, null)
+        handleEventCommon(event, event.data.id.toString(), event.data.payload, event.data.videoName, null)
         return "videoRecorded"
     }
 
     private fun handleVideoConvertedEvent(event: VideoConvertedEvent): String {
-        handleEventCommon(event, event.data.payload, event.data.videoName, null)
+        handleEventCommon(event, event.data.id.toString(), event.data.payload, event.data.videoName, null)
         return "videoConverted"
     }
 
     private fun handleVideoCopiedPipeS3Event(event: VideoCopiedPipeS3Event): String {
-        handleEventCommon(event, event.data.payload, event.data.videoName, event.data.rawRecordingUrl)
+        handleEventCommon(event, event.data.id.toString(), event.data.payload, event.data.videoName, event.data.rawRecordingUrl)
         return "videoCopied"
     }
 
-    private fun handleEventCommon(event: AddPipeEvent, payload: String, videoName: String, location: URL?) {
+    private fun handleEventCommon(event: AddPipeEvent, id: String, payload: String, videoName: String, location: URL?) {
         val payloadMap: Map<String, String> = deserializeKeyValuePairs(payload)
         val interviewQuestionId = payloadMap["interview_question_id"] ?: throw Exception("Missing interview_question_id from payload")
-        val media = Media(null, videoName, emptyList(), location?.toURI(), "type", null, null, event.event)
-        mediaService.associateMediaWithStorytellerFromInterviewQuestion(media, interviewQuestionId)
+        val media = Media(Base36Encoder.encodeAltId("AddPipe|$id"), videoName, emptyList(), location?.toURI(), "type", null, null, event.event)
+        mediaService.updateMediaStatus(media, interviewQuestionId)
     }
 
     private fun handleUnknownEvent(event: AddPipeEvent): String {
