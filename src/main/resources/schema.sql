@@ -1,4 +1,4 @@
-DROP DATABASE ECTEST;
+DROP DATABASE IF EXISTS ECTEST;
 CREATE DATABASE IF NOT EXISTS ECTEST;
 
 USE ECTEST;
@@ -12,18 +12,21 @@ CREATE TABLE IF NOT EXISTS organization
 CREATE TABLE IF NOT EXISTS mb_user
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    alt_id VARCHAR(128) UNIQUE NOT NULL,
     version INT,
     is_active BOOLEAN NOT NULL,
-    lastname VARCHAR(128) NOT NULL,
-    firstname VARCHAR(128) NOT NULL,
+    lastname VARCHAR(128),
+    firstname VARCHAR(128),
     middlename VARCHAR(128),
     email VARCHAR(128),
-    mobile VARCHAR(32)
+    mobile VARCHAR(32),
+    INDEX(alt_id)
 );
 
 CREATE TABLE IF NOT EXISTS resource
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    alt_id VARCHAR(128) UNIQUE NOT NULL,
     name VARCHAR(128) NOT NULL,
     is_deleted BOOLEAN NOT NULL
 );
@@ -99,11 +102,11 @@ CREATE TABLE IF NOT EXISTS story
 CREATE TABLE IF NOT EXISTS media
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
-
     location VARCHAR(128) NOT NULL,
     type VARCHAR(128),
     storyteller_id MEDIUMINT,
     story_id MEDIUMINT,
+    state VARCHAR(32),
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
     FOREIGN KEY (story_id) REFERENCES story(id)
 );
@@ -146,7 +149,6 @@ CREATE TABLE IF NOT EXISTS interview
 CREATE TABLE IF NOT EXISTS interview_question
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
-
     question_id MEDIUMINT,
     interview_id MEDIUMINT,
     story_id MEDIUMINT,
@@ -190,6 +192,24 @@ CREATE TABLE IF NOT EXISTS access_policy_denied_resource_link
     access_policy_id MEDIUMINT REFERENCES access_policy(id),
     resource_id MEDIUMINT,
     PRIMARY KEY (access_policy_id, resource_id)
+);
+
+CREATE TABLE IF NOT EXISTS twillio_status
+(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    call_sid varchar(64),
+    call_status varchar(32),
+    recording_sid varchar(64),
+    recording_status varchar(32),
+    transcription_sid varchar(64),
+    transcription_status varchar(32)
+);
+
+CREATE TABLE IF NOT EXISTS twillio_data
+(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    status_id varchar(64) references twillio_status(id),
+    raw_json json
 );
 
 INSERT IGNORE INTO onboarding_status values (0, 'ONBOARDING_NOT_STARTED' );

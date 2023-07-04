@@ -41,7 +41,7 @@ class MediaService(
         val optionalIq = interviewQuestionService.findEntityByAltId(altId)
         val storytellerId =
             optionalIq.getOrElse { throw Exception("InterviewQuestion not found. Could not associate with Storyteller") }
-                .interview.storyteller?.id
+                .interview?.storyteller?.id
                 ?: throw Exception("Unable to find storyteller")
         val storyteller = storytellerService.findStorytellerEntityById(storytellerId).getOrElse { throw Exception("Unable to find storyteller") }
         val mediaEntity = mediaMapper.modelToEntity(media)

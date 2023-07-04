@@ -5,5 +5,6 @@ import org.springframework.stereotype.Component
 @ConfigurationProperties(prefix = "application")
 data class ApplicationProperties(
     val audience: String,
-    val addPipeKey: String) {
+    val addPipeKey: String,
+    val twillioKey: String) {
 }
