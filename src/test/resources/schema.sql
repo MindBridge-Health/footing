@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS access_policy_denied_resource_link
     PRIMARY KEY (access_policy_id, resource_id)
     );
 
-CREATE TABLE IF NOT EXISTS twillio_status
+CREATE TABLE IF NOT EXISTS twilio_status
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     call_sid varchar(64),
@@ -205,10 +205,10 @@ CREATE TABLE IF NOT EXISTS twillio_status
     transcription_status varchar(32)
     );
 
-CREATE TABLE IF NOT EXISTS twillio_data
+CREATE TABLE IF NOT EXISTS twilio_data
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    status_id varchar(64) references twillio_status(id),
+    status_id varchar(64) references twilio_status(id),
     raw_json json
     );
 

@@ -1,8 +1,8 @@
 package com.mindbridgehealth.footing.data.repository
 
-import com.mindbridgehealth.footing.service.entity.TwillioData
+import com.mindbridgehealth.footing.service.entity.TwilioStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface TwillioDataRepository: JpaRepository<TwillioData, Int>
+interface TwilioStatusRepository: JpaRepository<TwilioStatus, Int>
