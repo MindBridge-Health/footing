@@ -1,22 +1,21 @@
 package com.mindbridgehealth.footing.api.controller
 
+import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.service.MediaService
-import com.mindbridgehealth.footing.service.util.WebhookSignatureValidator
 import jakarta.servlet.ServletException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.web.client.HttpClientErrorException
+import java.util.*
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import kotlin.test.assertEquals
 
 
@@ -27,14 +26,14 @@ class MediaControllerTests {
     @Autowired
     lateinit var mediaController: MediaController
 
+    @Autowired
+    lateinit var applicationProperties: ApplicationProperties
+
     @MockBean
     lateinit var mediaService: MediaService
 
     @Autowired
     val mockMvc: MockMvc? = null
-
-    @Autowired
-    lateinit var signatureValidator: WebhookSignatureValidator
 
     val videoRecordedRawJson = "{\n" +
             "    \"version\":\"1.0\",\n" +
@@ -123,7 +122,7 @@ class MediaControllerTests {
                 .content(videoRecordedRawJson)
                 .header(
                     "X-Pipe-Signature",
-                    signatureValidator.generateSignature("/api/v1/media/", videoRecordedRawJson)
+                    generateSignature("/api/v1/media/", videoRecordedRawJson)
                 )
         )?.andExpect(status().isOk())?.andReturn()
         assertEquals("videoRecorded", response?.response?.contentAsString)
@@ -137,7 +136,7 @@ class MediaControllerTests {
                 .content(videoConvetedRawJson)
                 .header(
                     "X-Pipe-Signature",
-                    signatureValidator.generateSignature("/api/v1/media/", videoConvetedRawJson)
+                    generateSignature("/api/v1/media/", videoConvetedRawJson)
                 )
         )?.andExpect(status().isOk())?.andReturn()
         assertEquals("videoConverted", response?.response?.contentAsString)
@@ -149,14 +148,14 @@ class MediaControllerTests {
             post("/api/v1/media/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(videoCopiedRawJson)
-                .header("X-Pipe-Signature", signatureValidator.generateSignature("/api/v1/media/", videoCopiedRawJson))
+                .header("X-Pipe-Signature", generateSignature("/api/v1/media/", videoCopiedRawJson))
         )?.andExpect(status().isOk())?.andReturn()
         assertEquals("videoCopied", response?.response?.contentAsString)
     }
 
     @Test
     fun addPipeCallback_UnknownEvent_MappedCorrectly() {
-        val generatedSignature = signatureValidator.generateSignature("/api/v1/media/", unexpectedEventRawJson)
+        val generatedSignature = generateSignature("/api/v1/media/", unexpectedEventRawJson)
         assertThrows<ServletException> {
             mockMvc?.perform(
                 post("/api/v1/media/")
@@ -165,5 +164,14 @@ class MediaControllerTests {
                     .header("X-Pipe-Signature", generatedSignature)
             )?.andExpect(status().isBadRequest())
         }
+    }
+
+    fun generateSignature(url: String, jsonData: String): String {
+        val dataToSign = url + jsonData
+        val mac = Mac.getInstance("HmacSHA1")
+        val secretKey = SecretKeySpec(applicationProperties.addPipeKey.toByteArray(), "HmacSHA1")
+        mac.init(secretKey)
+        val signatureBytes = mac.doFinal(dataToSign.toByteArray())
+        return Base64.getEncoder().encodeToString(signatureBytes)
     }
 }
