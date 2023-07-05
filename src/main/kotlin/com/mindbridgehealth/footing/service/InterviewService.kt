@@ -53,7 +53,7 @@ class InterviewService(
         name: String,
         chroniclerId: String,
         storytellerId: String,
-        questions: List<String>?
+        questionIds: List<String>?
     ): Interview {
         val storyteller = storytellerService.findStorytellerEntityByAltId(storytellerId)
             .getOrElse { throw Exception("Storyteller was not found; unable to create interview") }
@@ -63,8 +63,8 @@ class InterviewService(
 
         val interviewEntity = db.save(InterviewEntity(name, null, null, false, chronicler, storyteller))
 
-        val dbQuestions = questions
-            ?.filter { qid -> questionService.findQuestionByAltId(qid).isPresent }
+        val dbQuestions = questionIds
+            ?.filter { qid -> questionService.findQuestionEntityByAltId(qid).isPresent }
             ?.map { qid ->
                 val q = questionService.findQuestionEntityByAltId(qid)
                 val iq = InterviewQuestionEntity()

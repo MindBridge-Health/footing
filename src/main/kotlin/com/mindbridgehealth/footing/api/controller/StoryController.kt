@@ -1,9 +1,11 @@
 package com.mindbridgehealth.footing.api.controller
 
 import com.mindbridgehealth.footing.configuration.ApplicationProperties
+import com.mindbridgehealth.footing.configuration.RequestLoggingInterceptor
 import com.mindbridgehealth.footing.service.TwilioCallbackService
 import com.twilio.security.RequestValidator;
 import jakarta.servlet.http.HttpServletRequest
+import org.slf4j.LoggerFactory
 import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.RequestContextHolder
@@ -16,16 +18,20 @@ import java.net.URLDecoder
 class StoryController(applicationProperties: ApplicationProperties, val twilioCallbackService: TwilioCallbackService) {
 
     private val validator: RequestValidator = RequestValidator(applicationProperties.twillioKey)
-
+    private val logger = LoggerFactory.getLogger(StoryController::class.java)
     @PostMapping("/interviews/{id}", consumes = ["application/x-www-form-urlencoded"])
     fun post(
         @PathVariable("id") id: String,
         @RequestBody body: String,
     ) {
+        logger.info("id: $id")
+        logger.info("body: $body")
+
         val request: HttpServletRequest =
             (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes).request
         val xTwilioSignature = request.getHeader("x-twilio-signature")
 
+        logger.info("sig: $xTwilioSignature")
         val parameters = UriComponentsBuilder.fromUriString("?$body").build().queryParams
         val paramMap = decodeParameters(parameters, "UTF-8")
 
