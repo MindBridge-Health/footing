@@ -1,4 +1,4 @@
-DROP DATABASE ECTEST;
+DROP DATABASE IF EXISTS ECTEST;
 CREATE DATABASE IF NOT EXISTS ECTEST;
 
 USE ECTEST;
@@ -7,33 +7,36 @@ CREATE TABLE IF NOT EXISTS organization
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(128) NOT NULL
-);
+    );
 
 CREATE TABLE IF NOT EXISTS mb_user
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    alt_id VARCHAR(128) UNIQUE NOT NULL,
     version INT,
     is_active BOOLEAN NOT NULL,
-    lastname VARCHAR(128) NOT NULL,
-    firstname VARCHAR(128) NOT NULL,
+    lastname VARCHAR(128),
+    firstname VARCHAR(128),
     middlename VARCHAR(128),
     email VARCHAR(128),
-    mobile VARCHAR(32)
-);
+    mobile VARCHAR(32),
+    INDEX(alt_id)
+    );
 
 CREATE TABLE IF NOT EXISTS resource
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    alt_id VARCHAR(128) UNIQUE NOT NULL,
     name VARCHAR(128) NOT NULL,
     is_deleted BOOLEAN NOT NULL
-);
+    );
 
 CREATE TABLE IF NOT EXISTS tag
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(128) NOT NULL,
     text VARCHAR(128)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS resource_tag_link
 (
@@ -41,24 +44,24 @@ CREATE TABLE IF NOT EXISTS resource_tag_link
     tag_id MEDIUMINT,
     FOREIGN KEY (resource_id) REFERENCES resource(id),
     FOREIGN KEY (tag_id) REFERENCES tag(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS onboarding_status
 (
     id INT PRIMARY KEY,
     status VARCHAR(128)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS benefactor
 (
     id MEDIUMINT PRIMARY KEY REFERENCES mb_user(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS chronicler
 (
     id MEDIUMINT PRIMARY KEY REFERENCES mb_user(id),
     is_ai BOOLEAN
-);
+    );
 
 CREATE TABLE IF NOT EXISTS storyteller
 (
@@ -68,7 +71,7 @@ CREATE TABLE IF NOT EXISTS storyteller
     onboarding_status int,
     FOREIGN KEY (preferred_chronicler_id) REFERENCES chronicler(id),
     FOREIGN KEY (onboarding_status) REFERENCES  onboarding_status(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS storyteller_benefactor_link
 (
@@ -76,7 +79,7 @@ CREATE TABLE IF NOT EXISTS storyteller_benefactor_link
     benefactor_id MEDIUMINT,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
     FOREIGN KEY (benefactor_id) REFERENCES  benefactor(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS preferred_time
 (
@@ -86,7 +89,7 @@ CREATE TABLE IF NOT EXISTS preferred_time
     day varchar(16) NOT NULL,
     INDEX (storyteller_id),
     UNIQUE INDEX (storyteller_id, time, day)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS story
 (
@@ -94,26 +97,26 @@ CREATE TABLE IF NOT EXISTS story
     storyteller_id MEDIUMINT,
     text VARCHAR(128),
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS media
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
-
     location VARCHAR(128) NOT NULL,
     type VARCHAR(128),
     storyteller_id MEDIUMINT,
     story_id MEDIUMINT,
+    state VARCHAR(32),
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
     FOREIGN KEY (story_id) REFERENCES story(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS story_group
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
     storyteller_id MEDIUMINT,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS story_group_story_link
 (
@@ -121,7 +124,7 @@ CREATE TABLE IF NOT EXISTS story_group_story_link
     story_id MEDIUMINT,
     FOREIGN KEY (story_group_id) REFERENCES story_group(id),
     FOREIGN KEY (story_id) REFERENCES story(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS question
 (
@@ -129,7 +132,7 @@ CREATE TABLE IF NOT EXISTS question
 
     text VARCHAR(128),
     custom BOOLEAN
-);
+    );
 
 CREATE TABLE IF NOT EXISTS interview
 (
@@ -141,12 +144,11 @@ CREATE TABLE IF NOT EXISTS interview
     completed BOOLEAN,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
     FOREIGN KEY (chronicler_id) REFERENCES chronicler(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS interview_question
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
-
     question_id MEDIUMINT,
     interview_id MEDIUMINT,
     story_id MEDIUMINT,
@@ -155,7 +157,7 @@ CREATE TABLE IF NOT EXISTS interview_question
     FOREIGN KEY (question_id) REFERENCES question(id),
     FOREIGN KEY (interview_id) REFERENCES interview(id),
     FOREIGN KEY (story_id) REFERENCES story(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS scheduled_interview
 (
@@ -163,34 +165,52 @@ CREATE TABLE IF NOT EXISTS scheduled_interview
     scheduled_time DATETIME UNIQUE NOT NULL,
     interview_id MEDIUMINT NOT NULL ,
     FOREIGN KEY (interview_id) REFERENCES interview(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS access_policy
 (
     id   MEDIUMINT PRIMARY KEY,
     name VARCHAR(128) NOT NULL
-);
+    );
 
 CREATE TABLE IF NOT EXISTS access_policy_user_link
 (
     access_policy_id MEDIUMINT PRIMARY KEY REFERENCES access_policy(id),
     user_id MEDIUMINT,
     FOREIGN KEY (user_id) REFERENCES mb_user(id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS access_policy_allowed_resource_link
 (
     access_policy_id MEDIUMINT REFERENCES access_policy(id),
     resource_id MEDIUMINT,
     PRIMARY KEY (access_policy_id, resource_id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS access_policy_denied_resource_link
 (
     access_policy_id MEDIUMINT REFERENCES access_policy(id),
     resource_id MEDIUMINT,
     PRIMARY KEY (access_policy_id, resource_id)
-);
+    );
+
+CREATE TABLE IF NOT EXISTS twilio_status
+(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    call_sid varchar(64),
+    call_status varchar(32),
+    recording_sid varchar(64),
+    recording_status varchar(32),
+    transcription_sid varchar(64),
+    transcription_status varchar(32)
+    );
+
+CREATE TABLE IF NOT EXISTS twilio_data
+(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    status_id varchar(64) references twilio_status(id),
+    raw_json json
+    );
 
 INSERT IGNORE INTO onboarding_status values (0, 'ONBOARDING_NOT_STARTED' );
 INSERT IGNORE INTO onboarding_status values (1, 'ONBOARDING_STARTED' );

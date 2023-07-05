@@ -43,6 +43,9 @@ dependencies {
     compileOnly('javax.persistence:javax.persistence-api:2.2')
     implementation 'mysql:mysql-connector-java:8.0.33'
 
+    // https://mvnrepository.com/artifact/com.twilio.sdk/twilio
+    implementation 'com.twilio.sdk:twilio:9.8.0'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     implementation 'org.jetbrains.kotlin:kotlin-reflect'

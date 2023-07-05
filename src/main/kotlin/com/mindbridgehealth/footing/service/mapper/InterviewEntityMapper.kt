@@ -29,9 +29,14 @@ abstract class InterviewEntityMapper: IdMapper() {
         interviewEntity.interviewQuestionData = interview.interviewQuestions?.map { mapInterviewQuestionToInterviewQuestionEntity(it, interviewEntity) }?.toMutableList()
     }
 
-    fun mapInterviewQuestionToInterviewQuestionEntity(interviewQuestion: InterviewQuestion, interviewEntity: InterviewEntity): InterviewQuestionEntity {
+    private fun mapInterviewQuestionToInterviewQuestionEntity(interviewQuestion: InterviewQuestion, interviewEntity: InterviewEntity): InterviewQuestionEntity {
         val interviewQuestionEntity = InterviewQuestionEntity()
         interviewQuestionEntity.interview = interviewEntity
         return interviewQuestionEntity
+    }
+
+    @AfterMapping
+    fun mapInterviewQuestionEntitiesToModels(interviewEntity: InterviewEntity, @MappingTarget interview: Interview, interviewQuestionEntityMapper: InterviewQuestionEntityMapper) {
+        interview.interviewQuestions = interviewEntity.interviewQuestionData?.map {  it.interview = interviewEntity; interviewQuestionEntityMapper.entityToModel(it)}
     }
 }

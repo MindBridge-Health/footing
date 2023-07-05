@@ -30,12 +30,6 @@ class MediaControllerTests {
     @MockBean
     lateinit var mediaService: MediaService
 
-    @Value(value = "\${local.server.port}")
-    private val port = 0
-
-    @Autowired
-    private val restTemplate: TestRestTemplate? = null
-
     @Autowired
     val mockMvc: MockMvc? = null
 
@@ -131,7 +125,6 @@ class MediaControllerTests {
                     "X-Pipe-Signature",
                     signatureValidator.generateSignature("/api/v1/media/", videoRecordedRawJson)
                 )
-                .with(SecurityMockMvcRequestPostProcessors.jwt())
         )?.andExpect(status().isOk())?.andReturn()
         assertEquals("videoRecorded", response?.response?.contentAsString)
     }
@@ -146,7 +139,6 @@ class MediaControllerTests {
                     "X-Pipe-Signature",
                     signatureValidator.generateSignature("/api/v1/media/", videoConvetedRawJson)
                 )
-                .with(SecurityMockMvcRequestPostProcessors.jwt())
         )?.andExpect(status().isOk())?.andReturn()
         assertEquals("videoConverted", response?.response?.contentAsString)
     }
@@ -158,7 +150,6 @@ class MediaControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(videoCopiedRawJson)
                 .header("X-Pipe-Signature", signatureValidator.generateSignature("/api/v1/media/", videoCopiedRawJson))
-                .with(SecurityMockMvcRequestPostProcessors.jwt())
         )?.andExpect(status().isOk())?.andReturn()
         assertEquals("videoCopied", response?.response?.contentAsString)
     }
@@ -172,7 +163,6 @@ class MediaControllerTests {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(unexpectedEventRawJson)
                     .header("X-Pipe-Signature", generatedSignature)
-                    .with(SecurityMockMvcRequestPostProcessors.jwt())
             )?.andExpect(status().isBadRequest())
         }
     }

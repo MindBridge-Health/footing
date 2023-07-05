@@ -20,12 +20,13 @@ class SecurityConfig(
     @Bean
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http.authorizeHttpRequests()
-            .requestMatchers("/api/v1/health/**", "/", "/images/**").permitAll()
+        http.csrf().disable()// I don't think we need CSRF as we're using other forms to validate the request
+            .authorizeHttpRequests()
+            .requestMatchers("/api/v1/health/**", "/api/v1/media**", "/api/v1/stories/**","/", "/images/**").permitAll()
             .requestMatchers("/api/v1/storytellers/{id}").hasAuthority("SCOPE_read:userdata")
             .anyRequest().permitAll()
             .and().cors()
-            .and().oauth2ResourceServer().jwt();
+            .and().oauth2ResourceServer().jwt()
         return http.build()
     }
 
