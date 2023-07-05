@@ -1,6 +1,8 @@
 ### Create Storyteler
 POST http://localhost:8080/api/v1/storytellers/
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
 
 {
   "firstname": "Chris",
@@ -14,6 +16,8 @@ Content-Type: application/json
 ### Create Question 1
 POST http://localhost:8080/api/v1/questions/
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
 
 {
   "name": "Question 2",
@@ -25,16 +29,19 @@ Content-Type: application/json
 ### Create Chronicler
 POST http://localhost:8080/api/v1/chroniclers/
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
   "firstname": "Chat",
-  "lastname": "GPT2.0"
+  "lastname": "GPT2.0",
+  "isAi" : true
 }
 > {% client.global.set("cid", response.body) %}
 
-### Post Interview 1 (We ignore Chronicler for now)
+### Post Interview 1
 POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/chroniclers/{{cid}}
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
   "name": "Interview 3",
@@ -48,6 +55,8 @@ Content-Type: application/json
 
 ###Schedule an interview use preferred time and no append
 POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?name=noAppend
+Authorization: Bearer {{JWT}}
+
 
 > {%
     client.global.set("siid1", response.body)
@@ -64,6 +73,8 @@ POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id
 
 ###Schedule an interview w/time
 POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?time=2030-06-14T12%3A34%3A00Z&name=scheduled
+Authorization: Bearer {{JWT}}
+
 
 > {%
     client.global.set("siid2", response.body)
@@ -80,6 +91,8 @@ POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id
 
 ###Schedule an interview use preferred time and no append should error
 POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?name=shouldError
+Authorization: Bearer {{JWT}}
+
 
 > {%
     client.test("Request executed successfully", function() {
@@ -95,6 +108,8 @@ POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id
 
 ###Schedule an interview with scheduled time and append should error
 POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?time=2030-06-17T12%3A34%3A00Z&append=true&name=shouldError
+Authorization: Bearer {{JWT}}
+
 
 > {%
     client.test("Request executed successfully", function() {
@@ -110,6 +125,8 @@ POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id
 
 ###Schedule an interview use preferred time and append
 POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?append=true&name=appended2
+Authorization: Bearer {{JWT}}
+
 
 > {%
     client.global.set("siid3", response.body)
@@ -126,6 +143,8 @@ POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id
 
 ### GET All Scheduled Interview should be three TODO Pipe to JS test
 GET http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled:all/
+Authorization: Bearer {{JWT}}
+
 
 > {%
     client.test("Request executed successfully", function() {
@@ -142,21 +161,34 @@ GET http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled:all/
 
 ### GET Next Scheduled Interview
 GET http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/scheduled:next/
+Authorization: Bearer {{JWT}}
+
 
 ### Delete Scheduled Interview 1
 DELETE http://localhost:8080/api/v1/interviews/scheduled/{{siid1}}
+Authorization: Bearer {{JWT}}
+
 
 ### Delete Scheduled Interview 2
 DELETE http://localhost:8080/api/v1/interviews/scheduled/{{siid2}}
+Authorization: Bearer {{JWT}}
+
 
 ### Delete Scheduled Interview 3
 DELETE http://localhost:8080/api/v1/interviews/scheduled/{{siid3}}
+Authorization: Bearer {{JWT}}
+
 
 ### Delete Question
 DELETE http://localhost:8080/api/v1/questions/{{qid}}
+Authorization: Bearer {{JWT}}
+
 
 ### Delete Interview
 DELETE http://localhost:8080/api/v1/interviews/{{id}}
+Authorization: Bearer {{JWT}}
+
 
 ### Delete Storyteller
 DELETE http://localhost:8080/api/v1/storytellers/{{sid}}
+Authorization: Bearer {{JWT}}

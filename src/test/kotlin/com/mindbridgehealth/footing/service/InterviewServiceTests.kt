@@ -6,27 +6,71 @@ import com.mindbridgehealth.footing.service.entity.*
 import com.mindbridgehealth.footing.service.mapper.*
 import com.mindbridgehealth.footing.service.model.*
 import com.mindbridgehealth.footing.service.util.Base36Encoder
+import com.ninjasquad.springmockk.MockkClear
+import com.ninjasquad.springmockk.clear
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import org.junit.jupiter.api.Test
 import org.mapstruct.factory.Mappers
+import java.sql.Time
 import java.sql.Timestamp
+import java.time.DayOfWeek
 import java.time.Instant
-import java.util.UUID
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.floor
+import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
 class InterviewServiceTests {
 
+    val mockInterviewDb = mockk<InterviewRepository>()
+    val mockStorytellerService = mockk<StorytellerService>()
+    val mockQuestionService = mockk<QuestionService>()
+    val mockInterviewQuestionService = mockk<InterviewQuestionService>()
+    val mockChroniclerService = mockk<ChroniclerService>()
+    val mockScheduledInterviewRepository = mockk<ScheduledInterviewRepository>()
+
+    val storytellerEntityMapperImpl = StorytellerEntityMapperImpl(
+        BenefactorEntityMapperImpl(),
+        com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
+        PreferredTimeMapperImpl()
+    )
+    val interviewQuestionEntityMapperImpl = InterviewQuestionEntityMapperImpl(
+        storytellerEntityMapperImpl,
+        com.mindbridgehealth.footing.service.mapper.QuestionEntityMapperImpl()
+    )
+    val iem = InterviewEntityMapperImpl(
+        TimeMapper(),
+        storytellerEntityMapperImpl,
+        com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
+        interviewQuestionEntityMapperImpl
+    )
+
+    val service = InterviewService(
+        mockInterviewDb,
+        mockStorytellerService,
+        mockChroniclerService,
+        mockQuestionService,
+        mockInterviewQuestionService,
+        iem,
+        storytellerEntityMapperImpl,
+        interviewQuestionEntityMapperImpl,
+        Mappers.getMapper(ChroniclerEntityMapper::class.java),
+        mockScheduledInterviewRepository,
+        Mappers.getMapper(ScheduledInterviewEntityMapper::class.java)
+
+    )
 
     @Test
     fun findByStorytellerId_validId_AllStories() {
-        val mockInterviewDb = mockk<InterviewRepository>()
-        val mockStorytellerDb = mockk<StorytellerService>()
-        val mockQuestionService = mockk<QuestionService>()
-        val mockInterviewQuestionService = mockk<InterviewQuestionService>()
-        val mockChroniclerService = mockk<ChroniclerService>()
-        val mockScheduledInterviewRepository = mockk<ScheduledInterviewRepository>()
+        mockInterviewDb.clear(MockkClear.BEFORE)
+        mockStorytellerService.clear(MockkClear.BEFORE)
+        mockQuestionService.clear(MockkClear.BEFORE)
+        mockInterviewQuestionService.clear(MockkClear.BEFORE)
+        mockChroniclerService.clear(MockkClear.BEFORE)
+        mockScheduledInterviewRepository.clear(MockkClear.BEFORE)
 
         //Ones
         val uuid1 = floor(Math.random() * 1000).toInt()
@@ -187,7 +231,7 @@ class InterviewServiceTests {
 
         val service = InterviewService(
             mockInterviewDb,
-            mockStorytellerDb,
+            mockStorytellerService,
             mockChroniclerService,
             mockQuestionService,
             mockInterviewQuestionService,
@@ -203,6 +247,145 @@ class InterviewServiceTests {
 
         val actualInterviews = ArrayList(interviews)
         assertEquals(expectedInterviews, actualInterviews)
+
+    }
+
+    @Test
+    fun createInterview_validData_interviewCreated() {
+        mockInterviewDb.clear(MockkClear.BEFORE)
+        mockStorytellerService.clear(MockkClear.BEFORE)
+        mockQuestionService.clear(MockkClear.BEFORE)
+        mockInterviewQuestionService.clear(MockkClear.BEFORE)
+        mockChroniclerService.clear(MockkClear.BEFORE)
+        mockScheduledInterviewRepository.clear(MockkClear.BEFORE)
+
+        val service = InterviewService(
+            mockInterviewDb,
+            mockStorytellerService,
+            mockChroniclerService,
+            mockQuestionService,
+            mockInterviewQuestionService,
+            iem,
+            storytellerEntityMapperImpl,
+            interviewQuestionEntityMapperImpl,
+            Mappers.getMapper(ChroniclerEntityMapper::class.java),
+            mockScheduledInterviewRepository,
+            Mappers.getMapper(ScheduledInterviewEntityMapper::class.java)
+
+        )
+
+        val name = "interview 1"
+        val chroniclerId = "c1"
+        val storytellerId = "s1"
+        val qIds = listOf("q1")
+
+        val interviewEntitySlot = slot<InterviewEntity>()
+        every { mockInterviewDb.save(capture(interviewEntitySlot))} answers { interviewEntitySlot.captured.apply {
+            this.id = 1
+            this.altId = "i1"
+        }}
+        val chroniclerEntity = ChroniclerEntity().apply {
+            this.id = 1
+            this.altId = "c1"
+            this.lastname = "ln"
+            this.firstname = "fn"
+            this.middlename = "mn"
+            this.email = "em"
+            this.mobile = "87"
+            this.ai = true
+        }
+        every { mockChroniclerService.findChroniclerEntityById(any()) } returns Optional.of(chroniclerEntity)
+        val questionEntity = QuestionEntity().apply {
+            this.id = 1
+            this.altId = "q1"
+            this.name = "question 1"
+            this.tags = mutableListOf()
+            this.text = "text?"
+            this.isCustom = false
+        }
+        every { mockQuestionService.findQuestionEntityByAltId(any()) } returns Optional.of(questionEntity)
+        val storytellerEntity = StorytellerEntity().apply {
+            this.id = 1
+            this.altId = "s1"
+            this.firstname = "fn"
+            this.lastname = "ln"
+            this.email = "em"
+            this.mobile = "98"
+            this.contactMethod = "text"
+        }
+        every { mockStorytellerService.findStorytellerEntityByAltId(any()) } returns Optional.of(storytellerEntity)
+        val interviewQuestionEntitySlot = slot<InterviewQuestionEntity>()
+        every { mockInterviewQuestionService.save(capture(interviewQuestionEntitySlot)) } answers { interviewQuestionEntitySlot.captured.apply {
+            this.id = 1
+            this.altId = "iq1"
+        }}
+
+        val interview = service.createInterview(name, chroniclerId, storytellerId, qIds)
+
+        assertEquals(name, interview.name)
+        assertEquals(false, interview.completed)
+        assertEquals(Chronicler("dlj", "ln", "fn", "mn", "em", "87", true), interview.chronicler)
+        assertEquals(Storyteller("5rm","ln", "fn", null, "em", "98", "text", emptyList(), null, OnboardingStatus.ONBOARDING_NOT_STARTED, emptyList()), interview.storyteller)
+        assertEquals(InterviewQuestion("lz344", "interview 1_question 1", emptyList(), "1sk", "xcm", null, false, false), interview.interviewQuestions?.first())
+    }
+
+    @Test
+    @Ignore //Ignored until working
+    fun scheduleInterview_nextPreferredTime_success() {
+        mockInterviewDb.clear(MockkClear.BEFORE)
+        mockStorytellerService.clear(MockkClear.BEFORE)
+        mockQuestionService.clear(MockkClear.BEFORE)
+        mockInterviewQuestionService.clear(MockkClear.BEFORE)
+        mockChroniclerService.clear(MockkClear.BEFORE)
+        mockScheduledInterviewRepository.clear(MockkClear.BEFORE)
+
+        val service = InterviewService(
+            mockInterviewDb,
+            mockStorytellerService,
+            mockChroniclerService,
+            mockQuestionService,
+            mockInterviewQuestionService,
+            iem,
+            storytellerEntityMapperImpl,
+            interviewQuestionEntityMapperImpl,
+            Mappers.getMapper(ChroniclerEntityMapper::class.java),
+            mockScheduledInterviewRepository,
+            Mappers.getMapper(ScheduledInterviewEntityMapper::class.java)
+
+        )
+
+        val now = Time(Instant.now().toEpochMilli())
+        val storytellerEntity = StorytellerEntity().apply {
+            this.id = 1
+            this.altId = "s1"
+            this.firstname = "fn"
+            this.lastname = "ln"
+            this.email = "em"
+            this.mobile = "98"
+            this.contactMethod = "text"
+            this.preferredTimes = mutableListOf(PreferredTimeEntity().apply {
+                this.id = 1
+                this.time = now
+                this.dayOfWeek = "Wednesday"
+            })
+        }
+
+        val storyteller = Storyteller("1", "ln", "fn", null, "em", "98", "text", emptyList(), null, OnboardingStatus.ONBOARDING_NOT_STARTED, emptyList())
+        val preferredTime = PreferredTime(storyteller, now, DayOfWeek.WEDNESDAY)
+        storyteller.preferredTimes = listOf(preferredTime)
+        every {  mockStorytellerService.findStorytellerById(any()) } answers { Optional.of(storyteller) }
+
+        every { mockScheduledInterviewRepository.findByStorytellerIdAndScheduledTime(any(), any()) } returns null
+
+        val savedScheduledInterviewSlot = slot<ScheduledInterviewEntity>()
+        every { mockScheduledInterviewRepository.save(capture(savedScheduledInterviewSlot)) } returnsArgument 0
+
+        val scheduledInterviewId = service.scheduleInterview("1", "1", Instant.now(), "scIn1", true)
+
+        assertEquals(1, savedScheduledInterviewSlot.captured.id)
+        assertEquals("i1", savedScheduledInterviewSlot.captured.altId)
+        assertEquals("scIn1", savedScheduledInterviewSlot.captured.name)
+        assertEquals(Timestamp.from(Instant.now()), savedScheduledInterviewSlot.captured.scheduledTime)
 
     }
 }
