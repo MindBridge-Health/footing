@@ -1,7 +1,7 @@
 package com.mindbridgehealth.footing.api.controller
 
+import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.service.TwilioCallbackService
-import com.mindbridgehealth.footing.service.util.WebhookSignatureValidator
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito
@@ -14,6 +14,12 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
+import java.util.*
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -31,7 +37,7 @@ class StoryControllerTests {
     lateinit var mockMvc: MockMvc
 
     @Autowired
-    lateinit var signatureValidator: WebhookSignatureValidator
+    lateinit var applicationProperties: ApplicationProperties
 
     @Test
     fun callbackDeserialization_transcriptionComplete_Success() {
@@ -84,13 +90,15 @@ class StoryControllerTests {
             anyString()
         )
 
+        val parameters = UriComponentsBuilder.fromUriString(
+            URLDecoder.decode("?$body", "UTF-8")).build().queryParams
         mockMvc.perform(
             post("/api/v1/stories/interviews/l01xt1w8u21s")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .content(body)
                 .header(
-                    "X-Pipe-Signature",
-                    signatureValidator.generateSignature("/api/v1/stories/interviews/l01xt1w8u21s", body)
+                    "x-twilio-signature",
+                    getValidationSignature("/api/v1/stories/interviews/l01xt1w8u21s", parameters.toSingleValueMap())
                 )
         ).andExpect(MockMvcResultMatchers.status().isOk())
 
@@ -147,13 +155,15 @@ class StoryControllerTests {
             any()
         )
 
+        val parameters = UriComponentsBuilder.fromUriString(
+            URLDecoder.decode("?$body", "UTF-8")).build().queryParams
         mockMvc.perform(
             post("/api/v1/stories/interviews/l01xt1w8u21s")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .content(body)
                 .header(
-                    "X-Pipe-Signature",
-                    signatureValidator.generateSignature("/api/v1/stories/interviews/l01xt1w8u21s", body)
+                    "x-twilio-signature",
+                    getValidationSignature("/api/v1/stories/interviews/l01xt1w8u21s", parameters.toSingleValueMap())
                 )
         ).andExpect(MockMvcResultMatchers.status().isOk())
 
@@ -186,14 +196,38 @@ class StoryControllerTests {
 
         val body = "Name=l01xt1w8u21s"
 
+        val parameters = UriComponentsBuilder.fromUriString(
+            URLDecoder.decode("?$body", "UTF-8")).build().queryParams
         mockMvc.perform(
             post("/api/v1/stories/interviews/l01xt1w8u21s")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .content(body)
                 .header(
-                    "X-Pipe-Signature",
-                    signatureValidator.generateSignature("/api/v1/stories/interviews/l01xt1w8u21s", body)
+                    "x-twilio-signature",
+                    getValidationSignature("/api/v1/stories/interviews/l01xt1w8u21s", parameters.toSingleValueMap())
                 )
         ).andExpect(MockMvcResultMatchers.status().isOk())
+    }
+
+    fun getValidationSignature(url: String?, params: Map<String, String?>?): String? {
+        return try {
+            val builder = StringBuilder(url)
+            if (params != null) {
+                val sortedKeys: List<String> = ArrayList(params.keys)
+                Collections.sort(sortedKeys)
+                for (key in sortedKeys) {
+                    builder.append(key)
+                    val value = params[key]
+                    builder.append(value ?: "")
+                }
+            }
+            val mac = Mac.getInstance("HmacSHA1")
+            val secretKey = SecretKeySpec(applicationProperties.twillioKey.toByteArray(), "HmacSHA1")
+            mac.init(secretKey)
+            val rawHmac = mac.doFinal(builder.toString().toByteArray(StandardCharsets.UTF_8))
+            Base64.getEncoder().encodeToString(rawHmac)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

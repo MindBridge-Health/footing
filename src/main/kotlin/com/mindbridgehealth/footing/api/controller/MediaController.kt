@@ -6,10 +6,10 @@ import com.mindbridgehealth.footing.api.dto.addpipe.AddPipeEvent
 import com.mindbridgehealth.footing.api.dto.addpipe.VideoConvertedEvent
 import com.mindbridgehealth.footing.api.dto.addpipe.VideoCopiedPipeS3Event
 import com.mindbridgehealth.footing.api.dto.addpipe.VideoRecordedEvent
+import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.service.MediaService
 import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.util.Base36Encoder
-import com.mindbridgehealth.footing.service.util.WebhookSignatureValidator
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatusCode
 import org.springframework.web.bind.annotation.*
@@ -18,11 +18,13 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import java.net.URL
 import java.util.*
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 
 @RestController
 @RequestMapping("/api/v1/media")
-class MediaController(val mediaService: MediaService, val webhookSignatureValidator: WebhookSignatureValidator) {
+class MediaController(val mediaService: MediaService, val applicationProperties: ApplicationProperties) {
 
     @GetMapping("/{id}")
     fun get(@PathVariable id: String) = mediaService.findMediaById(id)
@@ -44,7 +46,7 @@ class MediaController(val mediaService: MediaService, val webhookSignatureValida
         val event: AddPipeEvent = try {objectMapper.readValue(jsonString, AddPipeEvent::class.java)}
         catch (e: Exception) { throw HttpClientErrorException( //TODO: Logging
             HttpStatusCode.valueOf(400))}
-        val signature = webhookSignatureValidator.generateSignature(request.requestURI, jsonString)
+        val signature = generateSignature(request.requestURI, jsonString)
         if (xPipeSignature.isNullOrEmpty() || !xPipeSignature.equals(signature)) {
             println(xPipeSignature)
             println(signature)
@@ -94,6 +96,18 @@ class MediaController(val mediaService: MediaService, val webhookSignatureValida
     fun deleteMedia(@PathVariable id: String) {
         mediaService.deleteMedia(id)    }
 
-//    @PostMapping("/story/{id}")
-//    fun postToStory(media: Media, @PathVariable id: UUID) = mediaService.catalogMedia(media, id)
+    /**
+     * Generates a base64-encoded signature for a Pipe webhook request.
+     * @param url the webhook url
+     * @param jsonData the data in JSON format
+     * @return the base64-encoded signature
+     */
+    private fun generateSignature(url: String, jsonData: String): String {
+        val dataToSign = url + jsonData
+        val mac = Mac.getInstance("HmacSHA1")
+        val secretKey = SecretKeySpec(applicationProperties.addPipeKey.toByteArray(), "HmacSHA1")
+        mac.init(secretKey)
+        val signatureBytes = mac.doFinal(dataToSign.toByteArray())
+        return Base64.getEncoder().encodeToString(signatureBytes)
+    }
 }
