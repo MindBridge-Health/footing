@@ -18,13 +18,14 @@ import java.net.URLDecoder
 @RequestMapping("/api/v1/stories")
 class StoryController(applicationProperties: ApplicationProperties, val twilioCallbackService: TwilioCallbackService) {
 
-    private val validator: RequestValidator = RequestValidator(applicationProperties.twillioKey)
+    private val validator: RequestValidator = RequestValidator(applicationProperties.twilioKey)
     private val logger = LoggerFactory.getLogger(StoryController::class.java)
     @PostMapping("/interviews/{id}", consumes = ["application/x-www-form-urlencoded"])
     fun post(
         @PathVariable("id") id: String,
         @RequestBody body: String,
     ) {
+
         logger.info("id: $id")
         logger.info("body: $body")
 
@@ -55,7 +56,9 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
         val callSid = paramMap["CallSid"]
         val to = paramMap["To"]
 
-        if(!validator.validate(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + request.requestURI, paramMap, xTwilioSignature)) throw Exception("Invalid Signature")
+        val validationUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + request.requestURI
+        logger.info("url: $validationUrl")
+        if(!validator.validate(validationUrl, paramMap, xTwilioSignature)) throw Exception("Invalid Signature")
         
         twilioCallbackService.handleCallback(
             id,
