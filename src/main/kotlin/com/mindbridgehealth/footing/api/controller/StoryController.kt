@@ -1,11 +1,12 @@
 package com.mindbridgehealth.footing.api.controller
 
 import com.mindbridgehealth.footing.configuration.ApplicationProperties
-import com.mindbridgehealth.footing.configuration.RequestLoggingInterceptor
 import com.mindbridgehealth.footing.service.TwilioCallbackService
-import com.twilio.security.RequestValidator;
+import com.twilio.security.RequestValidator
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.env.Environment
 import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.RequestContextHolder
@@ -20,6 +21,9 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
 
     private val validator: RequestValidator = RequestValidator(applicationProperties.twilioKey)
     private val logger = LoggerFactory.getLogger(StoryController::class.java)
+
+    @Value("\${spring.profiles.active}")
+    private val activeProfile: String? = null
     @PostMapping("/interviews/{id}", consumes = ["application/x-www-form-urlencoded"])
     fun post(
         @PathVariable("id") id: String,
@@ -56,7 +60,11 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
         val callSid = paramMap["CallSid"]
         val to = paramMap["To"]
 
-        val validationUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + request.requestURI
+        var validationUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + request.requestURI
+        if("prod" == activeProfile) //App Runner is actually running on http with an https LB in front
+        {
+            validationUrl = validationUrl.replace("http", "https")
+        }
         logger.info("url: $validationUrl")
         if(!validator.validate(validationUrl, paramMap, xTwilioSignature)) throw Exception("Invalid Signature")
         
