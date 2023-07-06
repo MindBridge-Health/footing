@@ -10,6 +10,7 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URLDecoder
 
@@ -54,7 +55,7 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
         val callSid = paramMap["CallSid"]
         val to = paramMap["To"]
 
-        if(!validator.validate(request.requestURI, paramMap, xTwilioSignature)) throw Exception("Invalid Signature")
+        if(!validator.validate(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + request.requestURI, paramMap, xTwilioSignature)) throw Exception("Invalid Signature")
         
         twilioCallbackService.handleCallback(
             id,
