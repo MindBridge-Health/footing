@@ -1,5 +1,5 @@
 ### Post Question 1
-POST http://localhost:8080/api/v1/questions/
+POST {{host}}/api/v1/questions/
 Content-Type: application/json
 
 {
@@ -10,11 +10,11 @@ Content-Type: application/json
 > {% client.global.set("id", response.body) %}
 
 ### GET Question
-GET http://localhost:8080/api/v1/questions/{{id}}
+GET {{host}}/api/v1/questions/{{id}}
 Content-Type: application/json
 
 ### Update Question
-PUT http://localhost:8080/api/v1/questions/{{id}}
+PUT {{host}}/api/v1/questions/{{id}}
 Content-Type: application/json
 
 {
@@ -24,7 +24,7 @@ Content-Type: application/json
 }
 
 ### Get All questions
-GET  http://localhost:8080/api/v1/questions/
+GET  {{host}}/api/v1/questions/
 Content-Type: application/json
 Authorization: "Bearer {JWT}"
 

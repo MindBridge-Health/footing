@@ -17,15 +17,20 @@ class StoryEntity: ResourceEntity() {
     var storyteller: StorytellerEntity? = null
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val storyEntity = other as StoryEntity
-        if (id != storyEntity.id) return false
-        return name == storyEntity.name
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as StoryEntity
+
+        if (text != other.text) return false
+        return storyteller == other.storyteller
     }
 
     override fun hashCode(): Int {
-        var result = if (id != null) id.hashCode() else 0
-        result = 31 * result + if (name != null) name.hashCode() else 0
+        var result = super.hashCode()
+        result = 31 * result + (text?.hashCode() ?: 0)
+        result = 31 * result + (storyteller?.hashCode() ?: 0)
         return result
     }
+
 }

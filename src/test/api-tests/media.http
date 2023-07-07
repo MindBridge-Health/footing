@@ -1,6 +1,6 @@
 //AddPipe Callback tests
 #### AddPipe Callback Create Storyteler
-POST http://localhost:8080/api/v1/storytellers/
+POST {{host}}/api/v1/storytellers/
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
@@ -12,7 +12,7 @@ Authorization: Bearer {{JWT}}
 > {% client.global.set("sid", response.body) %}
 
 ### AddPipe Callback Create Question 1
-POST http://localhost:8080/api/v1/questions/
+POST {{host}}/api/v1/questions/
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
@@ -24,7 +24,7 @@ Authorization: Bearer {{JWT}}
 > {% client.global.set("qid", response.body) %}
 
 ### AddPipe Callback Create Chronicler
-POST http://localhost:8080/api/v1/chroniclers/c1
+POST {{host}}/api/v1/chroniclers/c1
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
@@ -36,7 +36,7 @@ Authorization: Bearer {{JWT}}
 > {% client.global.set("cid", response.body) %}
 
 ### AddPipe Callback Post Interview 1
-POST http://localhost:8080/api/v1/interviews/storytellers/{{sid}}/chroniclers/{{cid}}
+POST {{host}}/api/v1/interviews/storytellers/{{sid}}/chroniclers/{{cid}}
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
@@ -51,14 +51,14 @@ Authorization: Bearer {{JWT}}
 > {% client.global.set("id", response.body) %}
 
 #### GET Interview
-GET http://localhost:8080/api/v1/interviews/{{id}}
+GET {{host}}/api/v1/interviews/{{id}}
 Content-Type: application/json
 
 > {% client.global.set("iqid", response.body.interviewQuestions[0].id) %}
 
 
 ### AddPipe Video Recorded Callback
-POST http://localhost:8080/api/v1/media/
+POST {{host}}/api/v1/media/
 Content-Type: application/json
 X-Pipe-Signature: xpFgTJ+/xRkd2MoXpaSkXaKPOw4=
 
@@ -83,7 +83,7 @@ X-Pipe-Signature: xpFgTJ+/xRkd2MoXpaSkXaKPOw4=
 }
 
 ### AddPipe Video Converted Callback
-POST http://localhost:8080/api/v1/media/
+POST {{host}}/api/v1/media/
 Content-Type: application/json
 X-Pipe-Signature: zR8wT8cy8+tOvh3NAwX6cGHZ3MM=
 
@@ -107,7 +107,7 @@ X-Pipe-Signature: zR8wT8cy8+tOvh3NAwX6cGHZ3MM=
   }
 }
 ### AddPipe Video Copied Callback
-POST http://localhost:8080/api/v1/media/
+POST {{host}}/api/v1/media/
 Content-Type: application/json
 X-Pipe-Signature: 6g04T9Y+8HZgd+dIuh8QvQXG3sM=
 
@@ -139,6 +139,6 @@ X-Pipe-Signature: 6g04T9Y+8HZgd+dIuh8QvQXG3sM=
 
 
 ### Find Media By Storyteler
-GET http://localhost:8080/api/v1/media/storytellers/{{sid}}
+GET {{host}}/api/v1/media/storytellers/{{sid}}
 Content-Type: application/json
 Authorization: Bearer {{JWT}}

@@ -1,63 +1,38 @@
 package com.mindbridgehealth.footing.service
 
+import com.mindbridgehealth.footing.api.controller.StoryController
 import com.mindbridgehealth.footing.data.repository.TwilioDataRepository
 import com.mindbridgehealth.footing.data.repository.TwilioStatusRepository
+import com.mindbridgehealth.footing.service.entity.StoryEntity
 import com.mindbridgehealth.footing.service.entity.TwilioData
 import com.mindbridgehealth.footing.service.entity.TwilioStatus
+import com.mindbridgehealth.footing.service.model.Story
+import com.mindbridgehealth.footing.service.model.Tag
 import net.minidev.json.JSONObject
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class TwilioCallbackService(private val twilioStatusRepository: TwilioStatusRepository, private val twilioDataRepository: TwilioDataRepository) {
+class TwilioCallbackService(
+    private val twilioStatusRepository: TwilioStatusRepository,
+    private val twilioDataRepository: TwilioDataRepository,
+    private val interviewService: InterviewService,
+    private val storyService: StoryService
+) {
 
-    fun handleCallback(
-        interviewId: String?,
-        apiVersion: String?,
-        accountSid: String?,
-        callSid: String?,
-        callStatus: String?,
-        recordingSid: String?,
-        recordingUrl: String?,
-        recordingStatus: String?,
-        transcriptionType: String?,
-        transcriptionUrl: String?,
-        transcriptionSid: String?,
-        transcriptionStatus: String?,
-        transcriptionText: String?,
-        caller: String?,
-        called: String?,
-        from: String?,
-        to: String?,
-        direction: String?,
-        url: String?,
-                       ) {
+    private val logger = LoggerFactory.getLogger(TwilioCallbackService::class.java)
+    fun handleCallback(interviewId: String, callbackData: Map<String, String>) {
         val twilioStatus = TwilioStatus().apply {
-            this.callSid = callSid
-            this.callStatus = callStatus
-            this.recordingSid = recordingSid
-            this.recordingStatus = recordingStatus
-            this.transcriptionSid = transcriptionSid
-            this.transcriptionStatus = transcriptionStatus
+            this.callSid = callbackData["CallSid"]
+            this.callStatus = callbackData["CallStatus"]
+            this.recordingSid = callbackData["RecordingSid"]
+            this.recordingStatus = callbackData["RecordingStatus"]
+            this.transcriptionSid = callbackData["TranscriptionSid"]
+            this.transcriptionStatus = callbackData["TranscriptionStatus"]
         }
 
         val twilioJson = JSONObject()
-        if(apiVersion != null) twilioJson["apiVersion"] = apiVersion
-        if(accountSid != null) twilioJson["accountSid"] = accountSid
-        if(callSid != null) twilioJson["callSid"] = callSid
-        if(callStatus != null) twilioJson["callStatus"] = callStatus
-        if(recordingSid != null) twilioJson["recordingSid"] = recordingSid
-        if(recordingUrl != null) twilioJson["recordingUrl"] = recordingUrl
-        if(transcriptionType != null) twilioJson["transcriptionType"] = transcriptionType
-        if(transcriptionUrl != null) twilioJson["transcriptionUrl"] = transcriptionUrl
-        if(transcriptionSid != null) twilioJson["transcriptionSid"] = transcriptionSid
-        if(transcriptionStatus != null) twilioJson["transcriptionStatus"] = transcriptionStatus
-        if(transcriptionText != null) twilioJson["transcriptionText"] = transcriptionText
-        if(caller != null) twilioJson["caller"] = caller
-        if(called != null) twilioJson["called"] = called
-        if(from != null) twilioJson["from"] = from
-        if(to != null) twilioJson["to"] = to
-        if(direction != null) twilioJson["direction"] = direction
-        if(url != null) twilioJson["url"] = url
+        callbackData.entries.forEach { e -> twilioJson[e.key] = e.value }
 
         val savedStatus = twilioStatusRepository.save(twilioStatus)
         val twilioData = TwilioData().apply {
@@ -66,5 +41,21 @@ class TwilioCallbackService(private val twilioStatusRepository: TwilioStatusRepo
         }
         twilioDataRepository.save(twilioData)
 
+
+        callbackData["TranscriptionText"]?.let {
+            val storyteller = interviewService.findInterviewEntityByAltId(interviewId).storyteller
+            if (storyteller != null) {
+                val storyEntity = StoryEntity().apply {
+                    this.name = "Twilio_Interview_$interviewId"
+                    this.text = it
+                    this.storyteller = storyteller
+                }
+                storyService.saveEntity(storyEntity)
+                logger.debug("Saved Story for Twilio Callback")
+            } else {
+                logger.error("Unable to find storyteller for interview $interviewId")
+            }
+            null
+        }
     }
 }
