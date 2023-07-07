@@ -20,8 +20,10 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import kotlin.reflect.typeOf
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -47,47 +49,33 @@ class StoryControllerTests {
 
         Mockito.doAnswer {
             assertEquals("l01xt1w8u21s", it.getArgument<String>(0))
-            assertEquals("2010-04-01", it.getArgument<String>(1))
-            assertEquals("ACcc830b11ab88f5dd8ccc1430511c2357", it.getArgument<String>(2))
-            assertEquals("CAb0b939e902e7a396204cd7ba8c85acbb", it.getArgument<String>(3))
-            assertEquals("completed", it.getArgument<String>(4))
-            assertEquals("RE64545a8c9fbe9d6d191c2423c2c993ce", it.getArgument<String>(5))
-            assertEquals("https://api.twilio.com/2010-04-01/Accounts/ACcc830b11ab88f5dd8ccc1430511c2357/Recordings/RE64545a8c9fbe9d6d191c2423c2c993ce", it.getArgument<String>(6))
-            assertEquals("completed", it.getArgument<String>(7))
-            assertEquals("fast", it.getArgument<String>(8))
-            assertEquals("https://api.twilio.com/2010-04-01/Accounts/ACcc830b11ab88f5dd8ccc1430511c2357/Recordings/RE64545a8c9fbe9d6d191c2423c2c993ce/Transcriptions/TR5b7449e016d0716e82afae470221c007", it.getArgument<String>(9))
-            assertEquals("TR5b7449e016d0716e82afae470221c007", it.getArgument<String>(10))
-            assertEquals("completed", it.getArgument<String>(11))
-            assertEquals("One of my fondest memories was going and getting ice cream as a little child with my parents and sick and brothers. My favorite ice cream was from a place called cabins. I would order orange pineapple ice cream, with pineapple topping, with cream, and a churning. It was really enjoyable.", it.getArgument<String>(12))
-            assertEquals("+18443555050", it.getArgument<String>(13))
-            assertEquals("+19788356697", it.getArgument<String>(14))
-            assertEquals("+18443555050", it.getArgument<String>(15))
-            assertEquals("+19788356697", it.getArgument<String>(16))
-            assertEquals("outbound-api", it.getArgument<String>(17))
-            assertEquals("https://webhook.site/ac9cab2b-ff6e-4e88-bf12-eb2bf33cb772/l01xt1w8u21s", it.getArgument<String>(17))
+            val paramMap = it.getArgument<Map<String, String>>(1)
+            assertEquals("2010-04-01", paramMap["ApiVersion"])
+            assertEquals("fast", paramMap["TranscriptionType"])
+            assertEquals("https://api.twilio.com/2010-04-01/Accounts/ACcc830b11ab88f5dd8ccc1430511c2357/Recordings/RE64545a8c9fbe9d6d191c2423c2c993ce/Transcriptions/TR5b7449e016d0716e82afae470221c007", paramMap["TranscriptionUrl"])
+            assertEquals("TR5b7449e016d0716e82afae470221c007", paramMap["TranscriptionSid"])
+            assertEquals("+19788356697", paramMap["Called"])
+            assertEquals("RE64545a8c9fbe9d6d191c2423c2c993ce", paramMap["RecordingSid"])
+            assertEquals("completed", paramMap["CallStatus"])
+            assertEquals("https://api.twilio.com/2010-04-01/Accounts/ACcc830b11ab88f5dd8ccc1430511c2357/Recordings/RE64545a8c9fbe9d6d191c2423c2c993ce", paramMap["RecordingUrl"])
+            assertEquals("+18443555050", paramMap["From"])
+            assertEquals("outbound-api", paramMap["Direction"])
+            assertEquals("https://webhook.site/ac9cab2b-ff6e-4e88-bf12-eb2bf33cb772/l01xt1w8u21s", paramMap["url"])
+            assertEquals("ACcc830b11ab88f5dd8ccc1430511c2357", paramMap["AccountSid"])
+            assertEquals(
+                "One of my fondest memories was going and getting ice cream as a little child with my parents and sick and brothers. My favorite ice cream was from a place called cabins. I would order orange pineapple ice cream, with pineapple topping, with cream, and a churning. It was really enjoyable.",
+                paramMap["TranscriptionText"]
+            )
+            assertEquals("+18443555050", paramMap["Caller"])
+            assertEquals("completed", paramMap["TranscriptionStatus"])
+            assertEquals("CAb0b939e902e7a396204cd7ba8c85acbb", paramMap["CallSid"])
+            assertEquals("+19788356697", paramMap["To"])
             null
         }.`when`(
             twilioCallbackService
         ).handleCallback(
             anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString()
+            anyMap()
         )
 
         val parameters = UriComponentsBuilder.fromUriString(
@@ -111,48 +99,23 @@ class StoryControllerTests {
             "RecordingSource=RecordVerb&RecordingSid=RE64545a8c9fbe9d6d191c2423c2c993ce&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACcc830b11ab88f5dd8ccc1430511c2357%2FRecordings%2FRE64545a8c9fbe9d6d191c2423c2c993ce&RecordingStatus=completed&RecordingChannels=1&ErrorCode=0&CallSid=CAb0b939e902e7a396204cd7ba8c85acbb&RecordingStartTime=Mon%2C%2003%20Jul%202023%2021%3A45%3A28%20%2B0000&AccountSid=ACcc830b11ab88f5dd8ccc1430511c2357&RecordingDuration=21"
 
         Mockito.doAnswer {
-            assertEquals("l01xt1w8u21s", it.getArgument<String>(0))
-            assertNull(it.getArgument<String>(1))
-            assertEquals("ACcc830b11ab88f5dd8ccc1430511c2357", it.getArgument<String>(2))
-            assertEquals("CAb0b939e902e7a396204cd7ba8c85acbb", it.getArgument<String>(3))
-            assertNull(it.getArgument<String>(4))
-            assertEquals("RE64545a8c9fbe9d6d191c2423c2c993ce", it.getArgument<String>(5))
-            assertEquals("https://api.twilio.com/2010-04-01/Accounts/ACcc830b11ab88f5dd8ccc1430511c2357/Recordings/RE64545a8c9fbe9d6d191c2423c2c993ce", it.getArgument<String>(6))
-            assertEquals("completed", it.getArgument<String>(7))
-            assertNull(it.getArgument<String>(8))
-            assertNull(it.getArgument<String>(9))
-            assertNull(it.getArgument<String>(10))
-            assertNull(it.getArgument<String>(11))
-            assertNull(it.getArgument<String>(12))
-            assertNull(it.getArgument<String>(13))
-            assertNull(it.getArgument<String>(14))
-            assertNull(it.getArgument<String>(15))
-            assertNull(it.getArgument<String>(16))
-            assertNull(it.getArgument<String>(17))
-            assertNull(it.getArgument<String>(18))
+            assertEquals("l01xt1w8u21s", it.getArgument(0))
+
+            val paramMap = it.getArgument<Map<String, String>>(1)
+            assertEquals("ACcc830b11ab88f5dd8ccc1430511c2357", paramMap["AccountSid"])
+            assertEquals("CAb0b939e902e7a396204cd7ba8c85acbb", paramMap["CallSid"])
+            assertEquals("RE64545a8c9fbe9d6d191c2423c2c993ce", paramMap["RecordingSid"])
+            assertEquals("https://api.twilio.com/2010-04-01/Accounts/ACcc830b11ab88f5dd8ccc1430511c2357/Recordings/RE64545a8c9fbe9d6d191c2423c2c993ce",
+                paramMap["RecordingUrl"]
+            )
+            assertEquals("completed", paramMap["RecordingStatus"])
+
             null
         }.`when`(
             twilioCallbackService
         ).handleCallback(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any()
+            anyString(),
+            anyMap()
         )
 
         val parameters = UriComponentsBuilder.fromUriString(
@@ -169,25 +132,8 @@ class StoryControllerTests {
 
         Mockito.verify(twilioCallbackService, atLeast(1))
             .handleCallback(
-                eq("l01xt1w8u21s"),
-                eq(null),
-                eq("ACcc830b11ab88f5dd8ccc1430511c2357"),
-                eq("CAb0b939e902e7a396204cd7ba8c85acbb"),
-                eq(null),
-                eq("RE64545a8c9fbe9d6d191c2423c2c993ce"),
-                eq("https://api.twilio.com/2010-04-01/Accounts/ACcc830b11ab88f5dd8ccc1430511c2357/Recordings/RE64545a8c9fbe9d6d191c2423c2c993ce"),
-                eq("completed"),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null)
+                anyString(),
+                anyMap()
             )
     }
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.Instant
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD, uses=[TimeMapper::class, StorytellerEntityMapper::class, ChroniclerEntityMapper::class, InterviewEntityMapper::class])
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses=[TimeMapper::class, StorytellerEntityMapper::class, ChroniclerEntityMapper::class, InterviewEntityMapper::class])
 abstract class ScheduledInterviewEntityMapper: IdMapper() {
 
     @Mapping(source="id", target = "id", ignore = true)

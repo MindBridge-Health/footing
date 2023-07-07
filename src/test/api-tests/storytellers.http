@@ -1,10 +1,11 @@
 ### Health
-GET http://localhost:8080/api/v1/health/
+GET {{host}}/api/v1/health/
 
 ### Post Storyteller
 
-POST http://localhost:8080/api/v1/storytellers/
+POST {{host}}/api/v1/storytellers/
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
   "firstname": "Chris",
@@ -14,8 +15,9 @@ Content-Type: application/json
 > {% client.global.set("cid", response.body) %}
 
 ### PUT (Update) Storyteller 2
-PUT http://localhost:8080/api/v1/storytellers/
+PUT {{host}}/api/v1/storytellers/
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
 "id": "{{cid}}",
@@ -29,11 +31,11 @@ Content-Type: application/json
 }
 
 ### Get the Storyteller
-GET http://localhost:8080/api/v1/storytellers/d1
+GET {{host}}/api/v1/storytellers/d1
 Authorization: Bearer {{JWT}}
 
 ### Delete the Storyteller
-DELETE http://localhost:8080/api/v1/storytellers/{{cid}}
+DELETE {{host}}/api/v1/storytellers/{{cid}}
 
 
 

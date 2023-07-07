@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.env.Environment
+import org.springframework.http.ResponseEntity
 import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.RequestContextHolder
@@ -28,37 +29,14 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
     fun post(
         @PathVariable("id") id: String,
         @RequestBody body: String,
-    ) {
-
-        logger.info("id: $id")
-        logger.info("body: $body")
+    ): ResponseEntity<Unit> {
 
         val request: HttpServletRequest =
             (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes).request
         val xTwilioSignature = request.getHeader("x-twilio-signature")
 
-        logger.info("sig: $xTwilioSignature")
         val parameters = UriComponentsBuilder.fromUriString("?$body").build().queryParams
         val paramMap = decodeParameters(parameters, "UTF-8")
-
-        val apiVersion = paramMap["ApiVersion"]
-        val transcriptionType = paramMap["TranscriptionType"]
-        val transcriptionUrl = paramMap["TranscriptionUrl"]
-        val transcriptionSid = paramMap["TranscriptionSid"]
-        val called = paramMap["Called"]
-        val recordingSid = paramMap["RecordingSid"]
-        val callStatus = paramMap["CallStatus"]
-        val recordingUrl = paramMap["RecordingUrl"]
-        val recordingStatus = paramMap["RecordingStatus"]
-        val from = paramMap["From"]
-        val direction = paramMap["Direction"]
-        val url = paramMap["url"]
-        val accountSid = paramMap["AccountSid"]
-        val transcriptionText = paramMap["TranscriptionText"]
-        val caller =  paramMap["Caller"]
-        val transcriptionStatus = paramMap["TranscriptionStatus"]
-        val callSid = paramMap["CallSid"]
-        val to = paramMap["To"]
 
         var validationUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + request.requestURI
         if("prod" == activeProfile) //App Runner is actually running on http with an https LB in front
@@ -66,29 +44,13 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
             validationUrl = validationUrl.replace("http", "https")
         }
         logger.info("url: $validationUrl")
-        if(!validator.validate(validationUrl, paramMap, xTwilioSignature)) throw Exception("Invalid Signature")
+        if(!validator.validate(validationUrl, paramMap, xTwilioSignature)) {
+            logger.error("Invalid Signature: $xTwilioSignature\"")
+            return ResponseEntity.badRequest().build()
+        }
         
-        twilioCallbackService.handleCallback(
-            id,
-            apiVersion,
-            accountSid,
-            callSid,
-            callStatus,
-            recordingSid,
-            recordingUrl,
-            recordingStatus,
-            transcriptionType,
-            transcriptionUrl,
-            transcriptionSid,
-            transcriptionStatus,
-            transcriptionText,
-            caller,
-            called,
-            from,
-            to,
-            direction,
-            url
-        )
+        twilioCallbackService.handleCallback( id, paramMap)
+        return ResponseEntity.ok().build()
     }
 
     private fun decodeParameters(parameters: MultiValueMap<String, String>, encoding: String): Map<String, String> {
