@@ -42,16 +42,20 @@ class MediaService(
         val storytellerId =
             optionalIq.getOrElse { throw Exception("InterviewQuestion not found. Could not associate with Storyteller") }
                 .interview?.storyteller?.id
-                ?: throw Exception("Unable to find storyteller")
+                ?: throw Exception("Interview Question did not have interview or storyteller associated")
         val storyteller = storytellerService.findStorytellerEntityById(storytellerId).getOrElse { throw Exception("Unable to find storyteller") }
         val mediaEntity = mediaMapper.modelToEntity(media)
         mediaEntity.storyteller = storyteller
         db.save(mediaEntity)
     }
 
+    /**
+     * This function is only meant to update the status that comes from add pipe.
+     * It is not intended to be a general update function.
+     */
     fun updateMediaStatus(media: Media, interviewQuestionId: String) {
-        val mediaEntityOptional = db.findByAltId(Base36Encoder.decodeAltId(media.id!!)) //TODO: Error Checking
-        if (mediaEntityOptional.isPresent) {
+        val mediaEntityOptional =  media.id?.let {db.findByAltId(Base36Encoder.decodeAltId(it)) } ?: Optional.empty()
+        if (mediaEntityOptional.isPresent) { //TODO: Check that storyteller matches or is null e.g. isn't assigned yet
             val mediaEntity = mediaEntityOptional.get()
             val incomingMedia =  mediaMapper.modelToEntity(media)
             mediaEntity.type = incomingMedia.type
@@ -62,8 +66,6 @@ class MediaService(
             associateMediaWithStorytellerFromInterviewQuestion(media, interviewQuestionId)
         }
     }
-
-    //fun associateMediaWithStory(media: Media, id: UUID) = mediaRepository.save(mediaMapper.modelToEntity(media))
 
     fun deleteMedia(id: String) {
         db.deleteById(Base36Encoder.decode(id).toInt())

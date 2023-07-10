@@ -12,6 +12,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.springframework.web.server.ResponseStatusException
 import java.sql.Time
 import java.sql.Timestamp
 import java.time.DayOfWeek
@@ -450,6 +452,54 @@ class InterviewServiceTests {
         assertEquals("i1", savedScheduledInterviewSlot.captured.altId)
         assertEquals("scIn1", savedScheduledInterviewSlot.captured.name)
         assertEquals(getNextPreferredTime(now.toLocalTime(), DayOfWeek.WEDNESDAY, 1), savedScheduledInterviewSlot.captured.scheduledTime)
+
+    }
+
+    @Test
+    fun scheduleInterview_nextPreferredTimeNoAppend_conflictError() {
+        mockInterviewDb.clear(MockkClear.BEFORE)
+        mockStorytellerService.clear(MockkClear.BEFORE)
+        mockQuestionService.clear(MockkClear.BEFORE)
+        mockInterviewQuestionService.clear(MockkClear.BEFORE)
+        mockChroniclerService.clear(MockkClear.BEFORE)
+        mockScheduledInterviewRepository.clear(MockkClear.BEFORE)
+
+        val nowInstant = Instant.ofEpochSecond(Instant.now().epochSecond) //All this cuz we don't care about millis
+        val now = Time(nowInstant.epochSecond * 1000)
+        val storytellerEntity = StorytellerEntity().apply {
+            this.id = 1
+            this.altId = "s1"
+            this.firstname = "fn"
+            this.lastname = "ln"
+            this.email = "em"
+            this.mobile = "98"
+            this.contactMethod = "text"
+            this.preferredTimes = mutableListOf(PreferredTimeEntity().apply {
+                this.id = 1
+                this.time = now
+                this.dayOfWeek = "WEDNESDAY"
+            })
+        }
+
+        val nextWednesday = getNextPreferredTime(now.toLocalTime(), DayOfWeek.WEDNESDAY)
+        every { mockInterviewDb.findByAltId(any()) } answers  { Optional.of(InterviewEntity("Interview1", "i1", null, false, null, storytellerEntity))}
+        every { mockStorytellerService.findStorytellerEntityByAltId(any()) } answers { Optional.of(storytellerEntity) }
+        every { mockScheduledInterviewRepository.findByStorytellerIdAndScheduledTime(any(), any()) } returns ScheduledInterviewEntity()
+        every { mockScheduledInterviewRepository.findAllByStorytellerIdOrderByScheduledTimeAsc(any()) } returns listOf(ScheduledInterviewEntity().apply {
+            this.id = 1
+            this.altId = "si1"
+            this.scheduledTime = nextWednesday
+        })
+
+        val savedScheduledInterviewSlot = slot<ScheduledInterviewEntity>()
+        every { mockScheduledInterviewRepository.save(capture(savedScheduledInterviewSlot)) } answers  {
+            savedScheduledInterviewSlot.captured.id = 1
+            savedScheduledInterviewSlot.captured.altId = "i1"
+            savedScheduledInterviewSlot.captured
+        }
+
+
+        assertThrows<ResponseStatusException> { service.scheduleInterview("1", "1", null, "scIn1", false) }
 
     }
 
