@@ -94,8 +94,8 @@ class StorytellerService(private val db : StorytellerRepository, private val pre
         storytellerEntity: StorytellerEntity
     ): ArrayList<PreferredTimeEntity> {
         val pfes = ArrayList<PreferredTimeEntity>()
-        if (storyteller.preferredTimes != null) {
-            storyteller.preferredTimes!!.forEach {
+        storyteller.preferredTimes?.let {
+            preferredTimes -> preferredTimes.forEach {
                 val existingRecord = preferredTimeRepository.findByStorytellerAndDayOfWeekAndTime(
                     storytellerEntity,
                     it.dayOfWeek.name,
