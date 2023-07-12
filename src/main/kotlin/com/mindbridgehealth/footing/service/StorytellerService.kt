@@ -10,6 +10,7 @@ import com.mindbridgehealth.footing.service.mapper.PreferredTimeMapper
 import com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapper
 import com.mindbridgehealth.footing.service.model.Storyteller
 import com.mindbridgehealth.footing.service.util.Base36Encoder
+import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
@@ -50,14 +51,27 @@ class StorytellerService(private val db : StorytellerRepository, private val pre
     }
 
     fun saveEntity(storyteller: Storyteller, altId: String): StorytellerEntity {
-        if(userDb.findByAltId(altId).isPresent) {
-            throw Exception("User Already Exists")
+
+        val userEntityOptional = userDb.findByAltId(altId)
+        return if(userEntityOptional.isPresent) {
+            val storytellerEntity = storytellerMapper.modelToEntity(storyteller.copy(id = null))
+            val se = userEntityOptional.get() as StorytellerEntity
+            se.altId = altId
+            se.contactMethod = storytellerEntity.contactMethod
+            se.benefactors = storytellerEntity.benefactors
+            se.preferredChronicler = storytellerEntity.preferredChronicler
+            se.onboardingStatus = storytellerEntity.onboardingStatus
+            se.preferredTimes = storytellerEntity.preferredTimes
+            val savedEntity = db.save(se)
+            savePreferredTimeEntities(storyteller, savedEntity)
+            savedEntity
+        } else {
+            val storytellerEntity = storytellerMapper.modelToEntity(storyteller.copy(id = null))
+            storytellerEntity.altId = altId
+            val savedEntity = db.save(storytellerEntity)
+            savePreferredTimeEntities(storyteller, savedEntity)
+            savedEntity
         }
-        val storytellerEntity = storytellerMapper.modelToEntity(storyteller.copy(id = null))
-        storytellerEntity.altId = altId
-        val savedEntity = db.save(storytellerEntity)
-        savePreferredTimeEntities(storyteller, savedEntity)
-        return savedEntity
     }
 
     fun update(storyteller: Storyteller, altId: String): Storyteller {
