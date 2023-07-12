@@ -65,7 +65,7 @@ class StorytellerService(private val db : StorytellerRepository, private val pre
     }
 
     fun updateEntity(storyteller: Storyteller, altId: String): StorytellerEntity {
-        val storedEntity = db.findByAltIdAndIsActive(altId, true).getOrElse { throw Exception() }
+        val storedEntity = db.findByAltIdAndIsActive(Base36Encoder.decodeAltId(altId), true).getOrElse { throw Exception() }
         val storytellerEntity = storytellerMapper.modelToEntity(storyteller)
 
         storytellerEntity.id = storedEntity.id
