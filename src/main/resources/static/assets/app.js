@@ -101,7 +101,7 @@ $('document').ready(function () {
             name: $('#interviewName').val()
         }
         if (!usePreferredTime && formattedDate !== undefined) {
-            qParams.append("time", formattedDate)
+            qParams.time = formattedDate
         }
         const url = `/api/v1/interviews/scheduled/?` + new URLSearchParams(qParams)
         console.log("Calling " + url)
@@ -158,7 +158,10 @@ $('document').ready(function () {
                         'Authorization': `Bearer ${accessToken}`
                     },
                     body: JSON.stringify(storyteller)
-                }).then(response => console.log(response))
+                }).then(response => {
+                    console.log(response)
+                    displayPreferredTimes()
+                })
             })
 
         displayPreferredTimes();
@@ -340,7 +343,7 @@ $('document').ready(function () {
     function displayPreferredTimes() {
         const url = `/api/v1/storytellers/`
         console.log("Calling " + url)
-        $('preferredTimes').empty()
+        $('#preferredTimes').empty()
         fetch(url, {
             method: 'GET',
             headers: {
