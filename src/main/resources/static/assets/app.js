@@ -67,7 +67,7 @@ $('document').ready(function () {
         };
 
         console.log('data' + JSON.stringify(data));
-        fetch('/storytellers/', {
+        fetch('/api/v1/storytellers/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

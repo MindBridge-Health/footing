@@ -38,7 +38,7 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
         @RequestBody storytellerCreateDto: StorytellerCreateDto,
         @AuthenticationPrincipal principal: Jwt
     ): String {
-        val altId = principal.subject
+        val altId = Base36Encoder.encodeAltId(principal.subject)
         return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId).id ?: throw HttpClientErrorException(HttpStatusCode.valueOf(404), "Not Found")
     }
 
