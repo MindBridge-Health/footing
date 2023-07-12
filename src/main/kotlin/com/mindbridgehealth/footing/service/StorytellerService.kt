@@ -52,11 +52,12 @@ class StorytellerService(private val db : StorytellerRepository, private val pre
 
     fun saveEntity(storyteller: Storyteller, altId: String): StorytellerEntity {
 
-        val userEntityOptional = userDb.findByAltId(altId)
+        val decodedAltId = Base36Encoder.decodeAltId(altId)
+        val userEntityOptional = userDb.findByAltId(decodedAltId)
         return if(userEntityOptional.isPresent) {
             val storytellerEntity = storytellerMapper.modelToEntity(storyteller.copy(id = null))
             val se = userEntityOptional.get() as StorytellerEntity
-            se.altId = altId
+            se.altId = decodedAltId
             se.contactMethod = storytellerEntity.contactMethod
             se.benefactors = storytellerEntity.benefactors
             se.preferredChronicler = storytellerEntity.preferredChronicler
@@ -67,7 +68,7 @@ class StorytellerService(private val db : StorytellerRepository, private val pre
             savedEntity
         } else {
             val storytellerEntity = storytellerMapper.modelToEntity(storyteller.copy(id = null))
-            storytellerEntity.altId = altId
+            storytellerEntity.altId = decodedAltId
             val savedEntity = db.save(storytellerEntity)
             savePreferredTimeEntities(storyteller, savedEntity)
             savedEntity
