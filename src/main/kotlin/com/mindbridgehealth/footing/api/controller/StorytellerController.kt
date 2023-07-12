@@ -18,10 +18,10 @@ import java.util.*
 @RequestMapping("/api/v1/storytellers")
 class StorytellerController(val service: StorytellerService, val mapper: StorytellerCreateDtoMapper) {
 
-    @GetMapping("/")
+    @GetMapping("/") //TODO: Self or not to Self?
     fun get(@AuthenticationPrincipal principal: Jwt): Storyteller {
 
-        val optStoryteller =service.findStorytellerById(principal.subject)
+        val optStoryteller =service.findStorytellerById(Base36Encoder.encodeAltId(principal.subject))
         return optStoryteller.orElseGet { null }
     }
     @GetMapping("/{id}")
@@ -45,7 +45,7 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
     @PutMapping("/")
     fun put(@RequestBody storyteller: StorytellerCreateDto, @AuthenticationPrincipal principal: Jwt): Storyteller {
         val altId = principal.subject
-        return service.update(mapper.storytellerCreateDtoToStoryteller(storyteller), altId)
+        return service.update(mapper.storytellerCreateDtoToStoryteller(storyteller), Base36Encoder.encodeAltId(altId))
     }
 
     @PostMapping("/{id}")

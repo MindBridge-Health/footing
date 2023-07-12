@@ -6,6 +6,8 @@ import com.mindbridgehealth.footing.service.InterviewService
 import com.mindbridgehealth.footing.service.model.Interview
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -34,15 +36,25 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
         return returnedInterview.id ?: throw Exception()
     }
 
-    @PostMapping("/storytellers/{storytellerId}/scheduled/{id}")
-    fun assignInterview(@PathVariable storytellerId: String, @PathVariable id: String, @RequestParam time: Instant?, @RequestParam name: String?, @RequestParam append: Boolean = false): String {
+    @PostMapping("/scheduled/")
+    fun scheduleInterview(@AuthenticationPrincipal principal: Jwt, @RequestParam questionId: String, @RequestParam time: Instant?, @RequestParam name: String?, @RequestParam append: Boolean = false): String {
         if(append && time != null) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't specify append and a time")
         }
-        return service.scheduleInterview(storytellerId, id, time, name, append)
+        val storytellerId = Base36Encoder.encodeAltId(principal.subject)
+        val returnedInterview = service.createInterview(name ?: "unnamed", "C1", storytellerId, listOf(questionId))
+        return returnedInterview.id?.let { service.scheduleInterview(storytellerId, it, time, name, append) } ?: "Error"
     }
 
-    @GetMapping("/storytellers/{storytellerId}/scheduled:next/")
+    @PostMapping("/storytellers/{storytellerId}/scheduled/{interviewId}")
+    fun assignInterview(@PathVariable storytellerId: String, @PathVariable interviewId: String, @RequestParam time: Instant?, @RequestParam name: String?, @RequestParam append: Boolean = false): String {
+        if(append && time != null) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't specify append and a time")
+        }
+        return service.scheduleInterview(storytellerId, interviewId, time, name, append)
+    }
+
+    @GetMapping("/storytellers/{storytellerId}/scheduled:next")
     fun getNextAssigned(@PathVariable storytellerId: String): ScheduleInterviewResponseDto? {
         val nextInterview = service.getNextInterview(storytellerId)
         if(nextInterview != null) {
@@ -52,9 +64,17 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
         return null
     }
 
-    @GetMapping("/storytellers/{storytellerId}/scheduled:all/")
-    fun getAllAssigned(@PathVariable storytellerId: String): Collection<ScheduleInterviewResponseDto>? {
-        return service.getAllScheduledInterviews(storytellerId).map { s -> dtoMapper.modelToDto(s) }
+    @GetMapping("/storytellers/{storytellerId}/scheduled:all")
+    fun getAllAssigned(@AuthenticationPrincipal principal: Jwt, @PathVariable storytellerId: String): Collection<ScheduleInterviewResponseDto>? {
+        return if(storytellerId.lowercase() == "self")
+            service.getAllScheduledInterviews(Base36Encoder.encodeAltId(principal.subject)).map { s -> dtoMapper.modelToDto(s) }
+        else
+            service.getAllScheduledInterviews(storytellerId).map { s -> dtoMapper.modelToDto(s) }
+    }
+
+    @GetMapping("/storytellers/scheduled:all")
+    fun getAllAssignedForSelf(@AuthenticationPrincipal principal: Jwt): Collection<ScheduleInterviewResponseDto>? {
+            return service.getAllScheduledInterviews(Base36Encoder.encodeAltId(principal.subject)).map { s -> dtoMapper.modelToDto(s) }
     }
 
     @DeleteMapping("/scheduled/{scheduledInterviewId}")

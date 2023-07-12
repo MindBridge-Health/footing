@@ -2,6 +2,7 @@
     margin-top: 7px
 }
 
+#interview-view,
 #onboarding-view,
 #profile-view,
 #ping-view {
@@ -15,4 +16,19 @@
 
 .panel-body h3 {
     margin-top: 0;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table th, table td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f2f2f2;
 }

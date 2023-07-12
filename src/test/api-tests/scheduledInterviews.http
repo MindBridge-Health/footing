@@ -142,7 +142,7 @@ Authorization: Bearer {{JWT}}
 %}
 
 ### GET All Scheduled Interview should be three TODO Pipe to JS test
-GET {{host}}/api/v1/interviews/storytellers/{{sid}}/scheduled:all/
+GET {{host}}/api/v1/interviews/storytellers/self/scheduled:all
 Authorization: Bearer {{JWT}}
 
 
@@ -160,7 +160,7 @@ Authorization: Bearer {{JWT}}
 %}
 
 ### GET Next Scheduled Interview
-GET {{host}}/api/v1/interviews/storytellers/{{sid}}/scheduled:next/
+GET {{host}}/api/v1/interviews/storytellers/{{sid}}/scheduled:next
 Authorization: Bearer {{JWT}}
 
 

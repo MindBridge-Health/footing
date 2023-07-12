@@ -25,6 +25,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.floor
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class InterviewServiceTests {
 
@@ -500,6 +502,147 @@ class InterviewServiceTests {
 
 
         assertThrows<ResponseStatusException> { service.scheduleInterview("1", "1", null, "scIn1", false) }
+
+    }
+
+    @Test
+    fun getAllScheduledInterviews_oldInterview_excluded() {
+        mockInterviewDb.clear(MockkClear.BEFORE)
+        mockStorytellerService.clear(MockkClear.BEFORE)
+        mockQuestionService.clear(MockkClear.BEFORE)
+        mockInterviewQuestionService.clear(MockkClear.BEFORE)
+        mockChroniclerService.clear(MockkClear.BEFORE)
+        mockScheduledInterviewRepository.clear(MockkClear.BEFORE)
+
+        val nowInstant = Instant.ofEpochSecond(Instant.now().epochSecond) //All this cuz we don't care about millis
+        val now = Time(nowInstant.epochSecond * 1000)
+        val storytellerEntity = StorytellerEntity().apply {
+            this.id = 1
+            this.altId = "s1"
+            this.firstname = "fn"
+            this.lastname = "ln"
+            this.email = "em"
+            this.mobile = "98"
+            this.contactMethod = "text"
+            this.preferredTimes = mutableListOf(PreferredTimeEntity().apply {
+                this.id = 1
+                this.time = now
+                this.dayOfWeek = "WEDNESDAY"
+            })
+        }
+
+        val nextDayOfWeek: ZonedDateTime = ZonedDateTime.now().plusWeeks(-1).with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
+        val lastWednesday = Timestamp.from(nextDayOfWeek.with(now.toLocalTime()).toInstant())
+        every { mockInterviewDb.findByAltId(any()) } answers  { Optional.of(InterviewEntity("Interview1", "i1", null, false, null, storytellerEntity))}
+        every { mockStorytellerService.findStorytellerEntityByAltId(any()) } answers { Optional.of(storytellerEntity) }
+        every { mockScheduledInterviewRepository.findByStorytellerIdAndScheduledTime(any(), any()) } returns ScheduledInterviewEntity()
+        every { mockScheduledInterviewRepository.findAllByStorytellerIdOrderByScheduledTimeAsc(any()) } returns listOf(ScheduledInterviewEntity().apply {
+            this.id = 1
+            this.name = "old interview"
+            this.altId = "si1"
+            this.scheduledTime = lastWednesday
+            this.interview = InterviewEntity("name", "iid1", null, false, null, storytellerEntity)
+        })
+
+        assertEquals(0, service.getAllScheduledInterviews("s1").size)
+
+    }
+
+    @Test
+    fun getNextInterview_onlyOldInterview_null() {
+        mockInterviewDb.clear(MockkClear.BEFORE)
+        mockStorytellerService.clear(MockkClear.BEFORE)
+        mockQuestionService.clear(MockkClear.BEFORE)
+        mockInterviewQuestionService.clear(MockkClear.BEFORE)
+        mockChroniclerService.clear(MockkClear.BEFORE)
+        mockScheduledInterviewRepository.clear(MockkClear.BEFORE)
+
+        val nowInstant = Instant.ofEpochSecond(Instant.now().epochSecond) //All this cuz we don't care about millis
+        val now = Time(nowInstant.epochSecond * 1000)
+        val storytellerEntity = StorytellerEntity().apply {
+            this.id = 1
+            this.altId = "s1"
+            this.firstname = "fn"
+            this.lastname = "ln"
+            this.email = "em"
+            this.mobile = "98"
+            this.contactMethod = "text"
+            this.preferredTimes = mutableListOf(PreferredTimeEntity().apply {
+                this.id = 1
+                this.time = now
+                this.dayOfWeek = "WEDNESDAY"
+            })
+        }
+
+        val nextDayOfWeek: ZonedDateTime = ZonedDateTime.now().plusWeeks(-1).with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
+        val lastWednesday = Timestamp.from(nextDayOfWeek.with(now.toLocalTime()).toInstant())
+        every { mockInterviewDb.findByAltId(any()) } answers  { Optional.of(InterviewEntity("Interview1", "i1", null, false, null, storytellerEntity))}
+        every { mockStorytellerService.findStorytellerEntityByAltId(any()) } answers { Optional.of(storytellerEntity) }
+        every { mockScheduledInterviewRepository.findByStorytellerIdAndScheduledTime(any(), any()) } returns ScheduledInterviewEntity()
+        every { mockScheduledInterviewRepository.findAllByStorytellerIdOrderByScheduledTimeAsc(any()) } returns listOf(ScheduledInterviewEntity().apply {
+            this.id = 1
+            this.name = "old interview"
+            this.altId = "si1"
+            this.scheduledTime = lastWednesday
+            this.interview = InterviewEntity("name", "iid1", null, false, null, storytellerEntity)
+        })
+
+        assertNull(service.getNextInterview("s1"))
+
+    }
+
+    @Test //This isn't a great test as we rely on the DB for ordering of interviews
+    fun getNextInterview_multipleInterviews_soonest() {
+        mockInterviewDb.clear(MockkClear.BEFORE)
+        mockStorytellerService.clear(MockkClear.BEFORE)
+        mockQuestionService.clear(MockkClear.BEFORE)
+        mockInterviewQuestionService.clear(MockkClear.BEFORE)
+        mockChroniclerService.clear(MockkClear.BEFORE)
+        mockScheduledInterviewRepository.clear(MockkClear.BEFORE)
+
+        val nowInstant = Instant.ofEpochSecond(Instant.now().epochSecond) //All this cuz we don't care about millis
+        val now = Time(nowInstant.epochSecond * 1000)
+        val storytellerEntity = StorytellerEntity().apply {
+            this.id = 1
+            this.altId = "s1"
+            this.firstname = "fn"
+            this.lastname = "ln"
+            this.email = "em"
+            this.mobile = "98"
+            this.contactMethod = "text"
+            this.preferredTimes = mutableListOf(PreferredTimeEntity().apply {
+                this.id = 1
+                this.time = now
+                this.dayOfWeek = "WEDNESDAY"
+            })
+        }
+
+        val nextDayOfWeek: ZonedDateTime = ZonedDateTime.now().plusWeeks(1).with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
+        val nextWednesday = Timestamp.from(nextDayOfWeek.with(now.toLocalTime()).toInstant())
+
+
+        every { mockInterviewDb.findByAltId(any()) } answers  { Optional.of(InterviewEntity("Interview1", "i1", null, false, null, storytellerEntity))}
+        every { mockStorytellerService.findStorytellerEntityByAltId(any()) } answers { Optional.of(storytellerEntity) }
+        every { mockScheduledInterviewRepository.findByStorytellerIdAndScheduledTime(any(), any()) } returns ScheduledInterviewEntity()
+        every { mockScheduledInterviewRepository.findAllByStorytellerIdOrderByScheduledTimeAsc(any()) } returns listOf(
+            ScheduledInterviewEntity().apply {
+                this.id = 2
+                this.name = "soonest interview"
+                this.altId = "si2"
+                this.scheduledTime = Timestamp.from(Instant.now().plusSeconds(10))
+                this.interview = InterviewEntity("name", "iid2", null, false, null, storytellerEntity)
+            },
+            ScheduledInterviewEntity().apply {
+            this.id = 1
+            this.name = "interview"
+            this.altId = "si1"
+            this.scheduledTime = nextWednesday
+            this.interview = InterviewEntity("name", "iid1", null, false, null, storytellerEntity)
+        })
+
+        val nextInterview = service.getNextInterview("s1")
+        assertNotNull(nextInterview)
+        assertEquals("soonest interview", nextInterview.name)
 
     }
 

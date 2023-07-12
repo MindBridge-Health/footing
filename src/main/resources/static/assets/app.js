@@ -1,12 +1,5 @@
-$('document').ready(function() {
+$('document').ready(function () {
     const apiUrl = 'http://localhost:8080';
-
-    // load environment variables
-    const envVar = $.parseJSON($.ajax({
-        url:  '/config',
-        dataType: 'json',
-        async: false
-    }).responseText);
 
     // create an Auth0 client
     const webAuth = new auth0.WebAuth({
@@ -26,6 +19,7 @@ $('document').ready(function() {
     const onboardingView = $('#onboarding-view');
     const callPrivateMessage = $('#call-private-message');
     const pingMessage = $('#ping-message');
+    const interviewView = $('#interview-view');
 
     // buttons
     const loginBtn = $('#btn-login');
@@ -37,6 +31,7 @@ $('document').ready(function() {
     const pingPublic = $('#btn-ping-public');
     const pingPrivate = $('#btn-ping-private');
     const pingPrivateScoped = $('#btn-ping-private-scoped');
+    const interviewBtn = $('#btn-interview-view');
 
     // listeners
     pingPublic.click(() => callAPI('/public', false));
@@ -48,18 +43,18 @@ $('document').ready(function() {
     profileViewBtn.click(displayProfile);
     pingViewBtn.click(displayPingView);
     onboardingViewBtn.click(displayOnboardingView);
+    interviewBtn.click(displayInterviewView);
+
 
     let accessToken = null;
     let userProfile = null;
-
-    document.getElementById('myForm').addEventListener('submit', submitForm);
 
     handleAuthentication();
     displayButtons();
 
     // function definitions
 
-    function submitForm(event){
+    $('#myForm').submit((event) => {
         event.preventDefault()
         console.log('Calling Footing');
         const myForm = document.getElementById("myForm");
@@ -82,7 +77,92 @@ $('document').ready(function() {
             body: JSON.stringify(data)
         }).then(response => response.json())
             .then(response => console.log(response))
-    }
+    });
+
+    $('#interview-schedule-form').submit((event) => {
+        event.preventDefault();
+        console.log("Scheduling Interview")
+
+        let usePreferredTime = $('#usePreferredTime').prop('checked');
+        let formattedDate = undefined
+        if (!usePreferredTime) {
+            const datetimeValue = document.getElementById('datePicker').value
+            // Parse the datetime value using the Date object
+            const parsedDate = new Date(datetimeValue);
+            // Format the parsed date in the desired format
+            formattedDate = parsedDate.toISOString().slice(0, 19) + 'Z';
+        }
+        // Get the value from the datetime-local input
+
+
+        const qParams = {
+            append: usePreferredTime,
+            questionId: $('#question').find(":selected").val(),
+            name: $('#interviewName').val()
+        }
+        if (!usePreferredTime && formattedDate !== undefined) {
+            qParams.append("time", formattedDate)
+        }
+        const url = `/api/v1/interviews/scheduled/?` + new URLSearchParams(qParams)
+        console.log("Calling " + url)
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        }).then(response => {
+            console.log(response)
+            displayUpcomingInterviews();
+        })
+    })
+
+    $('#preferred-time-form').submit((event) => {
+        event.preventDefault();
+        console.log("Adding preferred time")
+
+        const datetimeValue = document.getElementById('preferredDatePicker').value
+        // Parse the datetime value using the Date object
+        const parsedDate = new Date(datetimeValue);
+        // Format the parsed date in the desired format
+        const time = formatTime(parsedDate);
+        const dayOfWeek = getDayOfWeek(parsedDate);
+        const pTime = {
+            "time": time,
+            "dayOfWeek": dayOfWeek
+        }
+
+        const url = `/api/v1/storytellers/`
+        console.log("Calling " + url)
+        $('preferredTimes').empty()
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        }).then(response => response.json())
+            .then(storyteller => {
+                if (!storyteller["preferredTimes"]) {
+                    storyteller["preferredTimes"] = [pTime];
+                } else {
+                    storyteller["preferredTimes"].push(pTime)
+                }
+                fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify(storyteller)
+                }).then(response => console.log(response))
+            })
+
+        displayPreferredTimes();
+    })
 
     function logout() {
         // Remove tokens and expiry time from browser
@@ -96,7 +176,7 @@ $('document').ready(function() {
     }
 
     function handleAuthentication() {
-        webAuth.parseHash(function(err, authResult) {
+        webAuth.parseHash(function (err, authResult) {
             if (authResult && authResult.accessToken) {
                 window.location.hash = '';
                 accessToken = authResult.accessToken;
@@ -119,7 +199,7 @@ $('document').ready(function() {
 
         let headers;
         if (secured && accessToken) {
-            headers = { Authorization: 'Bearer ' + accessToken };
+            headers = {Authorization: 'Bearer ' + accessToken};
         }
 
         $.ajax({
@@ -159,13 +239,17 @@ $('document').ready(function() {
         homeView.css('display', 'inline-block');
         profileView.css('display', 'none');
         pingView.css('display', 'none');
+        interviewView.css('display', 'none');
+        onboardingView.css('display', 'none');
     }
 
     function displayProfile() {
         // display the elements
         homeView.css('display', 'none');
         pingView.css('display', 'none');
+        interviewView.css('display', 'none');
         profileView.css('display', 'inline-block');
+        onboardingView.css('display', 'none');
 
         // display profile data
         $('#profile-view .nickname').text(userProfile.nickname);
@@ -177,7 +261,9 @@ $('document').ready(function() {
     function displayPingView() {
         homeView.css('display', 'none');
         profileView.css('display', 'none');
+        interviewView.css('display', 'none');
         pingView.css('display', 'inline-block');
+        onboardingView.css('display', 'none');
     }
 
     function displayOnboardingView() {
@@ -185,5 +271,111 @@ $('document').ready(function() {
         profileView.css('display', 'none');
         pingView.css('display', 'none');
         onboardingView.css('display', 'inline-block');
+        interviewView.css('display', 'none');
     }
+
+
+    function getQuestions() {
+        const headers = {
+            Authorization: 'Bearer ' + accessToken
+        };
+
+        console.log("getting questions")
+
+        fetch("/api/v1/questions/", {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+        }).then(response => response.json())
+            .then(questions => {
+                console.log(questions)
+                $.each(questions, function (index, obj) {
+                    console.log(obj.id + ' ' + obj.text)
+                    const option = $('<option></option>').attr('value', obj.id).text(obj.text);
+                    $('#question').append(option);
+                })
+            })
+    }
+
+    function displayInterviewView() {
+        homeView.css('display', 'none');
+        profileView.css('display', 'none');
+        pingView.css('display', 'none');
+        onboardingView.css('display', 'none');
+        interviewView.css('display', 'inline-block');
+
+        displayUpcomingInterviews();
+        displayPreferredTimes();
+        getQuestions();
+    }
+
+    function displayUpcomingInterviews() {
+
+        const url = `/api/v1/interviews/storytellers/self/scheduled:all`
+        console.log("Calling " + url)
+        $('#upcomingInterviews').empty()
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        }).then(response => response.json())
+            .then(interviews => {
+                console.log(JSON.stringify(interviews))
+                $.each(interviews, function (index, obj) {
+                    const row = $('<tr></tr>');
+                    const nameCell = $('<td></td>').text(obj.name);
+                    const scheduledTimeCell = $('<td></td>').text(obj.scheduledTime);
+                    row.append(nameCell, scheduledTimeCell);
+                    $('#upcomingInterviews').append(row);
+                });
+            })
+    }
+
+    function displayPreferredTimes() {
+        const url = `/api/v1/storytellers/`
+        console.log("Calling " + url)
+        $('preferredTimes').empty()
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        }).then(response => response.json())
+            .then(storyteller => {
+                let preferredTimes = storyteller["preferredTimes"];
+                $.each(preferredTimes, function (index, obj) {
+                    console.log(obj)
+                    console.log(obj.time)
+                    console.log(obj.dayOfWeek)
+                    const row = $('<tr></tr>');
+                    const dayOfWeek = $('<td></td>').text(obj.dayOfWeek);
+                    const time = $('<td></td>').text(obj.time);
+                    row.append(dayOfWeek, time);
+                    $('#preferredTimes').append(row)
+                })
+            })
+    }
+
+// Helper function to format the time as "HH:mm:ss"
+    function formatTime(date) {
+        var hours = String(date.getHours()).padStart(2, '0');
+        var minutes = String(date.getMinutes()).padStart(2, '0');
+        var seconds = String(date.getSeconds()).padStart(2, '0');
+        return hours + ':' + minutes + ':' + seconds;
+    }
+
+// Helper function to get the day of the week as a string
+    function getDayOfWeek(date) {
+        var options = {weekday: 'long'};
+        return date.toLocaleDateString(undefined, options).toUpperCase();
+    }
+
 });

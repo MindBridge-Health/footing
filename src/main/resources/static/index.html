@@ -37,6 +37,10 @@
           Onboard
         </button>
 
+        <button id="btn-interview-view" class="btn btn-primary btn-margin">
+          Interview
+        </button>
+
         <button id="btn-login" class="btn btn-primary btn-margin">
           Log In
         </button>
@@ -93,7 +97,7 @@
     </div>
 
     <div id="onboarding-view">
-      <p>There would be a better onboarding form here</p>
+      <p>Storyteller Registration</p>
       <form id="myForm" name="myForm">
         <label for="firstname">First name:</label><br>
         <input type="text" id="firstname" name="firstname"><br>
@@ -111,6 +115,32 @@
       </form>
     </div>
 
+    <div id="interview-view">
+      <H1>Upcoming Interviews</H1>
+      <table id="upcomingInterviews"><tr><th>Name</th> <th>Scheduled Time</th></tr></table>
+      <H1>Schedule Interview</H1>
+      <form id="interview-schedule-form" name="interview-schedule-form">
+        <label for="question">Question</label>
+        <select id="question" name="question">
+          <option value=""> -- Please Select a question -- </option>
+        </select><br>
+        <label for="interviewName">Name</label>
+        <input type="text" id="interviewName" name="interviewName"><br>
+        <label for="usePreferredTime">Use next available preferred time</label>
+        <input id="usePreferredTime" name="usePreferredTime" type="checkbox"><br>
+        <label for="datePicker">Date and Time of Interview</label>
+        <input id="datePicker" name="datePicker" type="datetime-local"><br>
+        <button type="submit">Schedule Interview</button>
+      </form>
+      <H1>Preferred Times</H1>
+      <table id="preferredTimes"><tr><th>Day of Week</th> <th>Time</th></tr></table>
+      <h2>Add preferred time</h2>
+      <form id="preferred-time-form" name="preferred-time-form">
+        <label for="preferredDatePicker">Date and Time of Interview</label>
+        <input id="preferredDatePicker" name="preferredDatePicker" type="datetime-local"><br>
+        <button type="submit">Add</button>
+      </form>
+    </div>
   </main>
 </div>
 
