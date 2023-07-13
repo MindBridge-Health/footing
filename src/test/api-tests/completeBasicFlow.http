@@ -6,7 +6,8 @@ Authorization: Bearer {{JWT}}
 {
   "firstname": "Chris",
   "lastname": "Dufresne",
-  "contactMethod": "phone"
+  "contactMethod": "phone",
+  "preferredTimes": [{"time": "15:01:00", "dayOfWeek": "SATURDAY"}]
 }
 > {% client.global.set("sid", response.body) %}
 
@@ -54,7 +55,7 @@ GET {{host}}/api/v1/interviews/{{id}}
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
-> {% client.global.set("id", response.body.interviewQuestions[0].id) %}
+> {% client.global.set("iqid", response.body.interviewQuestions[0].id) %}
 
 ###Schedule an interview use preferred time and no append
 POST {{host}}/api/v1/interviews/storytellers/{{sid}}/scheduled/{{id}}?name=noAppend
@@ -66,27 +67,28 @@ Authorization: Bearer {{JWT}}
 %}
 
 ### GET Next Scheduled Interview
-GET {{host}}/api/v1/interviews/storytellers/{{sid}}/scheduled:next/
+GET {{host}}/api/v1/interviews/storytellers/{{sid}}/scheduled:next
 Authorization: Bearer {{JWT}}
 
+
 ### Twilio Recording Complete Callback
-POST {{host}}/api/v1/stories/interviews/ykj1y3hvf9ls
+POST {{host}}/api/v1/stories/interviews/{{id}}
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8
-x-twilio-signature: RJXW9uqKY6KaKWL40X5XfopygLY=
+x-twilio-signature: 4a9R4TlW5uL95KKWdxtBBaLTh5c=
 
 ApiVersion=2010-04-01&TranscriptionType=fast&TranscriptionUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACcc830b11ab88f5dd8ccc1430511c2357%2FRecordings%2FREaa1d4a01e52554a164a868a3cd5c1677%2FTranscriptions%2FTR473788549d75a2ae90fcad60e9ee11da&TranscriptionSid=TR473788549d75a2ae90fcad60e9ee11da&Called=%2B19784965923&RecordingSid=REaa1d4a01e52554a164a868a3cd5c1677&CallStatus=completed&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACcc830b11ab88f5dd8ccc1430511c2357%2FRecordings%2FREaa1d4a01e52554a164a868a3cd5c1677&From=%2B18443555050&Direction=outbound-api&url=https%3A%2F%2Fpb5a9nhpcb.us-east-1.awsapprunner.com%2Fapi%2Fv1%2Fstories%2Finterviews%2Fykj1y3hvf9ls&AccountSid=ACcc830b11ab88f5dd8ccc1430511c2357&TranscriptionText=A+testing+signature+validation.&Caller=%2B18443555050&TranscriptionStatus=completed&CallSid=CA3fed0ac9573c0e7084e5498dbf99fe49&To=%2B19784965923
 
 ### Twilio Transcription Complete Callback
-POST  {{host}}/api/v1/stories/interviews/6o5q6dwigiot
+POST  {{host}}/api/v1/stories/interviews/{{id}}
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8
-x-twilio-signature: boh5nQtk6iotOFheZhdbom7+8uM=
+x-twilio-signature: xRFXkqeVyYo70fNzJuoiOCjQAQI=
 
 ApiVersion=2010-04-01&TranscriptionType=fast&TranscriptionType=fast&TranscriptionUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACcc830b11ab88f5dd8ccc1430511c2357%2FRecordings%2FREa8ebd19366a88e65db928bc8e8df7dfb%2FTranscriptions%2FTR19231296462eee8c0b10b9072424603f&TranscriptionUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACcc830b11ab88f5dd8ccc1430511c2357%2FRecordings%2FREa8ebd19366a88e65db928bc8e8df7dfb%2FTranscriptions%2FTR19231296462eee8c0b10b9072424603f&TranscriptionSid=TR19231296462eee8c0b10b9072424603f&TranscriptionSid=TR19231296462eee8c0b10b9072424603f&Called=%2B19788356697&Called=%2B19788356697&RecordingSid=REa8ebd19366a88e65db928bc8e8df7dfb&RecordingSid=REa8ebd19366a88e65db928bc8e8df7dfb&CallStatus=completed&CallStatus=completed&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACcc830b11ab88f5dd8ccc1430511c2357%2FRecordings%2FREa8ebd19366a88e65db928bc8e8df7dfb&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACcc830b11ab88f5dd8ccc1430511c2357%2FRecordings%2FREa8ebd19366a88e65db928bc8e8df7dfb&From=%2B18443555050&From=%2B18443555050&Direction=outbound-api&Direction=outbound-api&url=https%3A%2F%2Fpb5a9nhpcb.us-east-1.awsapprunner.com%2Fapi%2Fv1%2Fstories%2Finterviews%2Fykj1y3hvf9ls&url=https%3A%2F%2Fpb5a9nhpcb.us-east-1.awsapprunner.com%2Fapi%2Fv1%2Fstories%2Finterviews%2Fykj1y3hvf9ls&AccountSid=ACcc830b11ab88f5dd8ccc1430511c2357&AccountSid=ACcc830b11ab88f5dd8ccc1430511c2357&TranscriptionText=This+is+a+test+we+are+doing+a+test+test+test+test+test.&TranscriptionText=This+is+a+test+we+are+doing+a+test+test+test+test+test.&Caller=%2B18443555050&Caller=%2B18443555050&TranscriptionStatus=completed&TranscriptionStatus=completed&CallSid=CAdbdfe9cf26ad351e2c7bab81686260dc&CallSid=CAdbdfe9cf26ad351e2c7bab81686260dc&To=%2B19788356697%0A%0A%23+2KB+8hcF1PCYH+mekkv0i36ax3Q%3D%0A%23+ApiVersion%3D2010-04-01&To=%2B19788356697
 
 ### AddPipe Video Recorded Callback
 POST {{host}}/api/v1/media/
 Content-Type: application/json
-X-Pipe-Signature: xpFgTJ+/xRkd2MoXpaSkXaKPOw4=
+X-Pipe-Signature: WvmJ+oP7nDp7unKetua6oEHTAh0=
 
 {
   "version":"1.0",
@@ -111,7 +113,7 @@ X-Pipe-Signature: xpFgTJ+/xRkd2MoXpaSkXaKPOw4=
 ### AddPipe Video Converted Callback
 POST {{host}}/api/v1/media/
 Content-Type: application/json
-X-Pipe-Signature: zR8wT8cy8+tOvh3NAwX6cGHZ3MM=
+X-Pipe-Signature: 5WnY6Av0XCwMFKXWbHHiT9/Lg7k=
 
 {
   "version":"1.0",
@@ -135,7 +137,7 @@ X-Pipe-Signature: zR8wT8cy8+tOvh3NAwX6cGHZ3MM=
 ### AddPipe Video Copied Callback
 POST {{host}}/api/v1/media/
 Content-Type: application/json
-X-Pipe-Signature: 6g04T9Y+8HZgd+dIuh8QvQXG3sM=
+X-Pipe-Signature: GxbDXHILCIXi7u7MllofnH+Q6QQ=
 
 {
   "version":"1.0",

@@ -12,7 +12,7 @@ import java.util.Optional
 class StoryService(private val db: StoryRepository, private val storyMapper: StoryEntityMapper) {
 
     fun findStoryById(id: String): Optional<Story> {
-        val optionalStory = db.findById(Base36Encoder.decode(id).toInt())
+        val optionalStory = db.findById(id.toInt())
         if(optionalStory.isPresent) {
             return Optional.of(storyMapper.entityToModel(optionalStory.get()))
         }

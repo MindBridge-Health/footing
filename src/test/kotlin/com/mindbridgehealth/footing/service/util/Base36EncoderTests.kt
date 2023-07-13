@@ -10,11 +10,11 @@ class Base36EncoderTests {
     fun encodeSingleDigit_decode_getBackValue() {
         val originalString = "1"
 
-        val encodedString = Base36Encoder.encode(originalString)
+        val encodedString = Base36Encoder.encodeAltId(originalString)
         println(encodedString)
         assertNotEquals(originalString, encodedString)
 
-        val decodedString = Base36Encoder.decode(encodedString)
+        val decodedString = Base36Encoder.decodeAltId(encodedString)
         assertEquals(originalString, decodedString)
         println()
     }
@@ -23,11 +23,11 @@ class Base36EncoderTests {
     fun encodeDoubleDigit_decode_getBackValue() {
         val originalString = "1000"
 
-        val encodedString = Base36Encoder.encode(originalString)
+        val encodedString = Base36Encoder.encodeAltId(originalString)
         println(encodedString)
         assertNotEquals(originalString, encodedString)
 
-        val decodedString = Base36Encoder.decode(encodedString)
+        val decodedString = Base36Encoder.decodeAltId(encodedString)
         assertEquals(originalString, decodedString)
         println()
     }
@@ -36,11 +36,11 @@ class Base36EncoderTests {
     fun encodeMaxInt_decode_getBackValue() {
         val originalString = Int.MAX_VALUE.toString()
 
-        val encodedString = Base36Encoder.encode(originalString)
+        val encodedString = Base36Encoder.encodeAltId(originalString)
         println(encodedString)
         assertNotEquals(originalString, encodedString)
 
-        val decodedString = Base36Encoder.decode(encodedString)
+        val decodedString = Base36Encoder.decodeAltId(encodedString)
         assertEquals(originalString, decodedString)
         println()
     }
@@ -49,11 +49,11 @@ class Base36EncoderTests {
     fun encodeIdProvider_decode_getBackValue() {
         val originalString = "google-oauth2"
 
-        val encodedString = Base36Encoder.encode(originalString)
+        val encodedString = Base36Encoder.encodeAltId(originalString)
         println(encodedString)
         assertNotEquals(originalString, encodedString)
 
-        val decodedString = Base36Encoder.decode(encodedString)
+        val decodedString = Base36Encoder.decodeAltId(encodedString)
         assertEquals(originalString, decodedString)
         println(decodedString)
     }

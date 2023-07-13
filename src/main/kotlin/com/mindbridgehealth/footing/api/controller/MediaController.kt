@@ -27,11 +27,11 @@ import javax.crypto.spec.SecretKeySpec
 class MediaController(val mediaService: MediaService, val applicationProperties: ApplicationProperties) {
 
     @GetMapping("/{id}")
-    fun get(@PathVariable id: String) = mediaService.findMediaById(id)
+    fun get(@PathVariable id: String) = mediaService.findMediaById(Base36Encoder.decodeAltId(id))
 
     @GetMapping("/storytellers/{id}")
     fun getMediaForStoryteller(@PathVariable id: String): Collection<Media> {
-        return mediaService.findMediaByStorytellerId(id)
+        return mediaService.findMediaByStorytellerId(Base36Encoder.decodeAltId(id))
     }
     @PostMapping("/storytellers/{id}")
     fun postToStoryteller(@RequestBody media: Media, @PathVariable id: String): String = mediaService.associateMediaWithStoryteller(media, id)
@@ -78,7 +78,7 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
 
     private fun handleEventCommon(event: AddPipeEvent, id: String, payload: String, videoName: String, location: URL?) {
         val payloadMap: Map<String, String> = deserializeKeyValuePairs(payload)
-        val interviewQuestionId = payloadMap["interview_question_id"] ?: throw Exception("Missing interview_question_id from payload")
+        val interviewQuestionId = Base36Encoder.decodeAltId(payloadMap["interview_question_id"] ?: throw Exception("Missing interview_question_id from payload"))
         val media = Media(Base36Encoder.encodeAltId("AddPipe|$id"), videoName, emptyList(), location?.toURI(), "type", null, null, event.event)
         mediaService.updateMediaStatus(media, interviewQuestionId)
     }
@@ -94,7 +94,7 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
 
     @DeleteMapping("/{id}")
     fun deleteMedia(@PathVariable id: String) {
-        mediaService.deleteMedia(id)    }
+        mediaService.deleteMedia(Base36Encoder.decodeAltId(id))    }
 
     /**
      * Generates a base64-encoded signature for a Pipe webhook request.

@@ -27,12 +27,12 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
 
     @GetMapping("/{id}")
     fun get(@PathVariable id: String): Interview {
-        return service.findInterviewById(id)
+        return service.findInterviewById(Base36Encoder.decodeAltId(id))
     }
 
     @PostMapping("/storytellers/{storytellerId}/chroniclers/{chroniclerId}")
     fun post(@RequestBody interview: Interview, @PathVariable(name = "storytellerId") sid: String, @PathVariable(name = "chroniclerId") cid: String): String {
-        val returnedInterview = service.createInterview(interview.name, cid, sid, interview.interviewQuestions?.map { iq -> iq.id!! }?.toList())
+        val returnedInterview = service.createInterview(interview.name, Base36Encoder.decodeAltId(cid), Base36Encoder.decodeAltId(sid), interview.interviewQuestions?.map { iq -> Base36Encoder.decodeAltId(iq.id!!) }?.toList())
         return returnedInterview.id ?: throw Exception()
     }
 
@@ -41,7 +41,7 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
         if(append && time != null) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't specify append and a time")
         }
-        val storytellerId = Base36Encoder.encodeAltId(principal.subject)
+        val storytellerId = principal.subject
         val returnedInterview = service.createInterview(name ?: "unnamed", "C1", storytellerId, listOf(questionId))
         return returnedInterview.id?.let { service.scheduleInterview(storytellerId, it, time, name, append) } ?: "Error"
     }
@@ -51,12 +51,12 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
         if(append && time != null) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't specify append and a time")
         }
-        return service.scheduleInterview(storytellerId, interviewId, time, name, append)
+        return Base36Encoder.encodeAltId(service.scheduleInterview(Base36Encoder.decodeAltId(storytellerId), Base36Encoder.decodeAltId(interviewId), time, name, append))
     }
 
     @GetMapping("/storytellers/{storytellerId}/scheduled:next")
     fun getNextAssigned(@PathVariable storytellerId: String): ScheduleInterviewResponseDto? {
-        val nextInterview = service.getNextInterview(storytellerId)
+        val nextInterview = service.getNextInterview(Base36Encoder.decodeAltId(storytellerId))
         if(nextInterview != null) {
             return dtoMapper.modelToDto(nextInterview)
         }
@@ -67,22 +67,22 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
     @GetMapping("/storytellers/{storytellerId}/scheduled:all")
     fun getAllAssigned(@AuthenticationPrincipal principal: Jwt, @PathVariable storytellerId: String): Collection<ScheduleInterviewResponseDto>? {
         return if(storytellerId.lowercase() == "self")
-            service.getAllScheduledInterviews(Base36Encoder.encodeAltId(principal.subject)).map { s -> dtoMapper.modelToDto(s) }
+            service.getAllScheduledInterviews(principal.subject).map { s -> dtoMapper.modelToDto(s) }
         else
-            service.getAllScheduledInterviews(storytellerId).map { s -> dtoMapper.modelToDto(s) }
+            service.getAllScheduledInterviews(Base36Encoder.decodeAltId(storytellerId)).map { s -> dtoMapper.modelToDto(s) }
     }
 
     @GetMapping("/storytellers/scheduled:all")
     fun getAllAssignedForSelf(@AuthenticationPrincipal principal: Jwt): Collection<ScheduleInterviewResponseDto>? {
-            return service.getAllScheduledInterviews(Base36Encoder.encodeAltId(principal.subject)).map { s -> dtoMapper.modelToDto(s) }
+            return service.getAllScheduledInterviews(principal.subject).map { s -> dtoMapper.modelToDto(s) }
     }
 
     @DeleteMapping("/scheduled/{scheduledInterviewId}")
     fun deleteScheduledInterview(@PathVariable scheduledInterviewId: String) {
-        service.deleteScheduledInterview(scheduledInterviewId)
+        service.deleteScheduledInterview(Base36Encoder.decodeAltId(scheduledInterviewId))
     }
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: String) {
-        service.deleteInterview(id)
+        service.deleteInterview(Base36Encoder.decodeAltId(id))
     }
 }
