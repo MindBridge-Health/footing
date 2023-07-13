@@ -60,7 +60,7 @@ Content-Type: application/json
 ### AddPipe Video Recorded Callback
 POST {{host}}/api/v1/media/
 Content-Type: application/json
-X-Pipe-Signature: xpFgTJ+/xRkd2MoXpaSkXaKPOw4=
+X-Pipe-Signature: 8The6gRez4Po6p0i/fkkC/Vf1SE=
 
 {
   "version":"1.0",
@@ -85,7 +85,7 @@ X-Pipe-Signature: xpFgTJ+/xRkd2MoXpaSkXaKPOw4=
 ### AddPipe Video Converted Callback
 POST {{host}}/api/v1/media/
 Content-Type: application/json
-X-Pipe-Signature: zR8wT8cy8+tOvh3NAwX6cGHZ3MM=
+X-Pipe-Signature: FT/l2VF++s0fxbHjR6qUEY15aR0=
 
 {
   "version":"1.0",
@@ -109,7 +109,7 @@ X-Pipe-Signature: zR8wT8cy8+tOvh3NAwX6cGHZ3MM=
 ### AddPipe Video Copied Callback
 POST {{host}}/api/v1/media/
 Content-Type: application/json
-X-Pipe-Signature: 6g04T9Y+8HZgd+dIuh8QvQXG3sM=
+X-Pipe-Signature: kf0yzAk5qPynlr6p7GwQv4i56K0=
 
 {
   "version":"1.0",

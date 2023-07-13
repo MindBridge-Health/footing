@@ -23,7 +23,7 @@ import java.util.UUID
 class ChroniclerController(val chroniclerService: ChroniclerService, val mapper: ChroniclerEntityMapper) {
 
     @GetMapping("/{id}")
-    fun get(@PathVariable id: String): Chronicler = chroniclerService.findChroniclerById(id).orElseThrow()
+    fun get(@PathVariable id: String): Chronicler = chroniclerService.findChroniclerById(Base36Encoder.decodeAltId(id)).orElseThrow()
 
     @PostMapping("/")
     fun post(
@@ -46,6 +46,6 @@ class ChroniclerController(val chroniclerService: ChroniclerService, val mapper:
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: String) {
-        chroniclerService.deactivateChronicler(id)
+        chroniclerService.deactivateChronicler(Base36Encoder.decodeAltId(id))
     }
 }

@@ -18,8 +18,7 @@ class InterviewQuestionService(private val interviewQuestionRepository: Intervie
     }
 
     fun findByAltId(altId: String): Optional<InterviewQuestion> {
-        val id = Base36Encoder.decode(altId).toInt()
-        val interviewQuestionEntity = interviewQuestionRepository.findById(id)
+        val interviewQuestionEntity = interviewQuestionRepository.findById(altId.toInt())
         if(interviewQuestionEntity.isEmpty) {
             return Optional.empty()
         }

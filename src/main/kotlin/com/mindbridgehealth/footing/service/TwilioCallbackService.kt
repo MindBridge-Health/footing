@@ -1,13 +1,10 @@
 package com.mindbridgehealth.footing.service
 
-import com.mindbridgehealth.footing.api.controller.StoryController
 import com.mindbridgehealth.footing.data.repository.TwilioDataRepository
 import com.mindbridgehealth.footing.data.repository.TwilioStatusRepository
 import com.mindbridgehealth.footing.service.entity.StoryEntity
 import com.mindbridgehealth.footing.service.entity.TwilioData
 import com.mindbridgehealth.footing.service.entity.TwilioStatus
-import com.mindbridgehealth.footing.service.model.Story
-import com.mindbridgehealth.footing.service.model.Tag
 import net.minidev.json.JSONObject
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service

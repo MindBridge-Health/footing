@@ -15,7 +15,7 @@ import kotlin.jvm.optionals.getOrElse
 class ChroniclerService(private val db: ChroniclerRepository, private val chroniclerEntityMapper: ChroniclerEntityMapper, private val userDb: MindBridgeUserRepository) {
     
     fun findChroniclerById(id: String): Optional<Chronicler> {
-        val optionalChroniclerEntity = db.findByAltIdAndIsActive(Base36Encoder.decodeAltId(id), true)
+        val optionalChroniclerEntity = db.findByAltIdAndIsActive(id, true)
         if(optionalChroniclerEntity.isPresent){
             return Optional.of(chroniclerEntityMapper.entityToModel(optionalChroniclerEntity.get()))
         }
@@ -23,7 +23,7 @@ class ChroniclerService(private val db: ChroniclerRepository, private val chroni
     }
 
     fun findChroniclerEntityById(id: String): Optional<ChroniclerEntity> {
-        return db.findByAltIdAndIsActive(Base36Encoder.decodeAltId(id), true)
+        return db.findByAltIdAndIsActive(id, true)
     }
 
     fun save(chronicler: Chronicler, altId: String): Chronicler {
@@ -45,7 +45,7 @@ class ChroniclerService(private val db: ChroniclerRepository, private val chroni
     }
 
     fun deactivateChronicler(id: String) {
-        val chronicler = db.findById(Base36Encoder.decode(id).toInt()).getOrElse { throw Exception() } //TODO Fix altId
+        val chronicler = db.findById(id.toInt()).getOrElse { throw Exception() } //TODO Fix altId
         chronicler.isActive = false
         db.save(chronicler)
     }

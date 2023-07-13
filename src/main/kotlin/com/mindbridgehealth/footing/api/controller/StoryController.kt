@@ -2,6 +2,7 @@ package com.mindbridgehealth.footing.api.controller
 
 import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.service.TwilioCallbackService
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.twilio.security.RequestValidator
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
@@ -49,7 +50,7 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
             return ResponseEntity.badRequest().build()
         }
         
-        twilioCallbackService.handleCallback( id, paramMap)
+        twilioCallbackService.handleCallback( Base36Encoder.decodeAltId(id), paramMap)
         return ResponseEntity.ok().build()
     }
 

@@ -26,11 +26,11 @@ abstract class IdMapper {
 
     @AfterMapping
     fun entityToModelId(source: ResourceEntity, @MappingTarget target: Resource) {
-        target.id = Base36Encoder.encode(source.id.toString())
+        target.id = Base36Encoder.encodeAltId(source.id.toString())
         target.id = if(source.altId != null)
-            Base36Encoder.encode(source.altId.toString())
+            Base36Encoder.encodeAltId(source.altId.toString())
         else
-            Base36Encoder.encode(source.id.toString())
+            Base36Encoder.encodeAltId(source.id.toString())
     }
 
     @AfterMapping

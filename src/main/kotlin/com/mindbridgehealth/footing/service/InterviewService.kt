@@ -33,11 +33,11 @@ class InterviewService(
 ) {
 
     fun findInterviewById(interviewId: String): Interview {
-        return interviewMapper.entityToModel(db.findByAltId(Base36Encoder.decode(interviewId)).orElseThrow()) //TODO: Footing-2 Revisit exception
+        return interviewMapper.entityToModel(db.findByAltId(interviewId).orElseThrow()) //TODO: Footing-2 Revisit exception
     }
 
     fun findInterviewEntityByAltId(interviewId: String): InterviewEntity {
-        return db.findByAltId(Base36Encoder.decode(interviewId)).orElseThrow() //TODO: Footing-2 Revisit exception
+        return db.findByAltId(interviewId).orElseThrow() //TODO: Footing-2 Revisit exception
     }
 
     fun findByStorytellerId(storytellerId: String): Collection<Interview> {
@@ -88,7 +88,7 @@ class InterviewService(
         val interview = findInterviewEntityByAltId(interviewId);
 
         val scheduledTime: Instant = if(time == null ) {
-            if((storyteller.preferredTimes?.first()?.time == null || storyteller.preferredTimes?.first()?.dayOfWeek == null)) {
+            if(storyteller.preferredTimes == null || storyteller.preferredTimes?.first()?.time == null || storyteller.preferredTimes?.first()?.dayOfWeek == null) {
                 throw Exception("No specified time or preferred time set")
             }
             if(append)
@@ -111,12 +111,12 @@ class InterviewService(
             )
         }
         if(existingInterview != null) {
-            throw ResponseStatusException(HttpStatus.CONFLICT, "Duplicate Scheduled Interview ID: " + Base36Encoder.encode(existingInterview.id.toString()))
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Duplicate Scheduled Interview ID: " + Base36Encoder.encodeAltId(existingInterview.id.toString()))
         }
 
         val scheduledInterviewEntity = scheduledInterviewEntityMapper.modelToEntity(scheduledInterview)
         scheduledInterviewEntity.interview?.id = interview.id
-        return Base36Encoder.encode(scheduledInterviewRepository.save(scheduledInterviewEntity).id.toString())
+        return scheduledInterviewRepository.save(scheduledInterviewEntity).id.toString()
     }
 
     private fun getNextPreferredTime(preferredTime: PreferredTimeEntity): ZonedDateTime {
@@ -191,10 +191,10 @@ class InterviewService(
     }
 
     fun deleteScheduledInterview(scheduledInterviewId: String) {
-        return scheduledInterviewRepository.deleteById(Base36Encoder.decode(scheduledInterviewId).toInt())
+        return scheduledInterviewRepository.deleteById(scheduledInterviewId.toInt())
     }
 
     //TODO: What happens if you delete an interview that was scheduled?
-    fun deleteInterview(id: String) = db.deleteById(Base36Encoder.decode(id).toInt())
+    fun deleteInterview(id: String) = db.deleteById(id.toInt())
 
 }

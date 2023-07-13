@@ -3,6 +3,7 @@ package com.mindbridgehealth.footing.api.controller
 import com.mindbridgehealth.footing.api.dto.QuestionResponseDto
 import com.mindbridgehealth.footing.service.QuestionService
 import com.mindbridgehealth.footing.service.model.Question
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -14,7 +15,7 @@ class QuestionController(val service: QuestionService) {
     @GetMapping("/{id}")
 
     fun get(@PathVariable id: String): Question {
-        return service.findQuestionByAltId(id).orElseThrow()
+        return service.findQuestionByAltId(Base36Encoder.decodeAltId(id)).orElseThrow()
     }
 
     @GetMapping("/")
@@ -28,9 +29,9 @@ class QuestionController(val service: QuestionService) {
 
     @PutMapping("/{id}")
     fun put(@RequestBody question: Question, @PathVariable id: String): Question  {
-        return service.update(id, question)
+        return service.update(Base36Encoder.decodeAltId(id), question)
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: String) = service.delete(id)
+    fun delete(@PathVariable id: String) = service.delete(Base36Encoder.decodeAltId(id))
 }

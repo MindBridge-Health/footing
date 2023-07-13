@@ -7,31 +7,21 @@ import com.mindbridgehealth.footing.service.model.Question
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.stereotype.Service
 import java.util.*
+import kotlin.jvm.optionals.getOrElse
 
 @Service
 class QuestionService(private val db: QuestionRepository, private val questionMapper: QuestionEntityMapper) {
 
-    fun findQuestionById(id: String): Optional<Question> {
-        val optionalQuestion = db.findById(Base36Encoder.decode(id).toInt())
-        if(optionalQuestion.isPresent){
-            return Optional.of(questionMapper.entityToModel(optionalQuestion.get()))
-        }
-        return Optional.empty()
-    }
-
     fun findQuestionByAltId(altId: String): Optional<Question> {
-        val optionalQuestion = db.findByAltId(Base36Encoder.decode(altId))
+        val optionalQuestion = db.findByAltId(altId)
         if(optionalQuestion.isPresent){
             return Optional.of(questionMapper.entityToModel(optionalQuestion.get()))
         }
         return Optional.empty()
-    }
-    fun findQuestionEntityById(id: String): Optional<QuestionEntity> {
-        return db.findById(Base36Encoder.decode(id).toInt())
     }
 
     fun findQuestionEntityByAltId(altId: String): Optional<QuestionEntity> {
-        return db.findByAltId(Base36Encoder.decode(altId))
+        return db.findByAltId(altId)
     }
     fun getAllQuestions(): Collection<Question> {
         return db.findAll().map { q -> questionMapper.entityToModel(q) }
@@ -45,11 +35,14 @@ class QuestionService(private val db: QuestionRepository, private val questionMa
     }
 
     fun update(id: String, question: Question): Question {
-        findQuestionById(Base36Encoder.decode(id))
+        val storedEntity = findQuestionEntityByAltId(id).getOrElse { throw Exception("Could not find Question to update") }
         val questionEntity = questionMapper.modelToEntity(question)
-        questionEntity.id = Base36Encoder.decode(id).toInt()
+        storedEntity.name = questionEntity.name
+        storedEntity.text = questionEntity.text
+        storedEntity.tags = questionEntity.tags
+        storedEntity.isCustom = questionEntity.isCustom
         return questionMapper.entityToModel(db.save(questionEntity))
     }
 
-    fun delete(id: String) = db.deleteById(Base36Encoder.decode(id).toInt())
+    fun delete(id: String) = db.deleteById(id.toInt())
 }

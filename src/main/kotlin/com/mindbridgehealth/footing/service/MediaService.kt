@@ -3,7 +3,6 @@ package com.mindbridgehealth.footing.service
 import com.mindbridgehealth.footing.data.repository.MediaRepository
 import com.mindbridgehealth.footing.service.mapper.MediaEntityMapper
 import com.mindbridgehealth.footing.service.model.Media
-import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.stereotype.Service
 import java.util.Optional
 import kotlin.jvm.optionals.getOrElse
@@ -14,10 +13,10 @@ class MediaService(
     private val mediaMapper: MediaEntityMapper,
     private val storytellerService: StorytellerService,
     private val interviewQuestionService: InterviewQuestionService
-) { //, private val storyService: StoryService) {
+) {
 
     fun findMediaById(id: String): Optional<Media> {
-        val optionalMedia = db.findById(Base36Encoder.decode(id).toInt())
+        val optionalMedia = db.findById(id.toInt())
         if (optionalMedia.isPresent) {
             return Optional.of(mediaMapper.entityToModel(optionalMedia.get()))
         }
@@ -30,14 +29,14 @@ class MediaService(
     }
 
     fun associateMediaWithStoryteller(media: Media, storytellerId: String): String {
-        val storyteller = storytellerService.findStorytellerById(storytellerId)
+        val storyteller = storytellerService.findStorytellerByAltId(storytellerId)
             .getOrElse { throw Exception("Could not find storyteller; unable to associate media") }
         val newMedia = media.copy(storyteller = storyteller)
         return db.save(mediaMapper.modelToEntity(newMedia)).id.toString()
     }
 
     fun associateMediaWithStorytellerFromInterviewQuestion(media: Media, interviewQuestionId: String) {
-        val altId = Base36Encoder.decodeAltId(interviewQuestionId)
+        val altId = interviewQuestionId
         val optionalIq = interviewQuestionService.findEntityByAltId(altId)
         val storytellerId =
             optionalIq.getOrElse { throw Exception("InterviewQuestion not found. Could not associate with Storyteller") }
@@ -54,10 +53,10 @@ class MediaService(
      * It is not intended to be a general update function.
      */
     fun updateMediaStatus(media: Media, interviewQuestionId: String) {
-        val mediaEntityOptional =  media.id?.let {db.findByAltId(Base36Encoder.decodeAltId(it)) } ?: Optional.empty()
+        val incomingMedia =  mediaMapper.modelToEntity(media)
+        val mediaEntityOptional =  incomingMedia.altId?.let {db.findByAltId(it) } ?: Optional.empty()
         if (mediaEntityOptional.isPresent) { //TODO: Check that storyteller matches or is null e.g. isn't assigned yet
             val mediaEntity = mediaEntityOptional.get()
-            val incomingMedia =  mediaMapper.modelToEntity(media)
             mediaEntity.type = incomingMedia.type
             mediaEntity.location = incomingMedia.location
             mediaEntity.state = incomingMedia.state
@@ -68,6 +67,6 @@ class MediaService(
     }
 
     fun deleteMedia(id: String) {
-        db.deleteById(Base36Encoder.decode(id).toInt())
+        db.deleteById(id.toInt())
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
-import org.springframework.web.client.HttpStatusCodeException
 import java.util.*
 
 @RestController
@@ -20,16 +19,12 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
 
     @GetMapping("/") //TODO: Self or not to Self?
     fun get(@AuthenticationPrincipal principal: Jwt): Storyteller {
-
-        val optStoryteller =service.findStorytellerById(Base36Encoder.encodeAltId(principal.subject))
+        val optStoryteller = service.findStorytellerByAltId(principal.subject)
         return optStoryteller.orElseGet { null }
     }
     @GetMapping("/{id}")
     fun get(@PathVariable id: String, @AuthenticationPrincipal principal: Jwt): Storyteller {
-
-       val optStoryteller = service.findStorytellerById(
-            Base36Encoder.decodeAltId(id))
-
+       val optStoryteller = service.findStorytellerByAltId(Base36Encoder.decodeAltId(id))
         return optStoryteller.orElseGet { null }
     }
 
@@ -38,14 +33,14 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
         @RequestBody storytellerCreateDto: StorytellerCreateDto,
         @AuthenticationPrincipal principal: Jwt
     ): String {
-        val altId = Base36Encoder.encodeAltId(principal.subject)
+        val altId = principal.subject
         return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId).id ?: throw HttpClientErrorException(HttpStatusCode.valueOf(404), "Not Found")
     }
 
     @PutMapping("/")
     fun put(@RequestBody storyteller: StorytellerCreateDto, @AuthenticationPrincipal principal: Jwt): Storyteller {
         val altId = principal.subject
-        return service.update(mapper.storytellerCreateDtoToStoryteller(storyteller), Base36Encoder.encodeAltId(altId))
+        return service.update(mapper.storytellerCreateDtoToStoryteller(storyteller), altId)
     }
 
     @PostMapping("/{id}")

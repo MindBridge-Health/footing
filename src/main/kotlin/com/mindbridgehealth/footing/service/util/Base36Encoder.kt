@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets
 
 object Base36Encoder {
 
-    fun encode(string: String): String {
+    private fun encode(string: String): String {
         if (string.length < 5) {
             string.padStart(4, '0')
         }
@@ -14,7 +14,7 @@ object Base36Encoder {
         return BigInteger(1, bytes).toString(36).reversed()
     }
 
-    fun decode(string: String): String {
+    private fun decode(string: String): String {
         val bytes = BigInteger(string.reversed(), 36).toByteArray()
         val zeroPrefixLength = zeroPrefixLength(bytes)
         return String(bytes, zeroPrefixLength, bytes.size - zeroPrefixLength)
@@ -27,6 +27,9 @@ object Base36Encoder {
         return externalId
     }
 
+    /**
+     * Controllers should decode altIds before passing them to services
+     */
     fun decodeAltId(externalId: String): String {
         val idTokens = externalId.split('.')
         val idProvider = decode(idTokens[0])
