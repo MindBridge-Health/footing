@@ -15,10 +15,7 @@ $('document').ready(function () {
     // sections and buttons
     const homeView = $('#home-view');
     const profileView = $('#profile-view');
-    const pingView = $('#ping-view');
     const onboardingView = $('#onboarding-view');
-    const callPrivateMessage = $('#call-private-message');
-    const pingMessage = $('#ping-message');
     const interviewView = $('#interview-view');
 
     // buttons
@@ -26,22 +23,14 @@ $('document').ready(function () {
     const logoutBtn = $('#btn-logout');
     const homeViewBtn = $('#btn-home-view');
     const profileViewBtn = $('#btn-profile-view');
-    const pingViewBtn = $('#btn-ping-view');
     const onboardingViewBtn = $('#btn-onboarding-view');
-    const pingPublic = $('#btn-ping-public');
-    const pingPrivate = $('#btn-ping-private');
-    const pingPrivateScoped = $('#btn-ping-private-scoped');
     const interviewBtn = $('#btn-interview-view');
 
     // listeners
-    pingPublic.click(() => callAPI('/public', false));
-    pingPrivate.click(() => callAPI('/private', true));
-    pingPrivateScoped.click(() => callAPI('/storytellers/qihq1bu4i1h08d1cmi2m.113891357537506632609', true));
     loginBtn.click(() => webAuth.authorize());
     logoutBtn.click(logout);
     homeViewBtn.click(displayHome);
     profileViewBtn.click(displayProfile);
-    pingViewBtn.click(displayPingView);
     onboardingViewBtn.click(displayOnboardingView);
     interviewBtn.click(displayInterviewView);
 
@@ -54,19 +43,18 @@ $('document').ready(function () {
 
     // function definitions
 
-    $('#myForm').submit((event) => {
+    $('#onboardingForm').submit((event) => {
         event.preventDefault()
-        console.log('Calling Footing');
-        const myForm = document.getElementById("myForm");
+        const onboardingForm = document.getElementById("onboardingForm");
 
         const data = {
-            firstname: myForm.firstname.value,
-            lastname: myForm.lastname.value,
-            mobile: myForm.mobile.value,
-            contactMethod: myForm.contactMethod.value
+            firstname: onboardingForm.firstname.value,
+            lastname: onboardingForm.lastname.value,
+            mobile: onboardingForm.mobile.value,
+            contactMethod: onboardingForm.contactMethod.value
         };
 
-        console.log('data' + JSON.stringify(data));
+        const status = $('.container h4');
         fetch('/api/v1/storytellers/', {
             method: 'POST',
             headers: {
@@ -75,8 +63,20 @@ $('document').ready(function () {
                 'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify(data)
-        }).then(response => response.json())
-            .then(response => console.log(response))
+        }).then(response => {
+            if(response.ok) {
+
+                status.css('display', 'inline-block');
+                status.text('Onboarding successful, proceed to Interview tab');
+                onboardingView.css('display', 'none');
+                homeView.css('display', 'inline-block');
+            } else {
+                status.css('display', 'inline-block');
+                status.text('Onboarding failed, check the logs');
+                onboardingView.css('display', 'none');
+                homeView.css('display', 'inline-block');
+            }
+        })
     });
 
     $('#interview-schedule-form').submit((event) => {
@@ -170,7 +170,6 @@ $('document').ready(function () {
     function logout() {
         // Remove tokens and expiry time from browser
         accessToken = null;
-        pingMessage.css('display', 'none');
         displayButtons();
     }
 
@@ -197,30 +196,14 @@ $('document').ready(function () {
         });
     }
 
-    function callAPI(endpoint, secured) {
-        const url = apiUrl + endpoint;
-
-        let headers;
-        if (secured && accessToken) {
-            headers = {Authorization: 'Bearer ' + accessToken};
-        }
-
-        $.ajax({
-            url: url,
-            headers: headers
-        }).done(({message}) => $('#ping-view h2').text(message))
-            .fail(({statusText}) => $('#ping-view h2').text('Request failed: ' + statusText));
-    }
-
     function displayButtons() {
         const loginStatus = $('.container h4');
         if (isAuthenticated()) {
             loginBtn.css('display', 'none');
             logoutBtn.css('display', 'inline-block');
             profileViewBtn.css('display', 'inline-block');
-            pingPrivate.css('display', 'inline-block');
-            pingPrivateScoped.css('display', 'inline-block');
-            callPrivateMessage.css('display', 'none');
+            onboardingViewBtn.css('display', 'inline-block');
+            interviewBtn.css('display', 'inline-block');
             loginStatus.text(
                 'You are logged in! You can now send authenticated requests to your server.'
             );
@@ -230,10 +213,8 @@ $('document').ready(function () {
             logoutBtn.css('display', 'none');
             profileViewBtn.css('display', 'none');
             profileView.css('display', 'none');
-            pingView.css('display', 'none');
-            pingPrivate.css('display', 'none');
-            pingPrivateScoped.css('display', 'none');
-            callPrivateMessage.css('display', 'block');
+            onboardingViewBtn.css('display', 'none');
+            interviewBtn.css('display', 'none');
             loginStatus.text('You are not logged in! Please log in to continue.');
         }
     }
@@ -241,7 +222,6 @@ $('document').ready(function () {
     function displayHome() {
         homeView.css('display', 'inline-block');
         profileView.css('display', 'none');
-        pingView.css('display', 'none');
         interviewView.css('display', 'none');
         onboardingView.css('display', 'none');
     }
@@ -249,7 +229,6 @@ $('document').ready(function () {
     function displayProfile() {
         // display the elements
         homeView.css('display', 'none');
-        pingView.css('display', 'none');
         interviewView.css('display', 'none');
         profileView.css('display', 'inline-block');
         onboardingView.css('display', 'none');
@@ -260,19 +239,9 @@ $('document').ready(function () {
         $('#profile-view img').attr('src', userProfile.picture);
         $('#profile-view .jwt').text(accessToken);
     }
-
-    function displayPingView() {
-        homeView.css('display', 'none');
-        profileView.css('display', 'none');
-        interviewView.css('display', 'none');
-        pingView.css('display', 'inline-block');
-        onboardingView.css('display', 'none');
-    }
-
     function displayOnboardingView() {
         homeView.css('display', 'none');
         profileView.css('display', 'none');
-        pingView.css('display', 'none');
         onboardingView.css('display', 'inline-block');
         interviewView.css('display', 'none');
     }
@@ -306,15 +275,48 @@ $('document').ready(function () {
     function displayInterviewView() {
         homeView.css('display', 'none');
         profileView.css('display', 'none');
-        pingView.css('display', 'none');
         onboardingView.css('display', 'none');
         interviewView.css('display', 'inline-block');
+        const onboardingStatus = $('.container h4');
 
-        displayUpcomingInterviews();
-        displayPreferredTimes();
-        getQuestions();
+        getStoryteller().then(success =>  {
+            if(success) {
+                onboardingStatus.css('display', 'none');
+                displayUpcomingInterviews();
+                displayPreferredTimes();
+                getQuestions();
+            } else {
+                interviewView.css('display', 'none');
+                homeView.css('display', 'inline-block')
+                onboardingStatus.css('display', 'inline-block');
+                onboardingStatus.text("Could not find storyteller. Try onboarding first.")
+            }
+        })
     }
 
+    async function getStoryteller() {
+        const url = `/api/v1/storytellers/`
+        console.log("Calling " + url)
+
+        let response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        })
+
+        console.log(response)
+        if(!response.ok) {
+
+            return false;
+        } else {
+            return true;
+        }
+
+
+    }
     function displayUpcomingInterviews() {
 
         const url = `/api/v1/interviews/storytellers/self/scheduled:all`

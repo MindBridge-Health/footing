@@ -29,10 +29,6 @@
           Profile
         </button>
 
-        <button id="btn-ping-view" class="btn btn-primary btn-margin">
-          Ping
-        </button>
-
         <button id="btn-onboarding-view" class="btn btn-primary btn-margin">
           Onboard
         </button>
@@ -73,32 +69,10 @@
       </div>
     </div>
 
-    <!-- ping view -->
-    <div id="ping-view">
-      <h1>Make a Call to the Server</h1>
-
-      <p id="call-private-message">
-        Log in to call a private (secured) server endpoint.
-      </p>
-
-      <button id="btn-ping-public" class="btn btn-primary">
-        Call Public
-      </button>
-
-      <button id="btn-ping-private" class="btn btn-primary">
-        Call Private
-      </button>
-
-      <button id="btn-ping-private-scoped" class="btn btn-primary">
-        Call Private Scoped
-      </button>
-
-      <h2 id="ping-message"></h2>
-    </div>
 
     <div id="onboarding-view">
       <p>Storyteller Registration</p>
-      <form id="myForm" name="myForm">
+      <form id="onboardingForm" name="onboardingForm">
         <label for="firstname">First name:</label><br>
         <input type="text" id="firstname" name="firstname"><br>
 
@@ -115,6 +89,7 @@
       </form>
     </div>
 
+    <div id="error-view"></div>
     <div id="interview-view">
       <H1>Upcoming Interviews</H1>
       <table id="upcomingInterviews"><tr><th>Name</th> <th>Scheduled Time</th></tr></table>

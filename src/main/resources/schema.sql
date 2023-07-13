@@ -211,7 +211,48 @@ CREATE TABLE IF NOT EXISTS twilio_data
     status_id varchar(64) references twilio_status(id),
     raw_json json
 );
-
+-- Onboarding Statuses
 INSERT IGNORE INTO onboarding_status values (0, 'ONBOARDING_NOT_STARTED' );
 INSERT IGNORE INTO onboarding_status values (1, 'ONBOARDING_STARTED' );
 INSERT IGNORE INTO onboarding_status values (99, 'ONBOARDING_COMPLETED' );
+
+-- Initial Questions
+INSERT INTO resource values (default, 'biq1', 'Initial Question 1', false);
+SET @lastId := LAST_INSERT_ID();
+INSERT INTO question values (@lastId, 'What is your earliest childhood memory that still stands out to you today?', false);
+
+INSERT INTO resource values (default, 'biq2', 'Initial Question 2', false);
+SET @lastId := LAST_INSERT_ID();
+INSERT INTO question values (@lastId, 'Can you recall a significant event from your teenage years that had a profound impact on your life?', false);
+
+INSERT INTO resource values (default, 'biq3', 'Initial Question 3', false);
+SET @lastId := LAST_INSERT_ID();
+INSERT INTO question values (@lastId, 'What is the most memorable trip or vacation you have ever taken, and what made it so special?', false);
+
+INSERT INTO resource values (default, 'biq4', 'Initial Question 4', false);
+SET @lastId := LAST_INSERT_ID();
+INSERT INTO question values (@lastId, 'Who was the most influential person in your life, and how did they shape you into who you are today?', false);
+
+INSERT INTO resource values (default, 'biq5', 'Initial Question 5', false);
+SET @lastId := LAST_INSERT_ID();
+INSERT INTO question values (@lastId, 'Is there a particular hobby or activity that brings you joy and relaxation? How did you discover it?', false);
+
+INSERT INTO resource values (default, 'biq6', 'Initial Question 6', false);
+SET @lastId := LAST_INSERT_ID();
+INSERT INTO question values (@lastId, 'What was your proudest accomplishment in your professional life, and what obstacles did you overcome to achieve it?', false);
+
+INSERT INTO resource values (default, 'biq7', 'Initial Question 7', false);
+SET @lastId := LAST_INSERT_ID();
+INSERT INTO question values (@lastId, 'Can you share a story of a friendship or relationship that has lasted for many years and holds a special place in your heart?', false);
+
+INSERT INTO resource values (default, 'biq8', 'Initial Question 8', false);
+SET @lastId := LAST_INSERT_ID();
+INSERT INTO question values (@lastId, 'What is a valuable life lesson you have learned over the years, and how did it impact your outlook on life?', false);
+
+INSERT INTO resource values (default, 'biq9', 'Initial Question 9', false);
+SET @lastId := LAST_INSERT_ID();
+INSERT INTO question values (@lastId, 'Are there any historical events or moments that you vividly remember and how they influenced your perspective?', false);
+
+INSERT INTO resource values (default, 'biq10', 'Initial Question 10', false);
+SET @lastId := LAST_INSERT_ID();
+INSERT INTO question values (@lastId, 'If you could give one piece of advice to younger generations, what would it be and why?', false);
