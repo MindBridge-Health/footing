@@ -1,6 +1,5 @@
 package com.mindbridgehealth.footing.api.controller
 
-import com.mindbridgehealth.footing.api.dto.StorytellerCreateDto
 import com.mindbridgehealth.footing.service.ChroniclerService
 import com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapper
 import com.mindbridgehealth.footing.service.model.Chronicler
@@ -16,14 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.HttpClientErrorException
-import java.util.UUID
 
 @RestController
 @RequestMapping("/api/v1/chroniclers")
 class ChroniclerController(val chroniclerService: ChroniclerService, val mapper: ChroniclerEntityMapper) {
 
     @GetMapping("/{id}")
-    fun get(@PathVariable id: String): Chronicler = chroniclerService.findChroniclerById(Base36Encoder.decodeAltId(id)).orElseThrow()
+    fun get(@PathVariable id: String): Chronicler = chroniclerService.findChroniclerByAltId(Base36Encoder.decodeAltId(id)).orElseThrow()
 
     @PostMapping("/")
     fun post(
