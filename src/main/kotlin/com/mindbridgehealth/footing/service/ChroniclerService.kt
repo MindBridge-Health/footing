@@ -5,8 +5,6 @@ import com.mindbridgehealth.footing.data.repository.MindBridgeUserRepository
 import com.mindbridgehealth.footing.service.entity.ChroniclerEntity
 import com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapper
 import com.mindbridgehealth.footing.service.model.Chronicler
-import com.mindbridgehealth.footing.service.model.Storyteller
-import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
@@ -14,7 +12,7 @@ import kotlin.jvm.optionals.getOrElse
 @Service
 class ChroniclerService(private val db: ChroniclerRepository, private val chroniclerEntityMapper: ChroniclerEntityMapper, private val userDb: MindBridgeUserRepository) {
     
-    fun findChroniclerById(id: String): Optional<Chronicler> {
+    fun findChroniclerByAltId(id: String): Optional<Chronicler> {
         val optionalChroniclerEntity = db.findByAltIdAndIsActive(id, true)
         if(optionalChroniclerEntity.isPresent){
             return Optional.of(chroniclerEntityMapper.entityToModel(optionalChroniclerEntity.get()))
@@ -22,7 +20,7 @@ class ChroniclerService(private val db: ChroniclerRepository, private val chroni
         return Optional.empty()
     }
 
-    fun findChroniclerEntityById(id: String): Optional<ChroniclerEntity> {
+    fun findChroniclerEntityByAltId(id: String): Optional<ChroniclerEntity> {
         return db.findByAltIdAndIsActive(id, true)
     }
 
@@ -40,7 +38,7 @@ class ChroniclerService(private val db: ChroniclerRepository, private val chroni
     }
 
     fun update(chronicler: Chronicler) {
-        if(chronicler.id != null) findChroniclerById(chronicler.id!!) else throw Exception() //TODO: Footing-2 Exception
+        if(chronicler.id != null) findChroniclerByAltId(chronicler.id!!) else throw Exception() //TODO: Footing-2 Exception
         db.save(chroniclerEntityMapper.modelToEntity(chronicler))
     }
 

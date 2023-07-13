@@ -42,8 +42,8 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't specify append and a time")
         }
         val storytellerId = principal.subject
-        val returnedInterview = service.createInterview(name ?: "unnamed", "C1", storytellerId, listOf(questionId))
-        return returnedInterview.id?.let { service.scheduleInterview(storytellerId, it, time, name, append) } ?: "Error"
+        val returnedInterview = service.createInterview(name ?: "unnamed", Base36Encoder.decodeAltId("c1"), storytellerId, listOf(Base36Encoder.decodeAltId(questionId)))
+        return returnedInterview.id?.let { service.scheduleInterview(storytellerId, Base36Encoder.decodeAltId(it), time, name, append) } ?: "Error"
     }
 
     @PostMapping("/storytellers/{storytellerId}/scheduled/{interviewId}")

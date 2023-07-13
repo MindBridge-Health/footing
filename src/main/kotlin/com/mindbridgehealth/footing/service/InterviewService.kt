@@ -60,7 +60,7 @@ class InterviewService(
         val storyteller = storytellerService.findStorytellerEntityByAltId(storytellerId)
             .getOrElse { throw Exception("Storyteller was not found; unable to create interview") }
 
-        val chronicler = chroniclerService.findChroniclerEntityById(chroniclerId)
+        val chronicler = chroniclerService.findChroniclerEntityByAltId(chroniclerId)
             .getOrElse { throw Exception("Chronicler was not found; unable to create interview") }
 
         val interviewEntity = db.save(InterviewEntity(name, null, null, false, chronicler, storyteller))

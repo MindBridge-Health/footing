@@ -275,7 +275,7 @@ class InterviewServiceTests {
             this.mobile = "87"
             this.ai = true
         }
-        every { mockChroniclerService.findChroniclerEntityById(any()) } returns Optional.of(chroniclerEntity)
+        every { mockChroniclerService.findChroniclerEntityByAltId(any()) } returns Optional.of(chroniclerEntity)
         val questionEntity = QuestionEntity().apply {
             this.id = 1
             this.altId = "q1"
