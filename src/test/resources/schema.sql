@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS twilio_data
     );
 
 -- Default Chronicler
-INSERT IGNORE INTO mb_user values (default, 'c1', 1, true, 'Chat', 'GPT', null, null, null);
+INSERT IGNORE INTO mb_user values (default, '0', 1, true, 'Chat', 'GPT', null, null, null);
 SET @lastId := LAST_INSERT_ID();
 INSERT IGNORE INTO chronicler values (@lastId, true);
 
