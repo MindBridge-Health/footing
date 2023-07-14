@@ -211,6 +211,12 @@ CREATE TABLE IF NOT EXISTS twilio_data
     status_id varchar(64) references twilio_status(id),
     raw_json json
     );
+
+-- Default Chronicler
+INSERT IGNORE INTO mb_user values (default, 'c1', 1, true, 'Chat', 'GPT', null, null, null);
+SET @lastId := LAST_INSERT_ID();
+INSERT IGNORE INTO chronicler values (@lastId, true);
+
 -- Onboarding Statuses
 INSERT IGNORE INTO onboarding_status values (0, 'ONBOARDING_NOT_STARTED' );
 INSERT IGNORE INTO onboarding_status values (1, 'ONBOARDING_STARTED' );

@@ -6,5 +6,6 @@ import org.springframework.stereotype.Component
 data class ApplicationProperties(
     val audience: String,
     val addPipeKey: String,
+    val twilioSid: String,
     val twilioKey: String) {
 }

@@ -26,7 +26,7 @@ class InterviewEntity: ResourceEntity {
     @JoinColumn(name = "storyteller_id", referencedColumnName = "id")
     var storyteller: StorytellerEntity? = null
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "interview_id", referencedColumnName = "id")
     var interviewQuestionData: MutableList<InterviewQuestionEntity>? = null
 
