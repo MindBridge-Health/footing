@@ -3,6 +3,7 @@ package com.mindbridgehealth.footing.service
 import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.service.entity.ScheduledInterviewEntity
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.twilio.Twilio
 import com.twilio.rest.studio.v2.flow.ExecutionCreator
 import com.twilio.type.PhoneNumber
@@ -40,7 +41,7 @@ class ScheduledInterviewInitiationTask(
 
     private fun processScheduledInterview(scheduledInterviewEntity: ScheduledInterviewEntity) {
         logger.debug("Reminding Interview: ${scheduledInterviewEntity.name}")
-        val interview = scheduledInterviewEntity.interview?.altId?.let { interviewService.findInterviewEntityByAltId(it) }
+        val interview = scheduledInterviewEntity.interview?.altId?.let { interviewService.findInterviewEntityByAltId(it) } //ToDo Consider lookup by id (indexed) rather than altId (not indexed)
         val interviewQuestions = interview?.id?.let { interviewQuestionService.findEntitiesByInterviewId(it) }
         if(interviewQuestions.isNullOrEmpty()) {
             logAndThrow("Interview had no questions associated with it ${scheduledInterviewEntity.interview?.id}")
@@ -67,6 +68,7 @@ class ScheduledInterviewInitiationTask(
         parameters["firstname"] = name
         parameters["question"] = questionString
         parameters["interviewurl"] = url
+        parameters["interview_id"] = Base36Encoder.encodeAltId(scheduledInterviewEntity.interview?.altId!!)
 
         sendTwilioReminder(number!!, parameters, scheduledInterviewEntity)
 
