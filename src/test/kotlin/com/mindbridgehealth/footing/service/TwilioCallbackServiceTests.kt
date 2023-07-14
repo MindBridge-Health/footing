@@ -4,13 +4,9 @@ import com.mindbridgehealth.footing.data.repository.TwilioDataRepository
 import com.mindbridgehealth.footing.data.repository.TwilioStatusRepository
 import com.mindbridgehealth.footing.service.entity.*
 import com.mindbridgehealth.footing.service.model.Interview
-import com.mindbridgehealth.footing.service.model.Story
-import com.mindbridgehealth.footing.service.model.Storyteller
-import com.mindbridgehealth.footing.service.model.Tag
 import com.ninjasquad.springmockk.MockkClear
 import com.ninjasquad.springmockk.clear
 import io.mockk.CapturingSlot
-import io.mockk.InternalPlatformDsl.toArray
 import io.mockk.every
 import org.junit.jupiter.api.Test
 import io.mockk.mockk

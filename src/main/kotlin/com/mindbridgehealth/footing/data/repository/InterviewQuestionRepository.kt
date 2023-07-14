@@ -9,5 +9,7 @@ import java.util.*
 interface InterviewQuestionRepository : JpaRepository<InterviewQuestionEntity, Int> {
 
     fun findByAltId(altId: String): Optional<InterviewQuestionEntity>
+
+    fun findByInterviewId(id: Int): Collection<InterviewQuestionEntity>
 }
 

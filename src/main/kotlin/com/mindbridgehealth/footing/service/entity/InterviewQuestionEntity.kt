@@ -23,7 +23,7 @@ class InterviewQuestionEntity: ResourceEntity() {
 
     @ManyToOne
     @JoinColumn(name = "question_id", referencedColumnName = "id")
-    lateinit var question: QuestionEntity
+    var question: QuestionEntity? = null
 
     @OneToOne
     @JoinColumn(name = "story_id", referencedColumnName = "id")

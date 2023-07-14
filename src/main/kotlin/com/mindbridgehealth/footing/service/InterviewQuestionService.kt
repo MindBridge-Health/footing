@@ -33,6 +33,10 @@ class InterviewQuestionService(private val interviewQuestionRepository: Intervie
         return interviewQuestionRepository.findByAltId(altId)
     }
 
+    fun findEntitiesByInterviewId(id: Int): Collection<InterviewQuestionEntity> {
+        return interviewQuestionRepository.findByInterviewId(id)
+    }
+
 
     fun save(interviewQuestion: InterviewQuestion) : InterviewQuestionEntity {
         val interviewQuestionEntity = interviewQuestionEntityMapper.modelToEntity(interviewQuestion)

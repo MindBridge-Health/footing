@@ -24,7 +24,7 @@ abstract class InterviewQuestionEntityMapper(): IdMapper() {
     @AfterMapping
     fun mapInterviewEntity(interviewQuestionEntity: InterviewQuestionEntity, @MappingTarget interviewQuestion: InterviewQuestion) {
         interviewQuestion.interviewId = Base36Encoder.encodeAltId(interviewQuestionEntity.interview?.altId.toString())
-        interviewQuestion.questionId = Base36Encoder.encodeAltId(interviewQuestionEntity.question.altId.toString())
+        interviewQuestion.questionId = Base36Encoder.encodeAltId(interviewQuestionEntity.question?.altId.toString())
     }
     @AfterMapping
     fun mapInterviewQuestionEntities(interviewEntity: InterviewEntity, @MappingTarget interview: Interview) {
