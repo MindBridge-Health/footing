@@ -48,28 +48,31 @@ class ScheduledInterviewInitiationTask(
         }
         val interviewAltId = Base36Encoder.encodeAltId(scheduledInterviewEntity.interview?.altId!!)
 
-        val interviewQuestionText = interview?.id?.let { interviewQuestionService.findEntitiesByInterviewId(it) }?.first()?.question?.text
-        if (interviewQuestionText == null) {
+        val interviewQuestion = interview?.id?.let { interviewQuestionService.findEntitiesByInterviewId(it) }?.first()?.question
+        if (interviewQuestion == null) {
             logAndThrow("Unable to find question for scheduled interview: ${scheduledInterviewEntity.name} Interview Id: ${scheduledInterviewEntity.interview?.id}")
         }
+        val interviewQuestionId = Base36Encoder.encodeAltId(interviewQuestion?.altId!!)
+        val interviewQuestionText = interviewQuestion.text
 
-        val number = interview?.storyteller?.mobile
-        val name = interview?.storyteller?.firstname ?: ""
+        val number = interview.storyteller?.mobile
+        val name = interview.storyteller?.firstname ?: ""
         if (number == null) {
-            logAndThrow("Unable to find mobile number for Storyteller ${interview?.storyteller?.id} scheduled interview: ${scheduledInterviewEntity.name} Interview Id: ${scheduledInterviewEntity.interview?.id}")
+            logAndThrow("Unable to find mobile number for Storyteller ${interview.storyteller?.id} scheduled interview: ${scheduledInterviewEntity.name} Interview Id: ${scheduledInterviewEntity.interview?.id}")
         }
         val questionString =
             "Here is your question for your upcoming MindBridge Health interview: $interviewQuestionText"
         val encodedQuestion =
             URLEncoder.encode(interviewQuestionText, StandardCharsets.UTF_8.toString())
         val url =
-            "http://54.196.211.99/e-c/message.html?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&rtel=$number&question=$encodedQuestion&interview_id=$interviewAltId"
+            "http://54.196.211.99/e-c/message.html?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&rtel=$number&question=$encodedQuestion&interview_id=$interviewAltId&interview_question_id=$interviewQuestionId"
 
         val parameters = HashMap<String, Any>()
         parameters["firstname"] = name
         parameters["question"] = questionString
         parameters["interviewurl"] = url
         parameters["interview_id"] = interviewAltId
+        parameters["interview_question_id"] = interviewQuestionId
 
         sendTwilioReminder(number!!, parameters, scheduledInterviewEntity)
 
