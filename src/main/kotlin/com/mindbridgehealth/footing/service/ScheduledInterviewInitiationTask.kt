@@ -65,7 +65,7 @@ class ScheduledInterviewInitiationTask(
         val encodedQuestion =
             URLEncoder.encode(interviewQuestionText, StandardCharsets.UTF_8.toString())
         val url =
-            "http://54.196.211.99/e-c/message.html?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&rtel=$number&question=$encodedQuestion&interview_id=$interviewAltId&interview_question_id=$interviewQuestionId"
+            "http://app.mindbridgehealth.com/interview.html?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&rtel=$number&question=$encodedQuestion&interview_id=$interviewAltId&interview_question_id=$interviewQuestionId"
 
         val parameters = HashMap<String, Any>()
         parameters["firstname"] = name
