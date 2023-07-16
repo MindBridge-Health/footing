@@ -14,9 +14,9 @@ data class VideoCopiedPipeS3EventData(
     val id: String,
     val url: URL,
     val rawRecordingUrl: URL,
-    val snapshotUrl: URL,
-    val filmstripUrl: URL,
-    val cdn: CdnData,
+    val snapshotUrl: URL?,
+    val filmstripUrl: URL?,
+    val cdn: CdnData?,
     val bucket: String,
     val region: String,
     val payload: String
