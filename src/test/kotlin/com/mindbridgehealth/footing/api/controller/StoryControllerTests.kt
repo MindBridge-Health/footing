@@ -81,12 +81,12 @@ class StoryControllerTests {
         val parameters = UriComponentsBuilder.fromUriString(
             URLDecoder.decode("?$body", "UTF-8")).build().queryParams
         mockMvc.perform(
-            post("/api/v1/stories/interviews/l01xt1w8u21s")
+            post("/api/v1/stories/interview_questions/l01xt1w8u21s")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .content(body)
                 .header(
                     "x-twilio-signature",
-                    getValidationSignature("http://localhost/api/v1/stories/interviews/l01xt1w8u21s", parameters.toSingleValueMap())
+                    getValidationSignature("http://localhost/api/v1/stories/interview_questions/l01xt1w8u21s", parameters.toSingleValueMap())
                 )
         ).andExpect(MockMvcResultMatchers.status().isOk())
 
@@ -121,12 +121,12 @@ class StoryControllerTests {
         val parameters = UriComponentsBuilder.fromUriString(
             URLDecoder.decode("?$body", "UTF-8")).build().queryParams
         mockMvc.perform(
-            post("/api/v1/stories/interviews/l01xt1w8u21s")
+            post("/api/v1/stories/interview_questions/l01xt1w8u21s")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .content(body)
                 .header(
                     "x-twilio-signature",
-                    getValidationSignature("http://localhost/api/v1/stories/interviews/l01xt1w8u21s", parameters.toSingleValueMap())
+                    getValidationSignature("http://localhost/api/v1/stories/interview_questions/l01xt1w8u21s", parameters.toSingleValueMap())
                 )
         ).andExpect(MockMvcResultMatchers.status().isOk())
 
@@ -145,12 +145,12 @@ class StoryControllerTests {
         val parameters = UriComponentsBuilder.fromUriString(
             URLDecoder.decode("?$body", "UTF-8")).build().queryParams
         mockMvc.perform(
-            post("/api/v1/stories/interviews/l01xt1w8u21s")
+            post("/api/v1/stories/interview_questions/l01xt1w8u21s")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .content(body)
                 .header(
                     "x-twilio-signature",
-                    getValidationSignature("http://localhost/api/v1/stories/interviews/l01xt1w8u21s", parameters.toSingleValueMap())
+                    getValidationSignature("http://localhost/api/v1/stories/interview_questions/l01xt1w8u21s", parameters.toSingleValueMap())
                 )
         ).andExpect(MockMvcResultMatchers.status().isOk())
     }

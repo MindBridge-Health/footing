@@ -4,6 +4,7 @@ import com.mindbridgehealth.footing.data.repository.TwilioDataRepository
 import com.mindbridgehealth.footing.data.repository.TwilioStatusRepository
 import com.mindbridgehealth.footing.service.entity.*
 import com.mindbridgehealth.footing.service.model.Interview
+import com.mindbridgehealth.footing.service.model.InterviewQuestion
 import com.ninjasquad.springmockk.MockkClear
 import com.ninjasquad.springmockk.clear
 import io.mockk.CapturingSlot
@@ -11,13 +12,15 @@ import io.mockk.every
 import org.junit.jupiter.api.Test
 import io.mockk.mockk
 import io.mockk.verify
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.test.assertEquals
 
 class TwilioCallbackServiceTests {
 
     private val mockDataRepository = mockk<TwilioDataRepository>()
     private val mockStatusRepository = mockk<TwilioStatusRepository>()
-    private val mockInterviewService = mockk<InterviewService>()
+    private val mockInterviewService = mockk<InterviewQuestionService>()
     private val mockStoryService = mockk<StoryService>()
 
 
@@ -36,16 +39,14 @@ class TwilioCallbackServiceTests {
 
         every { mockDataRepository.save(any()) } returnsArgument (0)
         every { mockStatusRepository.save(any()) } returns TwilioStatus().apply { id = 1 }
-        every { mockInterviewService.findInterviewById(any()) } returns Interview(
-            null,
-            "null",
-            null,
+        every { mockInterviewService.findEntityByAltId(any()) } returns Optional.of(InterviewQuestionEntity().apply { this.interview = InterviewEntity(
             null,
             null,
             null,
             false,
+            null,
             null
-        )
+        )})
 
         val paramMap = HashMap<String, String>()
         paramMap["AccountSid"] = "account1"
@@ -80,14 +81,15 @@ class TwilioCallbackServiceTests {
 
         every { mockDataRepository.save(any()) } returnsArgument (0)
         every { mockStatusRepository.save(any()) } returns TwilioStatus().apply { id = 1 }
-        every { mockInterviewService.findInterviewEntityByAltId(any()) } returns InterviewEntity(
+        every { mockInterviewService.findEntityByAltId(any()) } returns Optional.of(InterviewQuestionEntity().apply { this.interview = InterviewEntity(
             null,
             null,
             null,
             false,
             null,
-            null
-        )
+            StorytellerEntity().apply { this.id = 1; this.altId = "S1" }
+        )})
+        every { mockStoryService.saveEntity(any()) } returnsArgument 0
 
         val paramMap = HashMap<String, String>()
         paramMap["ApiVersion"] = "apiVersion"
@@ -138,14 +140,14 @@ class TwilioCallbackServiceTests {
             this.id = 1
             this.altId = "st1"
         }
-        every { mockInterviewService.findInterviewEntityByAltId(any()) } returns InterviewEntity(
+        every { mockInterviewService.findEntityByAltId(any())} returns Optional.of(InterviewQuestionEntity().apply { this.interview = InterviewEntity(
             "i1",
             "Interview 1",
             null,
             false,
             null,
             storytellerEntity,
-        )
+        )})
         val storyEntityCaptureSlot = CapturingSlot<StoryEntity>()
         every { mockStoryService.saveEntity(capture(storyEntityCaptureSlot)) } returnsArgument 0
 
@@ -179,7 +181,7 @@ class TwilioCallbackServiceTests {
         verify { mockStatusRepository.save(any()) }
 
         val expectedStoryEntity = StoryEntity().apply {
-            this.name = "Twilio_Interview_abc123"
+            this.name = "Twilio_InterviewQuestion_abc123"
             this.text = paramMap["TranscriptionText"]
             this.storyteller = storytellerEntity
         }
