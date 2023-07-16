@@ -6,12 +6,12 @@ import java.net.URL
 data class VideoCopiedPipeS3EventData(
     val storedStatus: String,
     val videoName: String,
-    val size: Int,
+    val size: String,
     @JsonProperty("checksum_md5")
     val checksumMd5: String,
     @JsonProperty("checksum_sha1")
     val checksumSha1: String,
-    val id: Int,
+    val id: String,
     val url: URL,
     val rawRecordingUrl: URL,
     val snapshotUrl: URL,
