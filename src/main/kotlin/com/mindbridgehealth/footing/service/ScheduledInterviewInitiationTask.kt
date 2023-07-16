@@ -30,6 +30,7 @@ class ScheduledInterviewInitiationTask(
         Twilio.init(applicationProperties.twilioSid, applicationProperties.twilioKey)
     }
 
+    //ToDo This needs to account for concurrency
     @Scheduled(cron = "0 * * * * *")
     fun performTask() {
         val scheduledInterviews = scheduledInterviewRepository.findAllByScheduledTime(Timestamp.from(Instant.now()))
