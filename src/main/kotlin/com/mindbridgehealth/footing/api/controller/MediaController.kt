@@ -11,11 +11,14 @@ import com.mindbridgehealth.footing.service.MediaService
 import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import jakarta.servlet.http.HttpServletRequest
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatusCode
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URL
 import java.util.*
 import javax.crypto.Mac
@@ -26,6 +29,9 @@ import javax.crypto.spec.SecretKeySpec
 @RequestMapping("/api/v1/media")
 class MediaController(val mediaService: MediaService, val applicationProperties: ApplicationProperties) {
 
+    private val logger = LoggerFactory.getLogger(this::class.java)
+    @Value("\${spring.profiles.active}")
+    private val activeProfile: String? = null
     @GetMapping("/{id}")
     fun get(@PathVariable id: String) = mediaService.findMediaById(Base36Encoder.decodeAltId(id))
 
@@ -46,7 +52,14 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
         val event: AddPipeEvent = try {objectMapper.readValue(jsonString, AddPipeEvent::class.java)}
         catch (e: Exception) { throw HttpClientErrorException( //TODO: Logging
             HttpStatusCode.valueOf(400))}
-        val signature = generateSignature(request.requestURI, jsonString)
+        var validationUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + request.requestURI
+        logger.debug(jsonString)
+        logger.debug(validationUrl)
+        if("prod" == activeProfile) //App Runner is actually running on http with an https LB in front
+        {
+            validationUrl = validationUrl.replace("http", "https")
+        }
+        val signature = generateSignature(validationUrl, jsonString)
         if (xPipeSignature.isNullOrEmpty() || !xPipeSignature.equals(signature)) {
             println(xPipeSignature)
             println(signature)
