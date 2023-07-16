@@ -13,5 +13,6 @@ data class VideoConvertedEventData(
     val id: String,
     val dateTime: String,
     val timeZone: String,
-    val payload: String
+    val payload: String,
+    val cutToLength: Int
 )
