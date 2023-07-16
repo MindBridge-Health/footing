@@ -54,8 +54,8 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
             logger.error("Error handling Media", e)
             throw HttpClientErrorException(HttpStatusCode.valueOf(400))}
         var validationUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + request.requestURI
-        logger.debug(jsonString)
-        logger.debug(validationUrl)
+        println(jsonString)
+        println(validationUrl)
         if("prod" == activeProfile) //App Runner is actually running on http with an https LB in front
         {
             validationUrl = validationUrl.replace("http", "https")
