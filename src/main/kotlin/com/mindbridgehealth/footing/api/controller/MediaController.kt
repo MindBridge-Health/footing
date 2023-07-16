@@ -86,7 +86,7 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
     }
 
     private fun handleVideoCopiedPipeS3Event(event: VideoCopiedPipeS3Event): String {
-        handleEventCommon(event, event.data.id.toString(), event.data.payload, event.data.videoName, event.data.rawRecordingUrl)
+        handleEventCommon(event, event.data.id.toString(), event.data.payload, event.data.videoName, event.data.url)
         return "videoCopied"
     }
 
