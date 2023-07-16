@@ -7,7 +7,7 @@ data class VideoRecordedEventData(
     val audioCodec: String,
     val videoCodec: String,
     val type: String,
-    val id: Int,
+    val id: String,
     val dateTime: String,
     val timeZone: String,
     val payload: String,
