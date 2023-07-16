@@ -26,7 +26,7 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
 
     @Value("\${spring.profiles.active}")
     private val activeProfile: String? = null
-    @PostMapping("/interviews/{id}", consumes = ["application/x-www-form-urlencoded"])
+    @PostMapping("/interview_questions/{id}", consumes = ["application/x-www-form-urlencoded"])
     fun post(
         @PathVariable("id") id: String,
         @RequestBody body: String,
