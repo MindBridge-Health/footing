@@ -50,8 +50,9 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
             (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes).request
         val xPipeSignature = request.getHeader("X-Pipe-Signature")
         val event: AddPipeEvent = try {objectMapper.readValue(jsonString, AddPipeEvent::class.java)}
-        catch (e: Exception) { throw HttpClientErrorException( //TODO: Logging
-            HttpStatusCode.valueOf(400))}
+        catch (e: Exception) {
+            logger.error("Error handling Media", e)
+            throw HttpClientErrorException(HttpStatusCode.valueOf(400))}
         var validationUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + request.requestURI
         logger.debug(jsonString)
         logger.debug(validationUrl)
