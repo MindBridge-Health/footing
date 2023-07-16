@@ -122,7 +122,7 @@ class MediaControllerTests {
                 .content(videoRecordedRawJson)
                 .header(
                     "X-Pipe-Signature",
-                    generateSignature("/api/v1/media/", videoRecordedRawJson)
+                    generateSignature("http://localhost/api/v1/media/", videoRecordedRawJson)
                 )
         )?.andExpect(status().isOk())?.andReturn()
         assertEquals("videoRecorded", response?.response?.contentAsString)
@@ -136,7 +136,7 @@ class MediaControllerTests {
                 .content(videoConvetedRawJson)
                 .header(
                     "X-Pipe-Signature",
-                    generateSignature("/api/v1/media/", videoConvetedRawJson)
+                    generateSignature("http://localhost/api/v1/media/", videoConvetedRawJson)
                 )
         )?.andExpect(status().isOk())?.andReturn()
         assertEquals("videoConverted", response?.response?.contentAsString)
@@ -148,14 +148,14 @@ class MediaControllerTests {
             post("/api/v1/media/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(videoCopiedRawJson)
-                .header("X-Pipe-Signature", generateSignature("/api/v1/media/", videoCopiedRawJson))
+                .header("X-Pipe-Signature", generateSignature("http://localhost/api/v1/media/", videoCopiedRawJson))
         )?.andExpect(status().isOk())?.andReturn()
         assertEquals("videoCopied", response?.response?.contentAsString)
     }
 
     @Test
     fun addPipeCallback_UnknownEvent_MappedCorrectly() {
-        val generatedSignature = generateSignature("/api/v1/media/", unexpectedEventRawJson)
+        val generatedSignature = generateSignature("http://localhost/api/v1/media/", unexpectedEventRawJson)
         assertThrows<ServletException> {
             mockMvc?.perform(
                 post("/api/v1/media/")
