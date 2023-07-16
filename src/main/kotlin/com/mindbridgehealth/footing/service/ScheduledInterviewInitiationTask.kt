@@ -48,12 +48,12 @@ class ScheduledInterviewInitiationTask(
         }
         val interviewAltId = Base36Encoder.encodeAltId(scheduledInterviewEntity.interview?.altId!!)
 
-        val interviewQuestion = interview?.id?.let { interviewQuestionService.findEntitiesByInterviewId(it) }?.first()?.question
+        val interviewQuestion = interview?.id?.let { interviewQuestionService.findEntitiesByInterviewId(it) }?.first()
         if (interviewQuestion == null) {
             logAndThrow("Unable to find question for scheduled interview: ${scheduledInterviewEntity.name} Interview Id: ${scheduledInterviewEntity.interview?.id}")
         }
         val interviewQuestionId = Base36Encoder.encodeAltId(interviewQuestion?.altId!!)
-        val interviewQuestionText = interviewQuestion.text
+        val interviewQuestionText = interviewQuestion.question?.text
 
         val number = interview.storyteller?.mobile
         val name = interview.storyteller?.firstname ?: ""
