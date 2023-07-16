@@ -19,5 +19,5 @@ data class VideoCopiedPipeS3EventData(
     val cdn: CdnData?,
     val bucket: String?,
     val region: String?,
-    val payload: String?
+    val payload: String
 )
