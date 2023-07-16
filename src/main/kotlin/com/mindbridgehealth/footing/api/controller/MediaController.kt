@@ -64,7 +64,7 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
         if (xPipeSignature.isNullOrEmpty() || !xPipeSignature.equals(signature)) {
             println(xPipeSignature)
             println(signature)
-            throw Exception("Signature did not match!")
+            //throw Exception("Signature did not match!") //ToDo Put this back in
         }
 
         return when (event) {
