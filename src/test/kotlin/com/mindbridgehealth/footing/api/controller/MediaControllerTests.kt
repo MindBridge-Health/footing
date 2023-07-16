@@ -46,7 +46,7 @@ class MediaControllerTests {
             "        \"id\":123,\n" +
             "        \"dateTime\":\"2016-03-03 15:51:44\",\n" +
             "        \"timeZone\":\"Europe/Bucharest\",\n" +
-            "        \"payload\":\"{\\\"interview_question_id\\\":\\\"i1\\\"}\",\n" +
+            "        \"payload\":\"\\\"{\\\"interview_question_id\\\":\\\"i1\\\"}\\\"\",\n" +
             "        \"httpReferer\":\"http://site_from_where_video_was_recorded.com\",\n" +
             "        \"cam_name\":\"Logitech HD Pro Webcam C920 (046d:082d)\",\n" +
             "        \"mic_name\":\"Default\",\n" +
@@ -71,7 +71,7 @@ class MediaControllerTests {
             "        \"id\":123,\n" +
             "        \"dateTime\": \"2015-10-10 16:00:36\",\n" +
             "        \"timeZone\":\"Europe/Bucharest\",\n" +
-            "        \"payload\":\"{\\\"interview_question_id\\\":\\\"i1\\\"}\"\n" +
+            "        \"payload\":\"\\\"{\\\"interview_question_id\\\":\\\"i1\\\"}\\\"\"\n" +
             "    }\n" +
             "}"
 
@@ -95,7 +95,7 @@ class MediaControllerTests {
             "      \"cdnFilmstripUrl\":\"https://recordings-eu.addpipe.com/b8e2f5bfd04a93b434bd8c740bff744d/STREAM_NAME_filmstrip.jpg\"},\n" +
             "    \"bucket\":\"eu1-addpipe\",\n" +
             "    \"region\":\"eu-central-1\",\n" +
-            "    \"payload\":\"{\\\"interview_question_id\\\":\\\"i1\\\"}\"\n" +
+            "    \"payload\":\"\\\"{\\\"interview_question_id\\\":\\\"i1\\\"}\\\"\"\n" +
             "  }\n" +
             "}"
 
