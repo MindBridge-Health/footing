@@ -31,14 +31,11 @@ class TwilioCallbackServiceTests {
         mockInterviewService.clear(MockkClear.BEFORE)
         mockStoryService.clear(MockkClear.BEFORE)
 
-        val expectedData = TwilioData().apply {
-            this.statusId = 1
-            this.rawJson =
-                "{\"Called\":\"2342342345\",\"Caller\":\"1231231234\",\"CallStatus\":\"completed\",\"CallSid\":\"callsid\",\"AccountSid\":\"account1\"}"
-        }
+
 
         every { mockDataRepository.save(any()) } returnsArgument (0)
-        every { mockStatusRepository.save(any()) } returns TwilioStatus().apply { id = 1 }
+        val twilioStatus = TwilioStatus().apply { id = 1 }
+        every { mockStatusRepository.save(any()) } returns twilioStatus
         every { mockInterviewService.findEntityByAltId(any()) } returns Optional.of(InterviewQuestionEntity().apply { this.interview = InterviewEntity(
             null,
             null,
@@ -48,9 +45,17 @@ class TwilioCallbackServiceTests {
             null
         )})
 
+        val expectedData = TwilioData().apply {
+            this.status = twilioStatus
+            this.name = "Twilio_callSid"
+            this.altId = "Twilio|callSid"
+            this.rawJson =
+                "{\"Called\":\"2342342345\",\"Caller\":\"1231231234\",\"CallStatus\":\"completed\",\"CallSid\":\"callSid\",\"AccountSid\":\"account1\"}"
+        }
+
         val paramMap = HashMap<String, String>()
         paramMap["AccountSid"] = "account1"
-        paramMap["CallSid"] = "callsid"
+        paramMap["CallSid"] = "callSid"
         paramMap["CallStatus"] = "completed"
         paramMap["Caller"] = "1231231234"
         paramMap["Called"] = "2342342345"
@@ -73,14 +78,11 @@ class TwilioCallbackServiceTests {
         mockInterviewService.clear(MockkClear.BEFORE)
         mockStoryService.clear(MockkClear.BEFORE)
 
-        val expectedData = TwilioData().apply {
-            this.statusId = 1
-            this.rawJson =
-                "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
-        }
+
 
         every { mockDataRepository.save(any()) } returnsArgument (0)
-        every { mockStatusRepository.save(any()) } returns TwilioStatus().apply { id = 1 }
+        val twilioStatus = TwilioStatus().apply { id = 1 }
+        every { mockStatusRepository.save(any()) } returns twilioStatus
         every { mockInterviewService.findEntityByAltId(any()) } returns Optional.of(InterviewQuestionEntity().apply { this.interview = InterviewEntity(
             null,
             null,
@@ -90,6 +92,14 @@ class TwilioCallbackServiceTests {
             StorytellerEntity().apply { this.id = 1; this.altId = "S1" }
         )})
         every { mockStoryService.saveEntity(any()) } returnsArgument 0
+
+        val expectedData = TwilioData().apply {
+            this.status = twilioStatus
+            this.name = "Twilio_callSid"
+            this.altId = "Twilio|callSid"
+            this.rawJson =
+                "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
+        }
 
         val paramMap = HashMap<String, String>()
         paramMap["ApiVersion"] = "apiVersion"
@@ -128,14 +138,11 @@ class TwilioCallbackServiceTests {
         mockInterviewService.clear(MockkClear.BEFORE)
         mockStoryService.clear(MockkClear.BEFORE)
 
-        val expectedData = TwilioData().apply {
-            this.statusId = 1
-            this.rawJson =
-                "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
-        }
+
 
         every { mockDataRepository.save(any()) } returnsArgument (0)
-        every { mockStatusRepository.save(any()) } returns TwilioStatus().apply { id = 1 }
+        val twilioStatus = TwilioStatus().apply { id = 1 }
+        every { mockStatusRepository.save(any()) } returns twilioStatus
         val storytellerEntity = StorytellerEntity().apply {
             this.id = 1
             this.altId = "st1"
@@ -150,6 +157,14 @@ class TwilioCallbackServiceTests {
         )})
         val storyEntityCaptureSlot = CapturingSlot<StoryEntity>()
         every { mockStoryService.saveEntity(capture(storyEntityCaptureSlot)) } returnsArgument 0
+
+        val expectedData = TwilioData().apply {
+            this.status = twilioStatus
+            this.name = "Twilio_callSid"
+            this.altId = "Twilio|callSid"
+            this.rawJson =
+                "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
+        }
 
         val paramMap = HashMap<String, String>()
         paramMap["ApiVersion"] = "apiVersion"

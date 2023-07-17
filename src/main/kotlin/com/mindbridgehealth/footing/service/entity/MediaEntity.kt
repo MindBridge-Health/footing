@@ -1,7 +1,7 @@
 package com.mindbridgehealth.footing.service.entity
 
 import jakarta.persistence.*
-import java.util.*
+import javax.persistence.OneToOne
 
 @Entity
 @Table(name = "media")
@@ -24,25 +24,36 @@ class MediaEntity: ResourceEntity() {
     @JoinColumn(name = "story_id", referencedColumnName = "id")
     var story: StoryEntity? = null
 
-    @Basic
-    @Column(name = "state")
-    var state: String? = null
+    @ManyToOne
+    @JoinColumn(name = "media_status_id", referencedColumnName = "id")
+    var status: MediaStatusEntity? = null
 
+    @Basic
+    @Column(name = "raw_json", columnDefinition = "json")
+    var rawJson: String? = null
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val mediaEntity = other as MediaEntity
-        if (id != mediaEntity.id) return false
-        if (name != mediaEntity.name) return false
-        if (location != mediaEntity.location) return false
-        return type == mediaEntity.type
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as MediaEntity
+
+        if (location != other.location) return false
+        if (type != other.type) return false
+        if (storyteller != other.storyteller) return false
+        if (story != other.story) return false
+        return rawJson == other.rawJson
     }
 
     override fun hashCode(): Int {
-        var result = if (id != null) id.hashCode() else 0
-        result = 31 * result + if (name != null) name.hashCode() else 0
-        result = 31 * result + if (location != null) location.hashCode() else 0
-        result = 31 * result + if (type != null) type.hashCode() else 0
+        var result = super.hashCode()
+        result = 31 * result + (location?.hashCode() ?: 0)
+        result = 31 * result + (type?.hashCode() ?: 0)
+        result = 31 * result + (storyteller?.hashCode() ?: 0)
+        result = 31 * result + (story?.hashCode() ?: 0)
+        result = 31 * result + (rawJson?.hashCode() ?: 0)
         return result
     }
+
+
 }

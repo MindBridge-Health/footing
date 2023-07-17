@@ -4,32 +4,42 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "twilio_data")
-class TwilioData {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int? = null
-
-    @Column(name = "status_id")
-    var statusId: Int? = null
+@PrimaryKeyJoinColumn(name="id")
+class TwilioData: ResourceEntity() {
 
     @Column(name = "raw_json", columnDefinition = "json")
     var rawJson: String? = null
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "story_id", referencedColumnName = "id")
+    var storyId: StoryEntity? = null
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "interview_question_id", referencedColumnName = "id")
+    var interviewQuestion: InterviewQuestionEntity? = null
+
+    @ManyToOne
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
+    var status: TwilioStatus? = null
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
 
         other as TwilioData
 
-        if (id != other.id) return false
-        if (statusId != other.statusId) return false
-        return rawJson == other.rawJson
+        if (rawJson != other.rawJson) return false
+        if (storyId != other.storyId) return false
+        if (interviewQuestion != other.interviewQuestion) return false
+        return status == other.status
     }
 
     override fun hashCode(): Int {
-        var result = id ?: 0
-        result = 31 * result + (statusId ?: 0)
+        var result = super.hashCode()
         result = 31 * result + (rawJson?.hashCode() ?: 0)
+        result = 31 * result + (storyId?.hashCode() ?: 0)
+        result = 31 * result + (interviewQuestion?.hashCode() ?: 0)
+        result = 31 * result + (status?.hashCode() ?: 0)
         return result
     }
 
