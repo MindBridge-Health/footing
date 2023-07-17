@@ -12,7 +12,7 @@ class TwilioData: ResourceEntity() {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "story_id", referencedColumnName = "id")
-    var storyId: StoryEntity? = null
+    var story: StoryEntity? = null
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "interview_question_id", referencedColumnName = "id")
@@ -29,7 +29,7 @@ class TwilioData: ResourceEntity() {
         other as TwilioData
 
         if (rawJson != other.rawJson) return false
-        if (storyId != other.storyId) return false
+        if (story != other.story) return false
         if (interviewQuestion != other.interviewQuestion) return false
         return status == other.status
     }
@@ -37,7 +37,7 @@ class TwilioData: ResourceEntity() {
     override fun hashCode(): Int {
         var result = super.hashCode()
         result = 31 * result + (rawJson?.hashCode() ?: 0)
-        result = 31 * result + (storyId?.hashCode() ?: 0)
+        result = 31 * result + (story?.hashCode() ?: 0)
         result = 31 * result + (interviewQuestion?.hashCode() ?: 0)
         result = 31 * result + (status?.hashCode() ?: 0)
         return result

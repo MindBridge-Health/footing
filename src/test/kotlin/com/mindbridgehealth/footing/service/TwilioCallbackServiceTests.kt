@@ -7,11 +7,8 @@ import com.mindbridgehealth.footing.service.model.Interview
 import com.mindbridgehealth.footing.service.model.InterviewQuestion
 import com.ninjasquad.springmockk.MockkClear
 import com.ninjasquad.springmockk.clear
-import io.mockk.CapturingSlot
-import io.mockk.every
+import io.mockk.*
 import org.junit.jupiter.api.Test
-import io.mockk.mockk
-import io.mockk.verify
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.test.assertEquals
@@ -68,7 +65,7 @@ class TwilioCallbackServiceTests {
             paramMap
         )
 
-        verify { mockDataRepository.save(eq(expectedData)) }
+        verify { mockDataRepository.save(any()) wasNot called}
         verify { mockStatusRepository.save(any()) }
     }
 
@@ -84,15 +81,26 @@ class TwilioCallbackServiceTests {
         every { mockDataRepository.save(any()) } returnsArgument (0)
         val twilioStatus = TwilioStatus().apply { id = 1 }
         every { mockStatusRepository.save(any()) } returns twilioStatus
-        every { mockInterviewService.findEntityByAltId(any()) } returns Optional.of(InterviewQuestionEntity().apply { this.interview = InterviewEntity(
-            null,
-            null,
-            null,
-            false,
-            null,
-            StorytellerEntity().apply { this.id = 1; this.altId = "S1" }
-        )})
-        every { mockStoryService.saveEntity(any()) } returnsArgument 0
+        val interviewQuestionEntity = InterviewQuestionEntity().apply {
+            this.altId = "55da68f2"
+            this.interview = InterviewEntity(
+                null,
+                "null",
+                null,
+                false,
+                null,
+                StorytellerEntity().apply { this.id = 1; this.altId = "S1" }
+            )
+        }
+        every { mockInterviewService.findEntityByAltId(any()) } returns Optional.of(interviewQuestionEntity)
+
+        val storyEntity = StoryEntity().apply {
+            this.altId = "88f58600"
+            this.name = "Twilio_InterviewQuestion_abc123"
+            this.text = "transcriptionText"
+            this.storyteller = storyteller
+        }
+        every { mockStoryService.saveEntity(any()) } returns storyEntity
 
         val expectedData = TwilioData().apply {
             this.status = twilioStatus
@@ -100,6 +108,8 @@ class TwilioCallbackServiceTests {
             this.altId = "Twilio|xSig"
             this.rawJson =
                 "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"x-twilio-signature\":\"xSig\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
+            this.story = storyEntity
+            this.interviewQuestion = interviewQuestionEntity
         }
 
         val paramMap = HashMap<String, String>()
@@ -149,24 +159,19 @@ class TwilioCallbackServiceTests {
             this.id = 1
             this.altId = "st1"
         }
-        every { mockInterviewService.findEntityByAltId(any())} returns Optional.of(InterviewQuestionEntity().apply { this.interview = InterviewEntity(
-            "i1",
-            "Interview 1",
-            null,
-            false,
-            null,
-            storytellerEntity,
-        )})
+        val interviewQuestionEntity = InterviewQuestionEntity().apply {
+            this.interview = InterviewEntity(
+                "i1",
+                "Interview 1",
+                null,
+                false,
+                null,
+                storytellerEntity,
+            )
+        }
+        every { mockInterviewService.findEntityByAltId(any())} returns Optional.of(interviewQuestionEntity)
         val storyEntityCaptureSlot = CapturingSlot<StoryEntity>()
         every { mockStoryService.saveEntity(capture(storyEntityCaptureSlot)) } returnsArgument 0
-
-        val expectedData = TwilioData().apply {
-            this.status = twilioStatus
-            this.name = "Twilio_xSig"
-            this.altId = "Twilio|xSig"
-            this.rawJson =
-                "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"x-twilio-signature\":\"xSig\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
-        }
 
         val paramMap = HashMap<String, String>()
         paramMap["ApiVersion"] = "apiVersion"
@@ -194,6 +199,16 @@ class TwilioCallbackServiceTests {
             "abc123",
             paramMap
         )
+
+        val expectedData = TwilioData().apply {
+            this.status = twilioStatus
+            this.name = "Twilio_xSig"
+            this.altId = "Twilio|xSig"
+            this.rawJson =
+                "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"x-twilio-signature\":\"xSig\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
+            this.story = storyEntityCaptureSlot.captured
+            this.interviewQuestion = interviewQuestionEntity
+        }
 
         verify { mockDataRepository.save(eq(expectedData)) }
         verify { mockStatusRepository.save(any()) }
