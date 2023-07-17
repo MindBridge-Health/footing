@@ -99,6 +99,13 @@ CREATE TABLE IF NOT EXISTS story
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id)
 );
 
+CREATE TABLE IF NOT EXISTS media_status
+(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    received TIMESTAMP NOT NULL DEFAULT NOW(),
+    state VARCHAR(32)
+);
+
 CREATE TABLE IF NOT EXISTS media
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
@@ -106,9 +113,11 @@ CREATE TABLE IF NOT EXISTS media
     type VARCHAR(128),
     storyteller_id MEDIUMINT,
     story_id MEDIUMINT,
-    state VARCHAR(32),
+    raw_json json,
+    media_status_id MEDIUMINT,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
-    FOREIGN KEY (story_id) REFERENCES story(id)
+    FOREIGN KEY (story_id) REFERENCES story(id),
+    FOREIGN KEY (media_status_id) REFERENCES media_status(id)
 );
 
 CREATE TABLE IF NOT EXISTS story_group
@@ -197,6 +206,7 @@ CREATE TABLE IF NOT EXISTS access_policy_denied_resource_link
 CREATE TABLE IF NOT EXISTS twilio_status
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    received TIMESTAMP NOT NULL DEFAULT NOW(),
     call_sid varchar(64),
     call_status varchar(32),
     recording_sid varchar(64),
@@ -207,13 +217,15 @@ CREATE TABLE IF NOT EXISTS twilio_status
 
 CREATE TABLE IF NOT EXISTS twilio_data
 (
-    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
     status_id varchar(64) references twilio_status(id),
+    interview_question_id varchar(64) references interview_question(id),
+    story_id varchar(64) references story(id),
     raw_json json
 );
 
 -- Default Chronicler
-INSERT IGNORE INTO mb_user values (default, '0', 1, true, 'Chat', 'GPT', null, null, null);
+INSERT IGNORE INTO mb_user values (default, '0', 0, true, 'Chat', 'GPT2.0', null, null, null);
 SET @lastId := LAST_INSERT_ID();
 INSERT IGNORE INTO chronicler values (@lastId, true);
 

@@ -49,12 +49,13 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
             logger.error("Invalid Signature: $xTwilioSignature\"")
             return ResponseEntity.badRequest().build()
         }
-        
+
+        paramMap["x-twilio-signature"] = xTwilioSignature
         twilioCallbackService.handleCallback( Base36Encoder.decodeAltId(id), paramMap)
         return ResponseEntity.ok().build()
     }
 
-    private fun decodeParameters(parameters: MultiValueMap<String, String>, encoding: String): Map<String, String> {
+    private fun decodeParameters(parameters: MultiValueMap<String, String>, encoding: String): HashMap<String, String> {
         val paramMap = HashMap<String, String>()
         for (entry in parameters.entries) {
             val key = entry.key

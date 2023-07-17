@@ -34,8 +34,8 @@ class TwilioCallbackService(
 
         val savedStatus = twilioStatusRepository.save(twilioStatus)
         val twilioData = TwilioData().apply {
-            this.name = "Twilio_${callbackData["CallSid"]}"
-            this.altId = "Twilio|${callbackData["CallSid"]}"
+            this.name = "Twilio_${callbackData["x-twilio-signature"]}"
+            this.altId = "Twilio|${callbackData["x-twilio-signature"]}"
             this.status = savedStatus
             this.rawJson = twilioJson.toJSONString()
         }
