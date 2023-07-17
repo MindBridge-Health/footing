@@ -22,7 +22,7 @@ class SecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf().disable()// I don't think we need CSRF as we're using other forms to validate the request
             .authorizeHttpRequests()
-            .requestMatchers("/api/v1/health/**", "/api/v1/media**", "/api/v1/stories/**","/", "/images/**").permitAll()
+            .requestMatchers("/api/v1/health/**", "/api/v1/media**", "/api/v1/stories/**","/", "/images/**", "/error").permitAll()
             .requestMatchers("/api/v1/storytellers/{id}").hasAuthority("SCOPE_read:userdata")
             .anyRequest().permitAll()
             .and().cors()

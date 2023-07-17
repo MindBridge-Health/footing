@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 class TwilioErrorController {
     private val logger = LoggerFactory.getLogger(this::class.java)
     @PostMapping(consumes = ["application/x-www-form-urlencoded"])
-    fun post(@RequestBody body: Any) {
-        logger.error(body.toString())
+    fun post(@RequestBody body: String) {
+        logger.error(body)
     }
 }
