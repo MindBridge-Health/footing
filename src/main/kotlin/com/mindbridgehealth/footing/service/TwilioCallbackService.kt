@@ -29,29 +29,32 @@ class TwilioCallbackService(
             this.transcriptionStatus = callbackData["TranscriptionStatus"]
         }
 
+        val savedStatus = twilioStatusRepository.save(twilioStatus)
+
         val twilioJson = JSONObject()
         callbackData.entries.forEach { e -> twilioJson[e.key] = e.value }
 
-        val savedStatus = twilioStatusRepository.save(twilioStatus)
-        val twilioData = TwilioData().apply {
-            this.name = "Twilio_${callbackData["x-twilio-signature"]}"
-            this.altId = "Twilio|${callbackData["x-twilio-signature"]}"
-            this.status = savedStatus
-            this.rawJson = twilioJson.toJSONString()
-        }
-        twilioDataRepository.save(twilioData)
-
-
         callbackData["TranscriptionText"]?.let {
-            val storyteller = interviewQuestionService.findEntityByAltId(interviewQuestionId).get().interview?.storyteller ?: throw IllegalStateException("Unable to find storyteller for interview question $interviewQuestionId")
+            val interviewQuestion = interviewQuestionService.findEntityByAltId(interviewQuestionId).get()
+            val storyteller = interviewQuestion.interview?.storyteller ?: throw IllegalStateException("Unable to find storyteller for interview question $interviewQuestionId")
 
             val storyEntity = StoryEntity().apply {
                 this.name = "Twilio_InterviewQuestion_$interviewQuestionId"
                 this.text = it
                 this.storyteller = storyteller
             }
-            storyService.saveEntity(storyEntity)
+            val savedStoryEntity = storyService.saveEntity(storyEntity)
             logger.debug("Saved Story for Twilio Callback")
+
+            val twilioData = TwilioData().apply {
+                this.name = "Twilio_${callbackData["x-twilio-signature"]}"
+                this.altId = "Twilio|${callbackData["x-twilio-signature"]}"
+                this.status = savedStatus
+                this.rawJson = twilioJson.toJSONString()
+                this.interviewQuestion = interviewQuestion
+                this.story = savedStoryEntity
+            }
+            twilioDataRepository.save(twilioData)
         }
     }
 }
