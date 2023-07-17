@@ -47,10 +47,10 @@ class TwilioCallbackServiceTests {
 
         val expectedData = TwilioData().apply {
             this.status = twilioStatus
-            this.name = "Twilio_callSid"
-            this.altId = "Twilio|callSid"
+            this.name = "Twilio_xSig"
+            this.altId = "Twilio|xSig"
             this.rawJson =
-                "{\"Called\":\"2342342345\",\"Caller\":\"1231231234\",\"CallStatus\":\"completed\",\"CallSid\":\"callSid\",\"AccountSid\":\"account1\"}"
+                "{\"Called\":\"2342342345\",\"Caller\":\"1231231234\",\"CallStatus\":\"completed\",\"CallSid\":\"callSid\",\"x-twilio-signature\":\"xSig\",\"AccountSid\":\"account1\"}"
         }
 
         val paramMap = HashMap<String, String>()
@@ -59,6 +59,7 @@ class TwilioCallbackServiceTests {
         paramMap["CallStatus"] = "completed"
         paramMap["Caller"] = "1231231234"
         paramMap["Called"] = "2342342345"
+        paramMap["x-twilio-signature"] = "xSig"
 
         val twilioCallbackService =
             TwilioCallbackService(mockStatusRepository, mockDataRepository, mockInterviewService, mockStoryService)
@@ -95,10 +96,10 @@ class TwilioCallbackServiceTests {
 
         val expectedData = TwilioData().apply {
             this.status = twilioStatus
-            this.name = "Twilio_callSid"
-            this.altId = "Twilio|callSid"
+            this.name = "Twilio_xSig"
+            this.altId = "Twilio|xSig"
             this.rawJson =
-                "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
+                "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"x-twilio-signature\":\"xSig\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
         }
 
         val paramMap = HashMap<String, String>()
@@ -119,6 +120,7 @@ class TwilioCallbackServiceTests {
         paramMap["To"] = "to"
         paramMap["Direction"] = "direction"
         paramMap["Url"] = "http://localhost"
+        paramMap["x-twilio-signature"] = "xSig"
 
         val twilioCallbackService =
             TwilioCallbackService(mockStatusRepository, mockDataRepository, mockInterviewService, mockStoryService)
@@ -160,10 +162,10 @@ class TwilioCallbackServiceTests {
 
         val expectedData = TwilioData().apply {
             this.status = twilioStatus
-            this.name = "Twilio_callSid"
-            this.altId = "Twilio|callSid"
+            this.name = "Twilio_xSig"
+            this.altId = "Twilio|xSig"
             this.rawJson =
-                "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
+                "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"completed\",\"RecordingSid\":\"recordingSid\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"x-twilio-signature\":\"xSig\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
         }
 
         val paramMap = HashMap<String, String>()
@@ -184,6 +186,7 @@ class TwilioCallbackServiceTests {
         paramMap["To"] = "to"
         paramMap["Direction"] = "direction"
         paramMap["Url"] = "http://localhost"
+        paramMap["x-twilio-signature"] = "xSig"
 
         val twilioCallbackService =
             TwilioCallbackService(mockStatusRepository, mockDataRepository, mockInterviewService, mockStoryService)

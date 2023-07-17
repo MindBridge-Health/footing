@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS organization
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(128) NOT NULL
-    );
+);
 
 CREATE TABLE IF NOT EXISTS mb_user
 (
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS mb_user
     email VARCHAR(128),
     mobile VARCHAR(32),
     INDEX(alt_id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS resource
 (
@@ -29,14 +29,14 @@ CREATE TABLE IF NOT EXISTS resource
     alt_id VARCHAR(128) UNIQUE NOT NULL,
     name VARCHAR(128) NOT NULL,
     is_deleted BOOLEAN NOT NULL
-    );
+);
 
 CREATE TABLE IF NOT EXISTS tag
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(128) NOT NULL,
     text VARCHAR(128)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS resource_tag_link
 (
@@ -44,24 +44,24 @@ CREATE TABLE IF NOT EXISTS resource_tag_link
     tag_id MEDIUMINT,
     FOREIGN KEY (resource_id) REFERENCES resource(id),
     FOREIGN KEY (tag_id) REFERENCES tag(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS onboarding_status
 (
     id INT PRIMARY KEY,
     status VARCHAR(128)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS benefactor
 (
     id MEDIUMINT PRIMARY KEY REFERENCES mb_user(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS chronicler
 (
     id MEDIUMINT PRIMARY KEY REFERENCES mb_user(id),
     is_ai BOOLEAN
-    );
+);
 
 CREATE TABLE IF NOT EXISTS storyteller
 (
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS storyteller
     onboarding_status int,
     FOREIGN KEY (preferred_chronicler_id) REFERENCES chronicler(id),
     FOREIGN KEY (onboarding_status) REFERENCES  onboarding_status(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS storyteller_benefactor_link
 (
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS storyteller_benefactor_link
     benefactor_id MEDIUMINT,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
     FOREIGN KEY (benefactor_id) REFERENCES  benefactor(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS preferred_time
 (
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS preferred_time
     day varchar(16) NOT NULL,
     INDEX (storyteller_id),
     UNIQUE INDEX (storyteller_id, time, day)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS story
 (
@@ -97,7 +97,14 @@ CREATE TABLE IF NOT EXISTS story
     storyteller_id MEDIUMINT,
     text LONGTEXT,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id)
-    );
+);
+
+CREATE TABLE IF NOT EXISTS media_status
+(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    received TIMESTAMP NOT NULL DEFAULT NOW(),
+    state VARCHAR(32)
+);
 
 CREATE TABLE IF NOT EXISTS media
 (
@@ -106,17 +113,19 @@ CREATE TABLE IF NOT EXISTS media
     type VARCHAR(128),
     storyteller_id MEDIUMINT,
     story_id MEDIUMINT,
-    state VARCHAR(32),
+    raw_json json,
+    media_status_id MEDIUMINT,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
-    FOREIGN KEY (story_id) REFERENCES story(id)
-    );
+    FOREIGN KEY (story_id) REFERENCES story(id),
+    FOREIGN KEY (media_status_id) REFERENCES media_status(id)
+);
 
 CREATE TABLE IF NOT EXISTS story_group
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
     storyteller_id MEDIUMINT,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS story_group_story_link
 (
@@ -124,7 +133,7 @@ CREATE TABLE IF NOT EXISTS story_group_story_link
     story_id MEDIUMINT,
     FOREIGN KEY (story_group_id) REFERENCES story_group(id),
     FOREIGN KEY (story_id) REFERENCES story(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS question
 (
@@ -132,7 +141,7 @@ CREATE TABLE IF NOT EXISTS question
 
     text VARCHAR(128),
     custom BOOLEAN
-    );
+);
 
 CREATE TABLE IF NOT EXISTS interview
 (
@@ -144,7 +153,7 @@ CREATE TABLE IF NOT EXISTS interview
     completed BOOLEAN,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
     FOREIGN KEY (chronicler_id) REFERENCES chronicler(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS interview_question
 (
@@ -157,7 +166,7 @@ CREATE TABLE IF NOT EXISTS interview_question
     FOREIGN KEY (question_id) REFERENCES question(id),
     FOREIGN KEY (interview_id) REFERENCES interview(id),
     FOREIGN KEY (story_id) REFERENCES story(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS scheduled_interview
 (
@@ -165,55 +174,58 @@ CREATE TABLE IF NOT EXISTS scheduled_interview
     scheduled_time DATETIME UNIQUE NOT NULL,
     interview_id MEDIUMINT NOT NULL ,
     FOREIGN KEY (interview_id) REFERENCES interview(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS access_policy
 (
     id   MEDIUMINT PRIMARY KEY,
     name VARCHAR(128) NOT NULL
-    );
+);
 
 CREATE TABLE IF NOT EXISTS access_policy_user_link
 (
     access_policy_id MEDIUMINT PRIMARY KEY REFERENCES access_policy(id),
     user_id MEDIUMINT,
     FOREIGN KEY (user_id) REFERENCES mb_user(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS access_policy_allowed_resource_link
 (
     access_policy_id MEDIUMINT REFERENCES access_policy(id),
     resource_id MEDIUMINT,
     PRIMARY KEY (access_policy_id, resource_id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS access_policy_denied_resource_link
 (
     access_policy_id MEDIUMINT REFERENCES access_policy(id),
     resource_id MEDIUMINT,
     PRIMARY KEY (access_policy_id, resource_id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS twilio_status
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    received TIMESTAMP NOT NULL DEFAULT NOW(),
     call_sid varchar(64),
     call_status varchar(32),
     recording_sid varchar(64),
     recording_status varchar(32),
     transcription_sid varchar(64),
     transcription_status varchar(32)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS twilio_data
 (
-    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
     status_id varchar(64) references twilio_status(id),
+    interview_question_id varchar(64) references interview_question(id),
+    story_id varchar(64) references story(id),
     raw_json json
-    );
+);
 
 -- Default Chronicler
-INSERT IGNORE INTO mb_user values (default, '0', 1, true, 'Chat', 'GPT', null, null, null);
+INSERT IGNORE INTO mb_user values (default, '0', 0, true, 'Chat', 'GPT2.0', null, null, null);
 SET @lastId := LAST_INSERT_ID();
 INSERT IGNORE INTO chronicler values (@lastId, true);
 
