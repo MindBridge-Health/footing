@@ -1,6 +1,10 @@
 package com.mindbridgehealth.footing.service
 
+import com.mindbridgehealth.footing.api.dto.addpipe.AddPipeEvent
+import com.mindbridgehealth.footing.api.dto.addpipe.VideoCopiedPipeS3Event
 import com.mindbridgehealth.footing.data.repository.MediaRepository
+import com.mindbridgehealth.footing.data.repository.MediaStatusRepository
+import com.mindbridgehealth.footing.service.entity.MediaStatusEntity
 import com.mindbridgehealth.footing.service.mapper.MediaEntityMapper
 import com.mindbridgehealth.footing.service.model.Media
 import org.springframework.stereotype.Service
@@ -10,6 +14,7 @@ import kotlin.jvm.optionals.getOrElse
 @Service
 class MediaService(
     private val db: MediaRepository,
+    val mediaStatusDb: MediaStatusRepository,
     private val mediaMapper: MediaEntityMapper,
     private val storytellerService: StorytellerService,
     private val interviewQuestionService: InterviewQuestionService
@@ -35,16 +40,16 @@ class MediaService(
         return db.save(mediaMapper.modelToEntity(newMedia)).id.toString()
     }
 
-    fun associateMediaWithStorytellerFromInterviewQuestion(media: Media, interviewQuestionId: String) {
+    fun associateMediaWithStorytellerFromInterviewQuestion(media: Media, interviewQuestionId: String, mediaStatus: MediaStatusEntity) {
         val altId = interviewQuestionId
         val optionalIq = interviewQuestionService.findEntityByAltId(altId)
-        val storytellerId =
+        val storyteller =
             optionalIq.getOrElse { throw Exception("InterviewQuestion not found. Could not associate with Storyteller") }
-                .interview?.storyteller?.id
+                .interview?.storyteller
                 ?: throw Exception("Interview Question did not have interview or storyteller associated")
-        val storyteller = storytellerService.findStorytellerEntityById(storytellerId).getOrElse { throw Exception("Unable to find storyteller") }
         val mediaEntity = mediaMapper.modelToEntity(media)
         mediaEntity.storyteller = storyteller
+        mediaEntity.status = mediaStatus
         db.save(mediaEntity)
     }
 
@@ -52,17 +57,14 @@ class MediaService(
      * This function is only meant to update the status that comes from add pipe.
      * It is not intended to be a general update function.
      */
-    fun updateMediaStatus(media: Media, interviewQuestionId: String) {
-        val incomingMedia =  mediaMapper.modelToEntity(media)
-        val mediaEntityOptional =  incomingMedia.altId?.let {db.findByAltId(it) } ?: Optional.empty()
-        if (mediaEntityOptional.isPresent) { //TODO: Check that storyteller matches or is null e.g. isn't assigned yet
-            val mediaEntity = mediaEntityOptional.get()
-            mediaEntity.type = incomingMedia.type
-            mediaEntity.location = incomingMedia.location
-            mediaEntity.state = incomingMedia.state
-            db.save(mediaEntity)
-        } else {
-            associateMediaWithStorytellerFromInterviewQuestion(media, interviewQuestionId)
+    fun updateMediaStatus(media: Media, interviewQuestionId: String, addPipeEvent: AddPipeEvent) {
+
+        val mediaStatus = MediaStatusEntity()
+        mediaStatus.state = addPipeEvent.event
+        val savedMediaStatus = mediaStatusDb.save(mediaStatus)
+
+        if (addPipeEvent is VideoCopiedPipeS3Event) {
+            associateMediaWithStorytellerFromInterviewQuestion(media, interviewQuestionId, savedMediaStatus)
         }
     }
 

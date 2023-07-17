@@ -76,25 +76,25 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
     }
 
     private fun handleVideoRecordedEvent(event: VideoRecordedEvent): String {
-        handleEventCommon(event, event.data.id.toString(), event.data.payload, event.data.videoName, null)
+        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, null)
         return "videoRecorded"
     }
 
     private fun handleVideoConvertedEvent(event: VideoConvertedEvent): String {
-        handleEventCommon(event, event.data.id.toString(), event.data.payload, event.data.videoName, null)
+        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, null)
         return "videoConverted"
     }
 
     private fun handleVideoCopiedPipeS3Event(event: VideoCopiedPipeS3Event): String {
-        handleEventCommon(event, event.data.id.toString(), event.data.payload, event.data.videoName, event.data.url)
+        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, event.data.url)
         return "videoCopied"
     }
 
     private fun handleEventCommon(event: AddPipeEvent, id: String, payload: String, videoName: String, location: URL?) {
         val payloadMap: Map<String, String> = deserializeKeyValuePairs(payload.substring(1, payload.length - 1))
         val interviewQuestionId = Base36Encoder.decodeAltId(payloadMap["interview_question_id"] ?: throw Exception("Missing interview_question_id from payload"))
-        val media = Media(Base36Encoder.encodeAltId("AddPipe|$id"), videoName, emptyList(), location?.toURI(), "type", null, null, event.event)
-        mediaService.updateMediaStatus(media, interviewQuestionId)
+        val media = Media(Base36Encoder.encodeAltId("AddPipe|$id"), videoName, emptyList(), location?.toURI(), "type", null, null)
+        mediaService.updateMediaStatus(media, interviewQuestionId, event)
     }
 
     private fun handleUnknownEvent(event: AddPipeEvent): String {

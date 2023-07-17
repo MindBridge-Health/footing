@@ -1,6 +1,7 @@
 package com.mindbridgehealth.footing.service.entity
 
 import jakarta.persistence.*
+import javax.persistence.OneToOne
 
 @Entity
 @Table(name = "twilio_status")
@@ -26,10 +27,6 @@ class TwilioStatus {
 
     @Column(name = "transcription_status")
     var transcriptionStatus: String? = null
-
-    @OneToMany
-    @JoinColumn(name = "status_id", referencedColumnName = "id")
-    var data: MutableList<TwilioData>? = null
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -42,8 +39,7 @@ class TwilioStatus {
         if (recordingSid != other.recordingSid) return false
         if (recordingStatus != other.recordingStatus) return false
         if (transcriptionSid != other.transcriptionSid) return false
-        if (transcriptionStatus != other.transcriptionStatus) return false
-        return data == other.data
+        return transcriptionStatus == other.transcriptionStatus
     }
 
     override fun hashCode(): Int {
@@ -54,7 +50,6 @@ class TwilioStatus {
         result = 31 * result + (recordingStatus?.hashCode() ?: 0)
         result = 31 * result + (transcriptionSid?.hashCode() ?: 0)
         result = 31 * result + (transcriptionStatus?.hashCode() ?: 0)
-        result = 31 * result + (data?.hashCode() ?: 0)
         return result
     }
 
