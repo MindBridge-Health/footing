@@ -38,12 +38,20 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
 
     @PostMapping("/scheduled/")
     fun scheduleInterview(@AuthenticationPrincipal principal: Jwt, @RequestParam questionId: String, @RequestParam time: Instant?, @RequestParam name: String?, @RequestParam append: Boolean = false): String {
+        return innerScheduleInterview(principal.subject, questionId, time, name, append)
+    }
+
+    @PostMapping("/scheduled/{storytellerId}")
+    fun scheduleInterviewOnBehalfOf(@AuthenticationPrincipal principal: Jwt, @PathVariable(name = "storytellerId") sid: String, @RequestParam questionId: String, @RequestParam time: Instant?, @RequestParam name: String?, @RequestParam append: Boolean = false): String {
+        return innerScheduleInterview(sid, questionId, time, name, append)
+    }
+
+    fun innerScheduleInterview(sid: String, questionId: String, time: Instant?, name: String?, append: Boolean = false): String {
         if(append && time != null) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't specify append and a time")
         }
-        val storytellerId = principal.subject
-        val returnedInterview = service.createInterview(name ?: "unnamed", Base36Encoder.decodeAltId("c1"), storytellerId, listOf(Base36Encoder.decodeAltId(questionId)))
-        return returnedInterview.id?.let { service.scheduleInterview(storytellerId, Base36Encoder.decodeAltId(it), time, name, append) } ?: "Error"
+        val returnedInterview = service.createInterview(name ?: "unnamed", Base36Encoder.decodeAltId("c1"), sid, listOf(Base36Encoder.decodeAltId(questionId)))
+        return returnedInterview.id?.let { service.scheduleInterview(sid, Base36Encoder.decodeAltId(it), time, name, append) } ?: "Error"
     }
 
     @PostMapping("/storytellers/{storytellerId}/scheduled/{interviewId}")
