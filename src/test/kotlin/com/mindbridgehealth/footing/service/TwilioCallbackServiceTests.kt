@@ -42,14 +42,6 @@ class TwilioCallbackServiceTests {
             null
         )})
 
-        val expectedData = TwilioData().apply {
-            this.status = twilioStatus
-            this.name = "Twilio_xSig"
-            this.altId = "Twilio|xSig"
-            this.rawJson =
-                "{\"Called\":\"2342342345\",\"Caller\":\"1231231234\",\"CallStatus\":\"completed\",\"CallSid\":\"callSid\",\"x-twilio-signature\":\"xSig\",\"AccountSid\":\"account1\"}"
-        }
-
         val paramMap = HashMap<String, String>()
         paramMap["AccountSid"] = "account1"
         paramMap["CallSid"] = "callSid"

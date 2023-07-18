@@ -5,6 +5,7 @@ import com.mindbridgehealth.footing.api.dto.addpipe.VideoCopiedPipeS3Event
 import com.mindbridgehealth.footing.data.repository.MediaRepository
 import com.mindbridgehealth.footing.data.repository.MediaStatusRepository
 import com.mindbridgehealth.footing.service.entity.MediaStatusEntity
+import com.mindbridgehealth.footing.service.entity.StoryEntity
 import com.mindbridgehealth.footing.service.mapper.MediaEntityMapper
 import com.mindbridgehealth.footing.service.model.Media
 import org.springframework.stereotype.Service
@@ -14,10 +15,11 @@ import kotlin.jvm.optionals.getOrElse
 @Service
 class MediaService(
     private val db: MediaRepository,
-    val mediaStatusDb: MediaStatusRepository,
+    private val mediaStatusDb: MediaStatusRepository,
     private val mediaMapper: MediaEntityMapper,
     private val storytellerService: StorytellerService,
-    private val interviewQuestionService: InterviewQuestionService
+    private val interviewQuestionService: InterviewQuestionService,
+    val storyService: StoryService
 ) {
 
     fun findMediaById(id: String): Optional<Media> {
@@ -42,12 +44,26 @@ class MediaService(
 
     fun associateMediaWithStorytellerFromInterviewQuestion(media: Media, interviewQuestionId: String, mediaStatus: MediaStatusEntity) {
         val altId = interviewQuestionId
-        val optionalIq = interviewQuestionService.findEntityByAltId(altId)
+        val interviewQuestionEntity = interviewQuestionService.findEntityByAltId(altId).getOrElse { throw Exception("InterviewQuestion not found. Could not associate with Storyteller") }
+
+        val mediaEntity = mediaMapper.modelToEntity(media)
+
+
+
         val storyteller =
-            optionalIq.getOrElse { throw Exception("InterviewQuestion not found. Could not associate with Storyteller") }
+            interviewQuestionEntity
                 .interview?.storyteller
                 ?: throw Exception("Interview Question did not have interview or storyteller associated")
-        val mediaEntity = mediaMapper.modelToEntity(media)
+
+        var storyEntity = interviewQuestionEntity.story
+        if(storyEntity == null) {
+            storyEntity = storyService.saveEntity(StoryEntity().apply {
+                this.storyteller = storyteller
+                this.name = "AddPipe_InterviewQuestion_$interviewQuestionId"
+            })
+        }
+
+        mediaEntity.story = storyEntity
         mediaEntity.storyteller = storyteller
         mediaEntity.status = mediaStatus
         db.save(mediaEntity)
