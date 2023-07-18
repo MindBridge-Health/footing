@@ -25,6 +25,7 @@ class MediaServiceTests {
     private val mockStorytellerService = mockk<StorytellerService>()
     private val mockMediaRepository = mockk<MediaRepository>()
     private val mockMediaStatusRepository = mockk<MediaStatusRepository>()
+    private val mockStoryService = mockk<StoryService>()
     private val mediaMapper = MediaEntityMapperImpl(
         StorytellerEntityMapperImpl(
             BenefactorEntityMapperImpl(),
@@ -41,6 +42,7 @@ class MediaServiceTests {
         mockStorytellerService.clear(MockkClear.BEFORE)
         mockMediaRepository.clear(MockkClear.BEFORE)
         mockMediaStatusRepository.clear(MockkClear.BEFORE)
+        mockStoryService.clear(MockkClear.BEFORE)
 
         val storytellerEntity = StorytellerEntity().apply {
             this.id = 1
@@ -66,13 +68,15 @@ class MediaServiceTests {
         every { mockStorytellerService.findStorytellerEntityById(any()) } returns Optional.of(storytellerEntity)
         every { mockMediaRepository.save(any()) } returnsArgument 0
         every { mockMediaStatusRepository.save(any()) } returnsArgument 0
+        every { mockStoryService.saveEntity(any()) } returnsArgument 0
 
         val mediaService = MediaService(
             mockMediaRepository,
             mockMediaStatusRepository,
             mediaMapper,
             mockStorytellerService,
-            mockInterviewService
+            mockInterviewService,
+            mockStoryService,
         )
         mediaService.associateMediaWithStorytellerFromInterviewQuestion(testMedia, "abc123", MediaStatusEntity())
 
@@ -85,6 +89,7 @@ class MediaServiceTests {
         mockStorytellerService.clear(MockkClear.BEFORE)
         mockMediaRepository.clear(MockkClear.BEFORE)
         mockMediaStatusRepository.clear(MockkClear.BEFORE)
+        mockStoryService.clear(MockkClear.BEFORE)
 
         every { mockInterviewService.findEntityByAltId(any()) } returns Optional.empty()
         every { mockMediaStatusRepository.save(any()) } returnsArgument 0
@@ -94,7 +99,8 @@ class MediaServiceTests {
             mockMediaStatusRepository,
             mediaMapper,
             mockStorytellerService,
-            mockInterviewService
+            mockInterviewService,
+            mockStoryService,
         )
 
         assertThrows<Exception> { mediaService.associateMediaWithStorytellerFromInterviewQuestion(testMedia, "abc123", MediaStatusEntity()) }
@@ -107,6 +113,7 @@ class MediaServiceTests {
         mockStorytellerService.clear(MockkClear.BEFORE)
         mockMediaRepository.clear(MockkClear.BEFORE)
         mockMediaStatusRepository.clear(MockkClear.BEFORE)
+        mockStoryService.clear(MockkClear.BEFORE)
 
         val storytellerEntity = StorytellerEntity().apply {
             this.id = 1
@@ -137,7 +144,8 @@ class MediaServiceTests {
             mockMediaStatusRepository,
             mediaMapper,
             mockStorytellerService,
-            mockInterviewService
+            mockInterviewService,
+            mockStoryService,
         )
 
         assertThrows<Exception> { mediaService.associateMediaWithStorytellerFromInterviewQuestion(testMedia, "abc123", MediaStatusEntity()) }
@@ -150,6 +158,7 @@ class MediaServiceTests {
         mockStorytellerService.clear(MockkClear.BEFORE)
         mockMediaRepository.clear(MockkClear.BEFORE)
         mockMediaStatusRepository.clear(MockkClear.BEFORE)
+        mockStoryService.clear(MockkClear.BEFORE)
 
         val storytellerEntity = StorytellerEntity().apply {
             this.id = 1
@@ -173,12 +182,14 @@ class MediaServiceTests {
             this.id = 1; this.altId = "iq1"; this.interview =
             InterviewEntity().apply { this.storyteller = StorytellerEntity().apply { this.id = 1 } }
         })
+        every { mockStoryService.saveEntity(any()) } returnsArgument 0
         val mediaService = MediaService(
             mockMediaRepository,
             mockMediaStatusRepository,
             mediaMapper,
             mockStorytellerService,
-            mockInterviewService
+            mockInterviewService,
+            mockStoryService,
         )
 
         val newMedia = Media(

@@ -68,32 +68,32 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
         }
 
         return when (event) {
-            is VideoRecordedEvent -> handleVideoRecordedEvent(event)
-            is VideoConvertedEvent -> handleVideoConvertedEvent(event)
-            is VideoCopiedPipeS3Event -> handleVideoCopiedPipeS3Event(event)
+            is VideoRecordedEvent -> handleVideoRecordedEvent(event, xPipeSignature)
+            is VideoConvertedEvent -> handleVideoConvertedEvent(event, xPipeSignature)
+            is VideoCopiedPipeS3Event -> handleVideoCopiedPipeS3Event(event, xPipeSignature)
             else -> handleUnknownEvent(event)
         }
     }
 
-    private fun handleVideoRecordedEvent(event: VideoRecordedEvent): String {
-        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, null)
+    private fun handleVideoRecordedEvent(event: VideoRecordedEvent, signature: String): String {
+        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, null, signature)
         return "videoRecorded"
     }
 
-    private fun handleVideoConvertedEvent(event: VideoConvertedEvent): String {
-        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, null)
+    private fun handleVideoConvertedEvent(event: VideoConvertedEvent, signature: String): String {
+        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, null, signature)
         return "videoConverted"
     }
 
-    private fun handleVideoCopiedPipeS3Event(event: VideoCopiedPipeS3Event): String {
-        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, event.data.url)
+    private fun handleVideoCopiedPipeS3Event(event: VideoCopiedPipeS3Event, signature: String): String {
+        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, event.data.url, signature)
         return "videoCopied"
     }
 
-    private fun handleEventCommon(event: AddPipeEvent, id: String, payload: String, videoName: String, location: URL?) {
+    private fun handleEventCommon(event: AddPipeEvent, id: String, payload: String, videoName: String, location: URL?, signature: String) {
         val payloadMap: Map<String, String> = deserializeKeyValuePairs(payload.substring(1, payload.length - 1))
         val interviewQuestionId = Base36Encoder.decodeAltId(payloadMap["interview_question_id"] ?: throw Exception("Missing interview_question_id from payload"))
-        val media = Media(Base36Encoder.encodeAltId("AddPipe|$id"), videoName, emptyList(), location?.toURI(), "type", null, null)
+        val media = Media(Base36Encoder.encodeAltId("AddPipe|$signature"), videoName, emptyList(), location?.toURI(), "type", null, null)
         mediaService.updateMediaStatus(media, interviewQuestionId, event)
     }
 
