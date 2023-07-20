@@ -14,7 +14,9 @@ class TwilioSnsService: SmsNotificationService {
     val generalMessageFlowId = "FW11bebd1ed9beede70cbf003a811115b1"
     val interviewMessageFlowId = "FW11eb3d59f134dc3ef56211df72adc21d"
     override fun sendMessage(to: String, message: String) {
-        sendTwilioReminder(generalMessageFlowId, to, HashMap())
+        val parameters = HashMap<String, Any>()
+        parameters["message"] = message
+        sendTwilioReminder(generalMessageFlowId, to, parameters)
     }
 
     override fun sendInterviewLink(to: String, name: String, question: String, interviewUrl: String, interviewAltId: String, interviewQuestionId: String) {
