@@ -22,6 +22,9 @@ class TwilioStatus {
     @Column(name = "recording_status")
     var recordingStatus: String? = null
 
+    @Column(name = "recording_url")
+    var recordingUrl: String? = null
+
     @Column(name = "transcription_sid")
     var transcriptionSid: String? = null
 
@@ -38,6 +41,7 @@ class TwilioStatus {
         if (callStatus != other.callStatus) return false
         if (recordingSid != other.recordingSid) return false
         if (recordingStatus != other.recordingStatus) return false
+        if (recordingUrl != other.recordingUrl) return false
         if (transcriptionSid != other.transcriptionSid) return false
         return transcriptionStatus == other.transcriptionStatus
     }
@@ -48,6 +52,7 @@ class TwilioStatus {
         result = 31 * result + (callStatus?.hashCode() ?: 0)
         result = 31 * result + (recordingSid?.hashCode() ?: 0)
         result = 31 * result + (recordingStatus?.hashCode() ?: 0)
+        result = 31 * result + (recordingUrl?.hashCode() ?: 0)
         result = 31 * result + (transcriptionSid?.hashCode() ?: 0)
         result = 31 * result + (transcriptionStatus?.hashCode() ?: 0)
         return result
