@@ -32,12 +32,16 @@ class InterviewService(
     private val scheduledInterviewEntityMapper: ScheduledInterviewEntityMapper
 ) {
 
-    fun findInterviewById(interviewId: String): Interview {
+    fun findInterviewByAltId(interviewId: String): Interview {
         return interviewMapper.entityToModel(db.findByAltId(interviewId).orElseThrow()) //TODO: Footing-2 Revisit exception
     }
 
     fun findInterviewEntityByAltId(interviewId: String): InterviewEntity {
         return db.findByAltId(interviewId).orElseThrow() //TODO: Footing-2 Revisit exception
+    }
+
+    fun findInterviewEntityById(interviewId: Int): InterviewEntity {
+        return db.findById(interviewId).orElseThrow() //TODO: Footing-2 Revisit exception
     }
 
     fun findByStorytellerId(storytellerId: String): Collection<Interview> {

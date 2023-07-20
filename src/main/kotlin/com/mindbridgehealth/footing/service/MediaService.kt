@@ -19,7 +19,8 @@ class MediaService(
     private val mediaMapper: MediaEntityMapper,
     private val storytellerService: StorytellerService,
     private val interviewQuestionService: InterviewQuestionService,
-    val storyService: StoryService
+    val storyService: StoryService,
+    private val smsNotificationService: SmsNotificationService
 ) {
 
     fun findMediaById(id: String): Optional<Media> {
@@ -67,6 +68,7 @@ class MediaService(
         mediaEntity.storyteller = storyteller
         mediaEntity.status = mediaStatus
         db.save(mediaEntity)
+        storyteller.mobile?.let { smsNotificationService.sendMessage(it, "Hi ${storyteller.firstname}, this is MindBridge Health. We've received the video file you uploaded for your recent interview. Thank you, and have a wonderful day!") }
     }
 
     /**

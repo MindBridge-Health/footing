@@ -9,10 +9,7 @@ import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.model.Tag
 import com.ninjasquad.springmockk.MockkClear
 import com.ninjasquad.springmockk.clear
-import io.mockk.CapturingSlot
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.net.URI
@@ -26,6 +23,7 @@ class MediaServiceTests {
     private val mockMediaRepository = mockk<MediaRepository>()
     private val mockMediaStatusRepository = mockk<MediaStatusRepository>()
     private val mockStoryService = mockk<StoryService>()
+    private val mockSmsNotificationService = mockk<SmsNotificationService>()
     private val mediaMapper = MediaEntityMapperImpl(
         StorytellerEntityMapperImpl(
             BenefactorEntityMapperImpl(),
@@ -43,10 +41,12 @@ class MediaServiceTests {
         mockMediaRepository.clear(MockkClear.BEFORE)
         mockMediaStatusRepository.clear(MockkClear.BEFORE)
         mockStoryService.clear(MockkClear.BEFORE)
+        mockSmsNotificationService.clear(MockkClear.BEFORE)
 
         val storytellerEntity = StorytellerEntity().apply {
             this.id = 1
             this.altId = "bdr321"
+            this.mobile = "1231231234"
         }
 
         val interview = InterviewEntity().apply {
@@ -69,6 +69,7 @@ class MediaServiceTests {
         every { mockMediaRepository.save(any()) } returnsArgument 0
         every { mockMediaStatusRepository.save(any()) } returnsArgument 0
         every { mockStoryService.saveEntity(any()) } returnsArgument 0
+        every { mockSmsNotificationService.sendMessage(any(), any()) } returns Unit
 
         val mediaService = MediaService(
             mockMediaRepository,
@@ -77,10 +78,12 @@ class MediaServiceTests {
             mockStorytellerService,
             mockInterviewService,
             mockStoryService,
+            mockSmsNotificationService,
         )
         mediaService.associateMediaWithStorytellerFromInterviewQuestion(testMedia, "abc123", MediaStatusEntity())
 
         verify { mockMediaRepository.save(any()) }
+        verify { mockSmsNotificationService.sendMessage(any(), any()) }
     }
 
     @Test
@@ -90,9 +93,11 @@ class MediaServiceTests {
         mockMediaRepository.clear(MockkClear.BEFORE)
         mockMediaStatusRepository.clear(MockkClear.BEFORE)
         mockStoryService.clear(MockkClear.BEFORE)
+        mockSmsNotificationService.clear(MockkClear.BEFORE)
 
         every { mockInterviewService.findEntityByAltId(any()) } returns Optional.empty()
         every { mockMediaStatusRepository.save(any()) } returnsArgument 0
+        every { mockSmsNotificationService.sendMessage(any(), any()) } returns Unit
 
         val mediaService = MediaService(
             mockMediaRepository,
@@ -101,10 +106,11 @@ class MediaServiceTests {
             mockStorytellerService,
             mockInterviewService,
             mockStoryService,
+            mockSmsNotificationService,
         )
 
         assertThrows<Exception> { mediaService.associateMediaWithStorytellerFromInterviewQuestion(testMedia, "abc123", MediaStatusEntity()) }
-
+        verify { mockSmsNotificationService wasNot called }
     }
 
     @Test
@@ -114,6 +120,7 @@ class MediaServiceTests {
         mockMediaRepository.clear(MockkClear.BEFORE)
         mockMediaStatusRepository.clear(MockkClear.BEFORE)
         mockStoryService.clear(MockkClear.BEFORE)
+        mockSmsNotificationService.clear(MockkClear.BEFORE)
 
         val storytellerEntity = StorytellerEntity().apply {
             this.id = 1
@@ -138,6 +145,7 @@ class MediaServiceTests {
         every { mockInterviewService.findEntityByAltId(any()) } returns Optional.of(interviewQuestionEntity)
         every { mockStorytellerService.findStorytellerEntityById(any()) } returns Optional.empty()
         every { mockMediaStatusRepository.save(any()) } returnsArgument 0
+        every { mockSmsNotificationService.sendMessage(any(), any()) } returns Unit
 
         val mediaService = MediaService(
             mockMediaRepository,
@@ -146,10 +154,11 @@ class MediaServiceTests {
             mockStorytellerService,
             mockInterviewService,
             mockStoryService,
+            mockSmsNotificationService,
         )
 
         assertThrows<Exception> { mediaService.associateMediaWithStorytellerFromInterviewQuestion(testMedia, "abc123", MediaStatusEntity()) }
-
+        verify { mockSmsNotificationService wasNot called }
     }
 
     @Test
@@ -159,10 +168,12 @@ class MediaServiceTests {
         mockMediaRepository.clear(MockkClear.BEFORE)
         mockMediaStatusRepository.clear(MockkClear.BEFORE)
         mockStoryService.clear(MockkClear.BEFORE)
+        mockSmsNotificationService.clear(MockkClear.BEFORE)
 
         val storytellerEntity = StorytellerEntity().apply {
             this.id = 1
             this.altId = "bdr321"
+            this.mobile = "1231231234"
         }
 
         every { mockMediaRepository.findByAltId(any()) } returns Optional.of(MediaEntity().apply {
@@ -180,9 +191,10 @@ class MediaServiceTests {
         every { mockMediaStatusRepository.save(any()) } returnsArgument 0
         every { mockInterviewService.findEntityByAltId(any()) } returns Optional.of(InterviewQuestionEntity().apply {
             this.id = 1; this.altId = "iq1"; this.interview =
-            InterviewEntity().apply { this.storyteller = StorytellerEntity().apply { this.id = 1 } }
+            InterviewEntity().apply { this.storyteller = storytellerEntity }
         })
         every { mockStoryService.saveEntity(any()) } returnsArgument 0
+        every { mockSmsNotificationService.sendMessage(any(), any()) } returns Unit
         val mediaService = MediaService(
             mockMediaRepository,
             mockMediaStatusRepository,
@@ -190,6 +202,7 @@ class MediaServiceTests {
             mockStorytellerService,
             mockInterviewService,
             mockStoryService,
+            mockSmsNotificationService,
         )
 
         val newMedia = Media(
@@ -248,6 +261,7 @@ class MediaServiceTests {
         )
         assertEquals("http://new.location", mediaCaptureSlot.captured.location)
         assertEquals("video", mediaCaptureSlot.captured.type)
+        verify { mockSmsNotificationService.sendMessage(any(), any()) }
 //        assertEquals("converted", mediaCaptureSlot.captured.state)
 
 
