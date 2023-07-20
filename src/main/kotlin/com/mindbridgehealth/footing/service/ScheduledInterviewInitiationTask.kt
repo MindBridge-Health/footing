@@ -34,7 +34,7 @@ class ScheduledInterviewInitiationTask(
     //ToDo This needs to account for concurrency
     @Scheduled(cron = "0 * * * * *")
     fun performTask() {
-        val scheduledInterviews = scheduledInterviewRepository.findAllByScheduledTime(Timestamp.from(Instant.now()))
+        val scheduledInterviews = scheduledInterviewRepository.findAllByScheduledTime(Timestamp.from(Instant.now().plusSeconds(60)))
         logger.debug("Looking for scheduled interviews")
         scheduledInterviews.forEach { scheduledInterviewEntity ->
             processScheduledInterview(scheduledInterviewEntity)
