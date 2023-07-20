@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS organization
     name VARCHAR(128) NOT NULL
 );
 
+-- ToDo link organization to mb_user
+
 CREATE TABLE IF NOT EXISTS mb_user
 (
     id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -211,6 +213,7 @@ CREATE TABLE IF NOT EXISTS twilio_status
     call_status varchar(32),
     recording_sid varchar(64),
     recording_status varchar(32),
+    recording_url varchar(256),
     transcription_sid varchar(64),
     transcription_status varchar(32)
 );

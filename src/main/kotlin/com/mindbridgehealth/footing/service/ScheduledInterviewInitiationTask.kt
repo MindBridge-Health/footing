@@ -62,7 +62,7 @@ class ScheduledInterviewInitiationTask(
             logAndThrow("Unable to find mobile number for Storyteller ${interview.storyteller?.id} scheduled interview: ${scheduledInterviewEntity.name} Interview Id: ${scheduledInterviewEntity.interview?.id}")
         }
         val questionString =
-            "Here is your question for your upcoming MindBridge Health interview: $interviewQuestionText"
+            "Here is your question for your MindBridge Health interview: $interviewQuestionText"
         val encodedQuestion =
             URLEncoder.encode(interviewQuestionText, StandardCharsets.UTF_8.toString())
         val url =

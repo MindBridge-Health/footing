@@ -25,14 +25,21 @@ class TwilioCallbackService(
             this.callStatus = callbackData["CallStatus"]
             this.recordingSid = callbackData["RecordingSid"]
             this.recordingStatus = callbackData["RecordingStatus"]
+            this.recordingUrl = callbackData["RecordingUrl"]
             this.transcriptionSid = callbackData["TranscriptionSid"]
             this.transcriptionStatus = callbackData["TranscriptionStatus"]
         }
 
         val savedStatus = twilioStatusRepository.save(twilioStatus)
-
         val twilioJson = JSONObject()
         callbackData.entries.forEach { e -> twilioJson[e.key] = e.value }
+
+        val twilioData = TwilioData().apply {
+            this.name = "Twilio_${callbackData["x-twilio-signature"]}"
+            this.altId = "Twilio|${callbackData["x-twilio-signature"]}"
+            this.status = savedStatus
+            this.rawJson = twilioJson.toJSONString()
+        }
 
         callbackData["TranscriptionText"]?.let {
             val interviewQuestion = interviewQuestionService.findEntityByAltId(interviewQuestionId).get()
@@ -44,17 +51,14 @@ class TwilioCallbackService(
                 this.storyteller = storyteller
             }
             val savedStoryEntity = storyService.saveEntity(storyEntity)
-            logger.debug("Saved Story for Twilio Callback")
 
-            val twilioData = TwilioData().apply {
-                this.name = "Twilio_${callbackData["x-twilio-signature"]}"
-                this.altId = "Twilio|${callbackData["x-twilio-signature"]}"
-                this.status = savedStatus
-                this.rawJson = twilioJson.toJSONString()
-                this.interviewQuestion = interviewQuestion
+            twilioData.apply {
                 this.story = savedStoryEntity
+                this.interviewQuestion = interviewQuestion
             }
-            twilioDataRepository.save(twilioData)
+            logger.debug("Saved Story for Twilio Callback")
         }
+
+        twilioDataRepository.save(twilioData)
     }
 }
