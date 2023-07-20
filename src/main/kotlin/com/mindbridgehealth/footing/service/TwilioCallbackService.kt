@@ -1,5 +1,6 @@
 package com.mindbridgehealth.footing.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.mindbridgehealth.footing.data.repository.TwilioDataRepository
 import com.mindbridgehealth.footing.data.repository.TwilioStatusRepository
 import com.mindbridgehealth.footing.service.entity.StoryEntity
@@ -15,7 +16,8 @@ class TwilioCallbackService(
     private val twilioStatusRepository: TwilioStatusRepository,
     private val twilioDataRepository: TwilioDataRepository,
     private val interviewQuestionService: InterviewQuestionService,
-    private val storyService: StoryService
+    private val storyService: StoryService,
+    private val smsNotificationService: SmsNotificationService
 ) {
 
     private val logger = LoggerFactory.getLogger(TwilioCallbackService::class.java)
@@ -41,10 +43,11 @@ class TwilioCallbackService(
             this.rawJson = twilioJson.toJSONString()
         }
 
-        callbackData["TranscriptionText"]?.let {
-            val interviewQuestion = interviewQuestionService.findEntityByAltId(interviewQuestionId).get()
-            val storyteller = interviewQuestion.interview?.storyteller ?: throw IllegalStateException("Unable to find storyteller for interview question $interviewQuestionId")
+        var notifyReceiptOfRecording = callbackData["RecordingStatus"] == "complete"
+        val interviewQuestion = interviewQuestionService.findEntityByAltId(interviewQuestionId).get()
+        val storyteller = interviewQuestion.interview?.storyteller ?: throw IllegalStateException("Unable to find storyteller for interview question $interviewQuestionId")
 
+        callbackData["TranscriptionText"]?.let {
             val storyEntity = StoryEntity().apply {
                 this.name = "Twilio_InterviewQuestion_$interviewQuestionId"
                 this.text = it
@@ -56,7 +59,12 @@ class TwilioCallbackService(
                 this.story = savedStoryEntity
                 this.interviewQuestion = interviewQuestion
             }
+            notifyReceiptOfRecording = false
             logger.debug("Saved Story for Twilio Callback")
+        }
+
+        if(notifyReceiptOfRecording) {
+            callbackData["To"]?.let { smsNotificationService.sendMessage(it, "Hi ${storyteller.firstname}, this is MindBridge Health. We have received the audio recording of your recent interview.") }
         }
 
         twilioDataRepository.save(twilioData)

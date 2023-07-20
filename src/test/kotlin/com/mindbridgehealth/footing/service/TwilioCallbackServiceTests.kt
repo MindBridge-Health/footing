@@ -22,28 +22,37 @@ class TwilioCallbackServiceTests {
     private val mockStatusRepository = mockk<TwilioStatusRepository>()
     private val mockInterviewService = mockk<InterviewQuestionService>()
     private val mockStoryService = mockk<StoryService>()
+    private val mockSmsNotificationService = mockk<SmsNotificationService>()
 
 
     @Test
-    fun handleCallback_sparseData_sparseJson() {
+    fun handleCallback_callComplete_callJson_noNotify() {
         mockDataRepository.clear(MockkClear.BEFORE)
         mockStatusRepository.clear(MockkClear.BEFORE)
         mockInterviewService.clear(MockkClear.BEFORE)
         mockStoryService.clear(MockkClear.BEFORE)
-
+        mockSmsNotificationService.clear(MockkClear.BEFORE)
 
 
         every { mockDataRepository.save(any()) } returnsArgument (0)
         val statusEntityCaptureSlot = CapturingSlot<TwilioStatus>()
         every { mockStatusRepository.save(capture(statusEntityCaptureSlot)) } answers  { statusEntityCaptureSlot.captured.apply { this.id = 1 }}
-        every { mockInterviewService.findEntityByAltId(any()) } returns Optional.of(InterviewQuestionEntity().apply { this.interview = InterviewEntity(
-            null,
-            null,
-            null,
-            false,
-            null,
-            null
-        )})
+        val storytellerEntity = StorytellerEntity().apply {
+            this.id = 1
+            this.altId = "st1"
+        }
+        val interviewQuestionEntity = InterviewQuestionEntity().apply {
+            this.interview = InterviewEntity(
+                "i1",
+                "Interview 1",
+                null,
+                false,
+                null,
+                storytellerEntity,
+            )
+        }
+        every { mockInterviewService.findEntityByAltId(any())} returns Optional.of(interviewQuestionEntity)
+        every { mockSmsNotificationService.sendMessage(any(), any()) }
 
         val paramMap = HashMap<String, String>()
         paramMap["AccountSid"] = "account1"
@@ -54,29 +63,35 @@ class TwilioCallbackServiceTests {
         paramMap["x-twilio-signature"] = "xSig"
 
         val twilioCallbackService =
-            TwilioCallbackService(mockStatusRepository, mockDataRepository, mockInterviewService, mockStoryService)
+            TwilioCallbackService(mockStatusRepository, mockDataRepository, mockInterviewService, mockStoryService, mockSmsNotificationService)
         twilioCallbackService.handleCallback(
             "abc123",
             paramMap
         )
 
-        verify { mockDataRepository.save(any()) wasNot called}
+        verify { mockDataRepository.save(any())}
         verify { mockStatusRepository.save(any()) }
+        verify { mockSmsNotificationService wasNot called }
     }
 
     @Test
-    fun handleCallback_fullData_fullJson() {
+    fun handleCallback_callRecorded_recordedJson_notify() {
         mockDataRepository.clear(MockkClear.BEFORE)
         mockStatusRepository.clear(MockkClear.BEFORE)
         mockInterviewService.clear(MockkClear.BEFORE)
         mockStoryService.clear(MockkClear.BEFORE)
-
+        mockSmsNotificationService.clear(MockkClear.BEFORE)
 
 
         val dataCapturingSlot = CapturingSlot<TwilioData>()
         every { mockDataRepository.save(capture(dataCapturingSlot)) } answers {dataCapturingSlot.captured.apply { this.id = 2 }}
         val statusEntityCaptureSlot = CapturingSlot<TwilioStatus>()
-        every { mockStatusRepository.save(capture(statusEntityCaptureSlot)) } answers  { statusEntityCaptureSlot.captured.apply { this.id = 1 }; println(ObjectMapper().writeValueAsString(statusEntityCaptureSlot.captured)); statusEntityCaptureSlot.captured}
+        every { mockStatusRepository.save(capture(statusEntityCaptureSlot)) } answers  { statusEntityCaptureSlot.captured.apply { this.id = 1 }}
+        val storytellerEntity = StorytellerEntity().apply {
+            this.id = 1
+            this.altId = "st1"
+            this.firstname = "Joe"
+        }
         val interviewQuestionEntity = InterviewQuestionEntity().apply {
             this.altId = "55da68f2"
             this.interview = InterviewEntity(
@@ -85,20 +100,13 @@ class TwilioCallbackServiceTests {
                 null,
                 false,
                 null,
-                StorytellerEntity().apply { this.id = 1; this.altId = "S1" }
+                storytellerEntity
             )
         }
         every { mockInterviewService.findEntityByAltId(any()) } returns Optional.of(interviewQuestionEntity)
+        every { mockSmsNotificationService.sendMessage(any(), any()) } returns Unit
 
-        val storyEntity = StoryEntity().apply {
-            this.altId = "88f58600"
-            this.name = "Twilio_InterviewQuestion_abc123"
-            this.text = "transcriptionText"
-            this.storyteller = storyteller
-        }
-        every { mockStoryService.saveEntity(any()) } returns storyEntity
-
-        val rawJson = "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"callStatus\",\"RecordingSid\":\"recordingSid\",\"RecordingStatus\":\"recordingStatus\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"x-twilio-signature\":\"xSig\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
+        val rawJson = "{\"ApiVersion\":\"apiVersion\",\"Called\":\"2342342345\",\"CallStatus\":\"callStatus\",\"RecordingSid\":\"recordingSid\",\"RecordingStatus\":\"complete\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"x-twilio-signature\":\"xSig\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"Caller\":\"1231231234\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
         val expectedData = TwilioData().apply {
             this.id = 2
             this.status = TwilioStatus().apply {
@@ -106,16 +114,12 @@ class TwilioCallbackServiceTests {
                 this.callSid = "callSid"
                 this.callStatus = "callStatus"
                 this.recordingSid = "recordingSid"
-                this.recordingStatus = "recordingStatus"
+                this.recordingStatus = "complete"
                 this.recordingUrl = "recordingUrl"
-                this.transcriptionSid = "transcriptionSid"
-                this.transcriptionStatus = "transcriptionStatus"
             }
             this.name = "Twilio_xSig"
             this.altId = "Twilio|xSig"
             this.rawJson = rawJson
-            this.story = storyEntity
-            this.interviewQuestion = interviewQuestionEntity
         }
 
         //Weird shortcut to get a Map from the JSON
@@ -124,23 +128,26 @@ class TwilioCallbackServiceTests {
         val paramMap: HashMap<String, String> = ObjectMapper().readValue(rawJson, typeRef)
 
         val twilioCallbackService =
-            TwilioCallbackService(mockStatusRepository, mockDataRepository, mockInterviewService, mockStoryService)
+            TwilioCallbackService(mockStatusRepository, mockDataRepository, mockInterviewService, mockStoryService, mockSmsNotificationService)
         twilioCallbackService.handleCallback(
             "abc123",
             paramMap
         )
-
+        //Useful for debugging
+//        println(ObjectMapper().writeValueAsString(expectedData))
+//        println(ObjectMapper().writeValueAsString(dataCapturingSlot.captured))
         verify { mockDataRepository.save(eq(expectedData)) }
         verify { mockStatusRepository.save(any()) }
+        verify { mockSmsNotificationService.sendMessage(any(), any()) }
     }
 
     @Test
-    fun handleCallbackFindInterview_saveStory_success() {
+    fun handleCallbackFindInterview_transcriptionComplete_saveStory_noNotify() {
         mockDataRepository.clear(MockkClear.BEFORE)
         mockStatusRepository.clear(MockkClear.BEFORE)
         mockInterviewService.clear(MockkClear.BEFORE)
         mockStoryService.clear(MockkClear.BEFORE)
-
+        mockSmsNotificationService.clear(MockkClear.BEFORE)
 
 
         val dataCapturingSlot = CapturingSlot<TwilioData>()
@@ -164,15 +171,16 @@ class TwilioCallbackServiceTests {
         every { mockInterviewService.findEntityByAltId(any())} returns Optional.of(interviewQuestionEntity)
         val storyEntityCaptureSlot = CapturingSlot<StoryEntity>()
         every { mockStoryService.saveEntity(capture(storyEntityCaptureSlot)) } answers {storyEntityCaptureSlot.captured.apply { this.id = 1 }}
+        every { mockSmsNotificationService.sendInterviewLink(any(), any(), any(), any(), any(), any()) } returns Unit
 
         //Weird shortcut to get a Map from the JSON
-        val rawJson = "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"callStatus\",\"RecordingSid\":\"recordingSid\",\"RecordingStatus\":\"recordingStatus\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"x-twilio-signature\":\"xSig\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
+        val rawJson = "{\"ApiVersion\":\"apiVersion\",\"TranscriptionType\":\"transcriptionType\",\"TranscriptionUrl\":\"transcriptionUrl\",\"TranscriptionSid\":\"transcriptionSid\",\"Called\":\"2342342345\",\"CallStatus\":\"callStatus\",\"RecordingSid\":\"recordingSid\",\"RecordingStatus\":\"complete\",\"RecordingUrl\":\"recordingUrl\",\"From\":\"from\",\"x-twilio-signature\":\"xSig\",\"Direction\":\"direction\",\"AccountSid\":\"account1\",\"Url\":\"http:\\/\\/localhost\",\"TranscriptionText\":\"transcriptionText\",\"Caller\":\"1231231234\",\"TranscriptionStatus\":\"transcriptionStatus\",\"CallSid\":\"callSid\",\"To\":\"to\"}"
         class B: TypeReference<HashMap<String, String>>()
         val typeRef = B()
         val paramMap: HashMap<String, String> = ObjectMapper().readValue(rawJson, typeRef)
 
         val twilioCallbackService =
-            TwilioCallbackService(mockStatusRepository, mockDataRepository, mockInterviewService, mockStoryService)
+            TwilioCallbackService(mockStatusRepository, mockDataRepository, mockInterviewService, mockStoryService, mockSmsNotificationService)
         twilioCallbackService.handleCallback(
             "abc123",
             paramMap
@@ -185,7 +193,7 @@ class TwilioCallbackServiceTests {
                 this.callSid = "callSid"
                 this.callStatus = "callStatus"
                 this.recordingSid = "recordingSid"
-                this.recordingStatus = "recordingStatus"
+                this.recordingStatus = "complete"
                 this.recordingUrl = "recordingUrl"
                 this.transcriptionSid = "transcriptionSid"
                 this.transcriptionStatus = "transcriptionStatus"
@@ -197,10 +205,9 @@ class TwilioCallbackServiceTests {
             this.interviewQuestion = interviewQuestionEntity
         }
 
-        println(ObjectMapper().writeValueAsString(expectedData))
-        println(ObjectMapper().writeValueAsString(dataCapturingSlot.captured))
         verify { mockDataRepository.save(eq(expectedData)) }
         verify { mockStatusRepository.save(any()) }
+        verify { mockSmsNotificationService wasNot called }
 
         val expectedStoryEntity = StoryEntity().apply {
             this.name = "Twilio_InterviewQuestion_abc123"

@@ -27,7 +27,7 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
 
     @GetMapping("/{id}")
     fun get(@PathVariable id: String): Interview {
-        return service.findInterviewById(Base36Encoder.decodeAltId(id))
+        return service.findInterviewByAltId(Base36Encoder.decodeAltId(id))
     }
 
     @PostMapping("/storytellers/{storytellerId}/chroniclers/{chroniclerId}")

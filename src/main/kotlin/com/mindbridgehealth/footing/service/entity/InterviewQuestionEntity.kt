@@ -31,12 +31,27 @@ class InterviewQuestionEntity: ResourceEntity() {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val that = other as InterviewQuestionEntity
-        return id == that.id && name == that.name && completed == that.completed && skipped == that.skipped && interview == that.interview && question == that.question && story == that.story
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as InterviewQuestionEntity
+
+        if (completed != other.completed) return false
+        if (skipped != other.skipped) return false
+        if (interview != other.interview) return false
+        if (question != other.question) return false
+        return story == other.story
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(id, name, completed, skipped, interview, question, story)
+        var result = super.hashCode()
+        result = 31 * result + completed.hashCode()
+        result = 31 * result + skipped.hashCode()
+        result = 31 * result + (interview?.hashCode() ?: 0)
+        result = 31 * result + (question?.hashCode() ?: 0)
+        result = 31 * result + (story?.hashCode() ?: 0)
+        return result
     }
+
+
 }

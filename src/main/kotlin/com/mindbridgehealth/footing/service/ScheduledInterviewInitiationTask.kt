@@ -21,6 +21,7 @@ class ScheduledInterviewInitiationTask(
     private val scheduledInterviewRepository: ScheduledInterviewRepository,
     private val interviewService: InterviewService,
     private val interviewQuestionService: InterviewQuestionService,
+    private val smsNotificationService: SmsNotificationService,
     applicationProperties: ApplicationProperties
 ) {
 
@@ -42,7 +43,7 @@ class ScheduledInterviewInitiationTask(
 
     private fun processScheduledInterview(scheduledInterviewEntity: ScheduledInterviewEntity) {
         logger.debug("Reminding Interview: ${scheduledInterviewEntity.name}")
-        val interview = scheduledInterviewEntity.interview?.altId?.let { interviewService.findInterviewEntityByAltId(it) } //ToDo Consider lookup by id (indexed) rather than altId (not indexed)
+        val interview = scheduledInterviewEntity.interview?.id?.let { interviewService.findInterviewEntityById(it) }
         val interviewQuestions = interview?.id?.let { interviewQuestionService.findEntitiesByInterviewId(it) }
         if(interviewQuestions.isNullOrEmpty()) {
             logAndThrow("Interview had no questions associated with it ${scheduledInterviewEntity.interview?.id}")
@@ -68,14 +69,7 @@ class ScheduledInterviewInitiationTask(
         val url =
             "http://app.mindbridgehealth.com/interview.html?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&rtel=$number&question=$encodedQuestion&interview_id=$interviewAltId&interview_question_id=$interviewQuestionId"
 
-        val parameters = HashMap<String, Any>()
-        parameters["firstname"] = name
-        parameters["question"] = questionString
-        parameters["interviewurl"] = url
-        parameters["interview_id"] = interviewAltId
-        parameters["interview_question_id"] = interviewQuestionId
-
-        sendTwilioReminder(number!!, parameters, scheduledInterviewEntity)
+        smsNotificationService.sendInterviewLink(number!!, name, questionString, url, interviewAltId, interviewQuestionId)
 
         scheduledInterviewRepository.delete(scheduledInterviewEntity)
     }
@@ -83,17 +77,5 @@ class ScheduledInterviewInitiationTask(
     private fun logAndThrow(errorMsg: String) {
         logger.error(errorMsg)
         throw IllegalStateException(errorMsg)
-    }
-
-    private fun sendTwilioReminder(
-        number: String,
-        parameters: HashMap<String, Any>,
-        scheduledInterviewEntity: ScheduledInterviewEntity
-    ) {
-        val client =
-            ExecutionCreator("FW11eb3d59f134dc3ef56211df72adc21d", PhoneNumber(number), PhoneNumber("+18443555050"))
-        client.setParameters(parameters)
-        val execution = client.create()
-        logger.info("Kicked off Twilio Reminder, SID: ${execution.sid}, Interview: ${scheduledInterviewEntity.name}")
     }
 }
