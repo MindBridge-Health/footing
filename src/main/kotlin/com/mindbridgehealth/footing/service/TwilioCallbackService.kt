@@ -1,6 +1,5 @@
 package com.mindbridgehealth.footing.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.mindbridgehealth.footing.data.repository.TwilioDataRepository
 import com.mindbridgehealth.footing.data.repository.TwilioStatusRepository
 import com.mindbridgehealth.footing.service.entity.StoryEntity
@@ -17,7 +16,8 @@ class TwilioCallbackService(
     private val twilioDataRepository: TwilioDataRepository,
     private val interviewQuestionService: InterviewQuestionService,
     private val storyService: StoryService,
-    private val smsNotificationService: SmsNotificationService
+    private val smsNotificationService: SmsNotificationService,
+    private val interviewService: InterviewService
 ) {
 
     private val logger = LoggerFactory.getLogger(TwilioCallbackService::class.java)
@@ -61,6 +61,7 @@ class TwilioCallbackService(
             }
             notifyReceiptOfRecording = false
             logger.debug("Saved Story for Twilio Callback")
+            interviewService.markInterviewComplete(interviewId = interviewQuestion.interview?.id!!)
         }
 
         if(notifyReceiptOfRecording) {

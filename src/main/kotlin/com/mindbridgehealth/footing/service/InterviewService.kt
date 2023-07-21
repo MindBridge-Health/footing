@@ -194,6 +194,10 @@ class InterviewService(
         return emptyList()
     }
 
+    fun markInterviewComplete(interviewId: Int) {
+        db.save(db.findById(interviewId).orElseThrow().apply { this.completed = true })
+    }
+
     fun deleteScheduledInterview(scheduledInterviewId: String) {
         return scheduledInterviewRepository.deleteById(scheduledInterviewId.toInt())
     }
