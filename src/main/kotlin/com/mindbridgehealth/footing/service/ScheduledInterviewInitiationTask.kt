@@ -96,11 +96,13 @@ class ScheduledInterviewInitiationTask(
     }
 
     //Todo: This will have to take user timezone into account at the very least probably reminder preferences too
+    //Todo: Quiet hours? e.g. don't send texts between 9pm and 9am local time
     fun isTimeToSendReminder(scheduledInterviewEntity: ScheduledInterviewEntity): Boolean {
         val currentTime = ZonedDateTime.now(ZoneId.of("UTC"))
         val targetTime = ZonedDateTime.of(currentTime.toLocalDate(), LocalTime.of(15, 0), ZoneId.of("America/New_York"))
 
-        return scheduledInterviewEntity.linkSent!! && currentTime.isAfter(targetTime)
+        return scheduledInterviewEntity.linkSent!! && currentTime.isAfter(targetTime) && currentTime.isAfter(
+            scheduledInterviewEntity.scheduledTime?.toInstant()?.atZone(ZoneId.of("America/New_York"))?.plusHours(6))
     }
 
     private fun logAndThrow(errorMsg: String) {
