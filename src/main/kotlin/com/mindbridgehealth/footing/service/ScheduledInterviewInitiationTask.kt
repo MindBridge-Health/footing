@@ -85,9 +85,11 @@ class ScheduledInterviewInitiationTask(
             scheduledInterviewEntity.linkSent = true
             scheduledInterviewRepository.save(scheduledInterviewEntity)
         } else {
-            logger.debug("Reminding interview: ${scheduledInterviewEntity.name}")
-            val message = "Hello $name! \uD83C\uDF1F Your unique memories are like stars waiting to shine. \uD83C\uDF20 We'd love to hear your response to this week's question! Your story is invaluable. Take a moment to share your wisdom. \uD83D\uDCDD\uD83E\uDDE1 http://app.mindbridgehealth.com/interview.html?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&rtel=$number&question=$encodedQuestion&interview_id=$interviewAltId&interview_question_id=$interviewQuestionId"
-            smsNotificationService.sendMessage(number!!, message)
+            if(scheduledInterviewEntity.interview!!.completed == false) {
+                logger.debug("Reminding interview: ${scheduledInterviewEntity.name}")
+                val message = "Hello $name! \uD83C\uDF1F Your unique memories are like stars waiting to shine. \uD83C\uDF20 We'd love to hear your response to this week's question! Your story is invaluable. Take a moment to share your wisdom. \uD83D\uDCDD\uD83E\uDDE1 http://app.mindbridgehealth.com/interview.html?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&rtel=$number&question=$encodedQuestion&interview_id=$interviewAltId&interview_question_id=$interviewQuestionId"
+                smsNotificationService.sendMessage(number!!, message)
+            }
             scheduledInterviewRepository.delete(scheduledInterviewEntity)
         }
 
@@ -95,10 +97,10 @@ class ScheduledInterviewInitiationTask(
 
     //Todo: This will have to take user timezone into account at the very least probably reminder preferences too
     fun isTimeToSendReminder(scheduledInterviewEntity: ScheduledInterviewEntity): Boolean {
-//        val currentTime = ZonedDateTime.now(ZoneId.of("UTC"))
-//        val targetTime = ZonedDateTime.of(currentTime.toLocalDate(), LocalTime.of(15, 0), ZoneId.of("America/New_York"))
-//
-        return scheduledInterviewEntity.linkSent!! //&& currentTime.isAfter(targetTime)
+        val currentTime = ZonedDateTime.now(ZoneId.of("UTC"))
+        val targetTime = ZonedDateTime.of(currentTime.toLocalDate(), LocalTime.of(15, 0), ZoneId.of("America/New_York"))
+
+        return scheduledInterviewEntity.linkSent!! && currentTime.isAfter(targetTime)
     }
 
     private fun logAndThrow(errorMsg: String) {
