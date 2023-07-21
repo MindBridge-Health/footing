@@ -15,17 +15,30 @@ class ScheduledInterviewEntity: ResourceEntity() {
     @OneToOne
     @JoinColumn(name = "interview_id", referencedColumnName = "id")
     var interview: InterviewEntity? = null
+
+    @Basic
+    @Column(name = "link_sent")
+    var linkSent: Boolean? = false
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val that = other as ScheduledInterviewEntity
-        if (id != that.id) return false
-        return scheduledTime == that.scheduledTime
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as ScheduledInterviewEntity
+
+        if (scheduledTime != other.scheduledTime) return false
+        if (interview != other.interview) return false
+        return linkSent == other.linkSent
     }
 
     override fun hashCode(): Int {
-        var result = if (id != null) id.hashCode() else 0
-        result = 31 * result + if (scheduledTime != null) scheduledTime.hashCode() else 0
+        var result = super.hashCode()
+        result = 31 * result + (scheduledTime?.hashCode() ?: 0)
+        result = 31 * result + (interview?.hashCode() ?: 0)
+        result = 31 * result + (linkSent?.hashCode() ?: 0)
         return result
     }
+
+
 }

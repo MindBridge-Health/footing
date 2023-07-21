@@ -20,5 +20,7 @@ interface ScheduledInterviewRepository : JpaRepository<ScheduledInterviewEntity,
 
     @Query("SELECT a FROM ScheduledInterviewEntity a JOIN a.interview b WHERE a.scheduledTime <= :scheduledTime")
     fun findAllByScheduledTime(scheduledTime: Timestamp): Collection<ScheduledInterviewEntity>
+
+    fun findAllByLinkSent(linkSent: Boolean): Collection<ScheduledInterviewEntity>
 }
 

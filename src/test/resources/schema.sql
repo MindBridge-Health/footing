@@ -174,7 +174,8 @@ CREATE TABLE IF NOT EXISTS scheduled_interview
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
     scheduled_time DATETIME UNIQUE NOT NULL,
-    interview_id MEDIUMINT NOT NULL ,
+    interview_id MEDIUMINT NOT NULL,
+    link_sent BOOLEAN NOT NULL DEFAULT false,
     FOREIGN KEY (interview_id) REFERENCES interview(id)
 );
 
