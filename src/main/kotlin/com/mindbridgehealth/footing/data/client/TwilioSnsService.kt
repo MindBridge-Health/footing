@@ -13,6 +13,7 @@ class TwilioSnsService: SmsNotificationService {
     val logger = LoggerFactory.getLogger(this::class.java)
     val generalMessageFlowId = "FW11bebd1ed9beede70cbf003a811115b1"
     val interviewMessageFlowId = "FW11eb3d59f134dc3ef56211df72adc21d"
+
     override fun sendMessage(to: String, message: String) {
         val parameters = HashMap<String, Any>()
         parameters["message"] = message
