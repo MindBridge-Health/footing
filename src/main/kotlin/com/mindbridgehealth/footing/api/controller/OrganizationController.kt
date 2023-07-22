@@ -2,6 +2,7 @@ package com.mindbridgehealth.footing.api.controller
 
 import com.mindbridgehealth.footing.service.OrganizationService
 import com.mindbridgehealth.footing.service.model.Organization
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -15,7 +16,7 @@ class OrganizationController(val organizationService: OrganizationService) {
 
     @GetMapping("/{id}")
     fun get(@PathVariable id: String): Organization {
-        return organizationService.findById(id)
+        return organizationService.findByAltId(Base36Encoder.decodeAltId(id))
     }
 
 }

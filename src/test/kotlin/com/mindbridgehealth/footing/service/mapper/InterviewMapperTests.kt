@@ -64,14 +64,16 @@ class InterviewMapperTests {
             StorytellerEntityMapperImpl(
                 BenefactorEntityMapperImpl(),
                 com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
-                PreferredTimeMapperImpl()
+                PreferredTimeMapperImpl(),
+                OrganizationEntityMapperImpl()
             ),
             com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
             InterviewQuestionEntityMapperImpl(
                 StorytellerEntityMapperImpl(
                     BenefactorEntityMapperImpl(),
                     com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
-                    PreferredTimeMapperImpl()
+                    PreferredTimeMapperImpl(),
+                    OrganizationEntityMapperImpl()
                 ),
                 com.mindbridgehealth.footing.service.mapper.QuestionEntityMapperImpl()
             )

@@ -28,7 +28,8 @@ class MediaServiceTests {
         StorytellerEntityMapperImpl(
             BenefactorEntityMapperImpl(),
             com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
-            PreferredTimeMapperImpl()
+            PreferredTimeMapperImpl(),
+            OrganizationEntityMapperImpl()
         )
     )
     private val testMedia =
