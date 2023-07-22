@@ -8,6 +8,7 @@ abstract class User : DataModel() {
     abstract var middlename: String?
     abstract var email: String?
     abstract var mobile: String?
+    abstract var organization: Organization?
     //Avatar
     //Password, Preferences, etc.
 

@@ -16,11 +16,16 @@ class MediaEntityMapperTests {
     fun mediaToMediaEntity_validData_validData() {
         val media = Media(Base36Encoder.encodeAltId("123"), "name", null, URI("http://localhost/somewhere"),"MP4", null, null)
 
+        val userMapper = UserMapper()
+        val organizationEntityMapperImpl = OrganizationEntityMapperImpl()
+        userMapper.organizationEntityMapper = organizationEntityMapperImpl
         val mem =MediaEntityMapperImpl(
             StorytellerEntityMapperImpl(
-                BenefactorEntityMapperImpl(),
-                ChroniclerEntityMapperImpl(),
-                PreferredTimeMapperImpl()
+                BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+                ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+                PreferredTimeMapperImpl(),
+                organizationEntityMapperImpl,
+                UserMapperImpl()
             )
         )
         val mediaEntity = mem.modelToEntity(media)
@@ -37,12 +42,16 @@ class MediaEntityMapperTests {
             location = "http://localhost/somewhere"
             type = "MP4"
         }
-
+        val userMapper = UserMapper()
+        val organizationEntityMapperImpl = OrganizationEntityMapperImpl()
+        userMapper.organizationEntityMapper = organizationEntityMapperImpl
         val mem = MediaEntityMapperImpl(
             StorytellerEntityMapperImpl(
-                BenefactorEntityMapperImpl(),
-                com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
-                PreferredTimeMapperImpl()
+                BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+                ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+                PreferredTimeMapperImpl(),
+                organizationEntityMapperImpl,
+                UserMapperImpl()
             )
         )
         val media = mem.entityToModel(mediaEntity)

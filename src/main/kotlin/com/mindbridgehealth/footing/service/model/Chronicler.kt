@@ -9,5 +9,6 @@ data class Chronicler(
     override var middlename: String?,
     override var email: String?,
     override var mobile: String?,
-    val isAi: Boolean? = false
+    val isAi: Boolean? = false,
+    override var organization: Organization?
 ) : User()

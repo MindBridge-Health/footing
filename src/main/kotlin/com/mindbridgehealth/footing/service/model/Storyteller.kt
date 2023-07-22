@@ -14,5 +14,6 @@ data class Storyteller(
     var benefactors: Collection<Benefactor>?,
     var preferredChronicler: Chronicler?,
     var onboardingStatus: OnboardingStatus? = OnboardingStatus.ONBOARDING_NOT_STARTED,
-    var preferredTimes: Collection<PreferredTime>?
+    var preferredTimes: Collection<PreferredTime>?,
+    override var organization: Organization?
 ) : User()

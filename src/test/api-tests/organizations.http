@@ -1,11 +1,103 @@
 ### Post Org 1
 POST {{host}}/api/v1/organizations/
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
-  "name": "Organization 1"
+  "name": "Organization 2"
 }
 > {% client.global.set("oid", response.body.id) %}
 
 ### Get Org
 GET {{host}}/api/v1/organizations/{{oid}}
+
+### Post Storyteller
+POST {{host}}/api/v1/storytellers/
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chris",
+  "lastname": "Dufresne",
+  "contactMethod": "phone"
+}
+> {% client.global.set("sid", response.body) %}
+
+### PUT (Update) Storyteller 2
+PUT {{host}}/api/v1/storytellers/
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+"id": "{{sid}}",
+"firstname": "Christopher",
+"lastname": "Dufresne",
+"contactMethod": "text",
+"mobile": "123-123-1234",
+"email": "test@test.com",
+"preferredTimes": [{"time": "15:01:00", "dayOfWeek": "SATURDAY"}],
+"onboardingStatus": "ONBOARDING_STARTED",
+"organizationId": "{{oid}}"
+}
+
+### Get the Storyteller
+GET {{host}}/api/v1/storytellers/
+Authorization: Bearer {{JWT}}
+
+### Post Benefactor
+POST {{host}}/api/v1/benefactors/b1
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chat",
+  "lastname": "GPT2.0",
+  "isAi" : true
+}
+> {% client.global.set("bid", response.body) %}
+
+### PUT (Update) Benefactor
+PUT {{host}}/api/v1/benefactors/{{bid}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chat",
+  "lastname": "GPT2.0",
+  "isAi" : true,
+  "organizationId": "{{oid}}"
+}
+
+
+### Get Benefactor
+GET {{host}}/api/v1/benefactors/{{bid}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+### Post Chronicler
+POST {{host}}/api/v1/chroniclers/c2
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chat",
+  "lastname": "GPT2.0",
+  "isAi" : true
+}
+> {% client.global.set("cid", response.body) %}
+
+### PUT (Update) Chronicler
+PUT {{host}}/api/v1/chroniclers/{{cid}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chat",
+  "lastname": "GPT2.0",
+  "isAi" : true,
+  "organizationId": "{{oid}}"
+}
+
+### Get Chronicler
+GET {{host}}/api/v1/chroniclers/{{cid}}
+Content-Type: application/json

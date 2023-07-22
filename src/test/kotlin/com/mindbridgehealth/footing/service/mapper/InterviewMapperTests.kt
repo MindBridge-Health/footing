@@ -59,19 +59,26 @@ class InterviewMapperTests {
         )
         interviewEntity.interviewQuestionData = arrayListOf(interviewQuestionEntity)
 
+        val userMapper = UserMapper()
+        val organizationEntityMapperImpl = OrganizationEntityMapperImpl()
+        userMapper.organizationEntityMapper = organizationEntityMapperImpl
         val iem = InterviewEntityMapperImpl(
             TimeMapper(),
             StorytellerEntityMapperImpl(
-                BenefactorEntityMapperImpl(),
-                com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
-                PreferredTimeMapperImpl()
+                BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+                ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+                PreferredTimeMapperImpl(),
+                organizationEntityMapperImpl,
+                UserMapperImpl()
             ),
-            com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
+            ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
             InterviewQuestionEntityMapperImpl(
                 StorytellerEntityMapperImpl(
-                    BenefactorEntityMapperImpl(),
-                    com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
-                    PreferredTimeMapperImpl()
+                    BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+                    ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+                    PreferredTimeMapperImpl(),
+                    organizationEntityMapperImpl,
+                    UserMapperImpl()
                 ),
                 com.mindbridgehealth.footing.service.mapper.QuestionEntityMapperImpl()
             )

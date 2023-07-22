@@ -10,7 +10,7 @@ import java.util.*
 import kotlin.jvm.optionals.getOrElse
 
 @Service
-class ChroniclerService(private val db: ChroniclerRepository, private val chroniclerEntityMapper: ChroniclerEntityMapper, private val userDb: MindBridgeUserRepository) {
+class ChroniclerService(private val db: ChroniclerRepository, private val chroniclerEntityMapper: ChroniclerEntityMapper, private val userDb: MindBridgeUserRepository, private val organizationService: OrganizationService) {
     
     fun findChroniclerByAltId(id: String): Optional<Chronicler> {
         val optionalChroniclerEntity = db.findByAltIdAndIsActive(id, true)
@@ -37,9 +37,17 @@ class ChroniclerService(private val db: ChroniclerRepository, private val chroni
         return savedEntity
     }
 
-    fun update(chronicler: Chronicler) {
-        if(chronicler.id != null) findChroniclerByAltId(chronicler.id!!) else throw Exception() //TODO: Footing-2 Exception
-        db.save(chroniclerEntityMapper.modelToEntity(chronicler))
+    fun update(chronicler: Chronicler, altId: String): Chronicler {
+        val storedEntity = db.findByAltIdAndIsActive(altId, true).getOrElse { throw Exception() }
+
+        storedEntity.firstname = chronicler.firstname
+        storedEntity.lastname = chronicler.lastname
+        storedEntity.middlename = chronicler.middlename
+        storedEntity.mobile = chronicler.mobile
+        storedEntity.ai = chronicler.isAi
+        storedEntity.organization = chronicler.organization?.id?.let { organizationService.findEntityByAltId(it) }
+
+        return chroniclerEntityMapper.entityToModel(db.save(storedEntity))
     }
 
     fun deactivateChronicler(id: String) {

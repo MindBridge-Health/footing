@@ -9,9 +9,14 @@ import java.util.*
 import kotlin.jvm.optionals.getOrElse
 
 @Service
-class BenefactorService(private val db : BenefactorRepository, private val benefactorMapper: BenefactorEntityMapper,  private val userDb: MindBridgeUserRepository) {
+class BenefactorService(
+    private val db: BenefactorRepository,
+    private val benefactorMapper: BenefactorEntityMapper,
+    private val userDb: MindBridgeUserRepository,
+    val organizationService: OrganizationService
+) {
 
-    fun findBenefactorById(id: String): Optional<Benefactor> {
+    fun findBenefactorByAltId(id: String): Optional<Benefactor> {
         val optBenefactor = db.findByAltIdAndIsActive(id, true)
         if(optBenefactor.isPresent) {
             return Optional.of(benefactorMapper.entityToModel(optBenefactor.get()))
@@ -31,21 +36,14 @@ class BenefactorService(private val db : BenefactorRepository, private val benef
 
     fun update(benefactor: Benefactor, altId: String): Benefactor {
         val storedEntity = db.findByAltIdAndIsActive(altId, true).getOrElse { throw Exception() }
-        val benefactorEntity = benefactorMapper.modelToEntity(benefactor)
-
-        benefactorEntity.id = storedEntity.id
-        benefactorEntity.altId = storedEntity.altId
-        benefactorEntity.version = storedEntity.version
-        benefactorEntity.email = storedEntity.email
 
         storedEntity.firstname = benefactor.firstname
         storedEntity.lastname = benefactor.lastname
         storedEntity.middlename = benefactor.middlename
         storedEntity.mobile = benefactor.mobile
+        storedEntity.organization = benefactor.organization?.id?.let { organizationService.findEntityByAltId(it) }
 
-        db.save(storedEntity)
-
-        return benefactorMapper.entityToModel(benefactorEntity)
+        return benefactorMapper.entityToModel(db.save(storedEntity))
     }
 
     fun deactivateBenefactor(altId: String) {

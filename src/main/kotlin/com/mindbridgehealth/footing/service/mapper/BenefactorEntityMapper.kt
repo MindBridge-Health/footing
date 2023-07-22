@@ -10,7 +10,7 @@ import org.mapstruct.Mapping
 import org.mapstruct.MappingTarget
 import org.springframework.stereotype.Service
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = [OrganizationEntityMapper::class, UserMapper::class])
 abstract class BenefactorEntityMapper: IdMapper() {
 
     @Mapping(source = "id", target = "id", ignore = true)

@@ -19,7 +19,8 @@ class StorytellerService(
     private val preferredTimeRepository: PreferredTimeRepository,
     private val storytellerMapper: StorytellerEntityMapper,
     private val preferredTimeMapper: PreferredTimeMapper,
-    private val userDb: MindBridgeUserRepository
+    private val userDb: MindBridgeUserRepository,
+    private val organizationService: OrganizationService
 ) {
 
     fun findStorytellerByAltId(altId: String): Optional<Storyteller> {
@@ -79,6 +80,7 @@ class StorytellerService(
         storedEntity.preferredChronicler = storytellerEntity.preferredChronicler
         storedEntity.benefactors = storytellerEntity.benefactors
         storedEntity.email = storytellerEntity.email
+        storedEntity.organization = storyteller.organization?.id?.let { organizationService.findEntityByAltId(it) }
 
         val pfes = savePreferredTimeEntities(storyteller, storedEntity)
         val updatedStorytellerEntity = db.save(storedEntity)

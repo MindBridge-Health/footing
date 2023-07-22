@@ -6,7 +6,7 @@ import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.mapstruct.*
 import org.springframework.stereotype.Service
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = [OrganizationEntityMapper::class, UserMapper::class])
 abstract class ChroniclerEntityMapper: IdMapper() {
 
     @Mapping(source="ai", target="isAi")

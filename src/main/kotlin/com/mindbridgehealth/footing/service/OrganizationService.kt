@@ -1,6 +1,7 @@
 package com.mindbridgehealth.footing.service
 
 import com.mindbridgehealth.footing.data.repository.OrganizationRepository
+import com.mindbridgehealth.footing.service.entity.OrganizationEntity
 import com.mindbridgehealth.footing.service.mapper.OrganizationEntityMapper
 import com.mindbridgehealth.footing.service.model.Organization
 import org.springframework.stereotype.Service
@@ -12,7 +13,11 @@ class OrganizationService(val organizationRepository: OrganizationRepository, va
         return organizationEntityMapper.entityToModel(organizationRepository.save(organizationEntityMapper.modelToEntity(organization)))
     }
 
-    fun findById(id: String): Organization {
-        return organizationEntityMapper.entityToModel(organizationRepository.findById(id.substring(4).toInt()).orElseThrow())
+    fun findByAltId(altId: String): Organization {
+        return organizationEntityMapper.entityToModel(organizationRepository.findByAltId(altId))
+    }
+
+    fun findEntityByAltId(altId: String): OrganizationEntity {
+        return organizationRepository.findByAltId(altId)
     }
 }
