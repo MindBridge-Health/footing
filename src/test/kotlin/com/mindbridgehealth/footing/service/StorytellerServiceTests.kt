@@ -3,21 +3,22 @@ package com.mindbridgehealth.footing.service
 import com.mindbridgehealth.footing.data.repository.MindBridgeUserRepository
 import com.mindbridgehealth.footing.data.repository.PreferredTimeRepository
 import com.mindbridgehealth.footing.data.repository.StorytellerRepository
-import com.mindbridgehealth.footing.service.entity.MbUserEntity
 import com.mindbridgehealth.footing.service.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.mapper.*
 import com.mindbridgehealth.footing.service.model.*
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.ninjasquad.springmockk.MockkClear
 import com.ninjasquad.springmockk.clear
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.sql.Time
 import java.time.DayOfWeek
 import java.time.Instant
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.test.assertEquals
 
 class StorytellerServiceTests {

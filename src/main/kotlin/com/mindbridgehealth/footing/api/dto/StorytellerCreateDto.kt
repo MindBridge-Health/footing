@@ -1,5 +1,6 @@
 package com.mindbridgehealth.footing.api.dto
 
+import com.mindbridgehealth.footing.service.model.Organization
 import com.mindbridgehealth.footing.service.model.PreferredTime
 import com.mindbridgehealth.footing.service.model.User
 import java.util.*

@@ -5,4 +5,5 @@ import java.util.*
 
 @Entity
 @Table(name = "organization")
+@PrimaryKeyJoinColumn(name="id")
 class OrganizationEntity: ResourceEntity()

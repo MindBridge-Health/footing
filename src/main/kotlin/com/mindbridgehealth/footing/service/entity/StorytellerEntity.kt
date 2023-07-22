@@ -26,6 +26,10 @@ class StorytellerEntity: MbUserEntity() {
     @OneToMany(mappedBy = "storyteller")
     var preferredTimes: MutableList<PreferredTimeEntity>? = Collections.emptyList()
 
+    @OneToOne
+    @JoinColumn(name = "organization_id", referencedColumnName = "id")
+    var organization: OrganizationEntity? = null
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
