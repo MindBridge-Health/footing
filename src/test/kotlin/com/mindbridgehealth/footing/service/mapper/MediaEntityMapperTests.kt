@@ -20,7 +20,8 @@ class MediaEntityMapperTests {
             StorytellerEntityMapperImpl(
                 BenefactorEntityMapperImpl(),
                 ChroniclerEntityMapperImpl(),
-                PreferredTimeMapperImpl()
+                PreferredTimeMapperImpl(),
+                OrganizationEntityMapperImpl()
             )
         )
         val mediaEntity = mem.modelToEntity(media)
@@ -42,7 +43,8 @@ class MediaEntityMapperTests {
             StorytellerEntityMapperImpl(
                 BenefactorEntityMapperImpl(),
                 com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
-                PreferredTimeMapperImpl()
+                PreferredTimeMapperImpl(),
+                OrganizationEntityMapperImpl()
             )
         )
         val media = mem.entityToModel(mediaEntity)

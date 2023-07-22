@@ -9,7 +9,7 @@ import org.mapstruct.*
 @Mapper(
     componentModel = "spring",
     injectionStrategy = InjectionStrategy.CONSTRUCTOR,
-    uses = [BenefactorEntityMapper::class, ChroniclerEntityMapper::class, PreferredTimeMapper::class]
+    uses = [BenefactorEntityMapper::class, ChroniclerEntityMapper::class, PreferredTimeMapper::class, OrganizationEntityMapper::class]
 )
 abstract class StorytellerEntityMapper : IdMapper() {
 

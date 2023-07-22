@@ -42,7 +42,8 @@ class StorytellerEntityMapperTests {
         val storyteller =  StorytellerEntityMapperImpl(
             BenefactorEntityMapperImpl(),
             ChroniclerEntityMapperImpl(),
-            PreferredTimeMapperImpl()
+            PreferredTimeMapperImpl(),
+            OrganizationEntityMapperImpl()
         ).entityToModel(storytellerEntity)
 
         assertEquals(storytellerEntity.altId, Base36Encoder.decodeAltId(storyteller.id!!))
@@ -58,12 +59,13 @@ class StorytellerEntityMapperTests {
         val benefactor2 = Benefactor( "8ub5lac5.648a23ab6ee6f0aa87941142", "someBenefactor2", "first", "middle", "", "")
         val chronicler = Chronicler( "8ub5lac5.648a23ab6ee6f0aa87941142", "d","a","c","", "", true)
 
-        val storyteller = Storyteller("8ub5lac5.648a23ab6ee6f0aa87941142",  "someName", "first", "middle","", "text", "", mutableListOf(benefactor, benefactor2), chronicler, OnboardingStatus.ONBOARDING_NOT_STARTED, null)
+        val storyteller = Storyteller("8ub5lac5.648a23ab6ee6f0aa87941142",  "someName", "first", "middle","", "text", "", mutableListOf(benefactor, benefactor2), chronicler, OnboardingStatus.ONBOARDING_NOT_STARTED, null, null)
 
         val mapper = StorytellerEntityMapperImpl(
             BenefactorEntityMapperImpl(),
             ChroniclerEntityMapperImpl(),
-            PreferredTimeMapperImpl()
+            PreferredTimeMapperImpl(),
+            OrganizationEntityMapperImpl()
         )
         val storytellerData = mapper.modelToEntity(storyteller)
 

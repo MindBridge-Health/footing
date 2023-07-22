@@ -3,24 +3,25 @@ package com.mindbridgehealth.footing.service
 import com.mindbridgehealth.footing.data.repository.MindBridgeUserRepository
 import com.mindbridgehealth.footing.data.repository.PreferredTimeRepository
 import com.mindbridgehealth.footing.data.repository.StorytellerRepository
-import com.mindbridgehealth.footing.service.entity.MbUserEntity
 import com.mindbridgehealth.footing.service.entity.StorytellerEntity
-import com.mindbridgehealth.footing.service.mapper.BenefactorEntityMapperImpl
-import com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl
-import com.mindbridgehealth.footing.service.mapper.PreferredTimeMapperImpl
-import com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapperImpl
-import com.mindbridgehealth.footing.service.model.*
+import com.mindbridgehealth.footing.service.mapper.*
+import com.mindbridgehealth.footing.service.model.Benefactor
+import com.mindbridgehealth.footing.service.model.Chronicler
+import com.mindbridgehealth.footing.service.model.PreferredTime
+import com.mindbridgehealth.footing.service.model.Storyteller
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.ninjasquad.springmockk.MockkClear
 import com.ninjasquad.springmockk.clear
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.sql.Time
 import java.time.DayOfWeek
 import java.time.Instant
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.test.assertEquals
 
 class StorytellerServiceTests {
@@ -28,12 +29,14 @@ class StorytellerServiceTests {
     private val mockStorytellerDb = mockk<StorytellerRepository>()
     private val mockPreferredTimeDb = mockk<PreferredTimeRepository>()
     private val mockUserDb = mockk<MindBridgeUserRepository>()
+    private val mockOrganizationService = mockk<OrganizationService>()
 
     private val preferredTimeMapperImpl = PreferredTimeMapperImpl()
     private val storytellerEntityMapperImpl = StorytellerEntityMapperImpl(
         BenefactorEntityMapperImpl(),
         ChroniclerEntityMapperImpl(),
-        preferredTimeMapperImpl
+        preferredTimeMapperImpl,
+        OrganizationEntityMapperImpl()
     )
 
     @Test
@@ -53,11 +56,11 @@ class StorytellerServiceTests {
 
         val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", "text", listOf(
             Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321")
-        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true), null, ArrayList())
+        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true), null, ArrayList(), null)
         val preferredTime = PreferredTime(storytellerInput, Time(Instant.now().toEpochMilli()), DayOfWeek.WEDNESDAY)
         (storytellerInput.preferredTimes as ArrayList).add(preferredTime)
 
-        val service = StorytellerService(mockStorytellerDb, mockPreferredTimeDb, storytellerEntityMapperImpl, preferredTimeMapperImpl, mockUserDb)
+        val service = StorytellerService(mockStorytellerDb, mockPreferredTimeDb, storytellerEntityMapperImpl, preferredTimeMapperImpl, mockUserDb, mockOrganizationService)
         val storytellerOutput = service.save(storytellerInput,"auth0|648a23ab6ee6f0aa87941142")
 
         val capturedStoryTeller = storytellerCaptureSlot.captured
@@ -87,11 +90,11 @@ class StorytellerServiceTests {
 
         val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", "text", listOf(
             Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321")
-        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true), null, ArrayList())
+        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true), null, ArrayList(), null)
         val preferredTime = PreferredTime(storytellerInput, Time(Instant.now().toEpochMilli()), DayOfWeek.WEDNESDAY)
         (storytellerInput.preferredTimes as ArrayList).add(preferredTime)
 
-        val service = StorytellerService(mockStorytellerDb, mockPreferredTimeDb, storytellerEntityMapperImpl, preferredTimeMapperImpl, mockUserDb)
+        val service = StorytellerService(mockStorytellerDb, mockPreferredTimeDb, storytellerEntityMapperImpl, preferredTimeMapperImpl, mockUserDb, mockOrganizationService)
         assertThrows<Exception> {  service.save(storytellerInput, Base36Encoder.encodeAltId("auth0|648a23ab6ee6f0aa87941142")) }
 
     }
@@ -117,11 +120,11 @@ class StorytellerServiceTests {
 
         val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", "text", listOf(
             Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321")
-        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true), null, ArrayList())
+        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true), null, ArrayList(), null)
         val preferredTime = PreferredTime(storytellerInput, Time(Instant.now().toEpochMilli()), DayOfWeek.WEDNESDAY)
         (storytellerInput.preferredTimes as ArrayList).add(preferredTime)
 
-        val service = StorytellerService(mockStorytellerDb, mockPreferredTimeDb, storytellerEntityMapperImpl, preferredTimeMapperImpl, mockUserDb)
+        val service = StorytellerService(mockStorytellerDb, mockPreferredTimeDb, storytellerEntityMapperImpl, preferredTimeMapperImpl, mockUserDb, mockOrganizationService)
         val storytellerOutput = service.update(storytellerInput, Base36Encoder.encodeAltId("auth0|648a23ab6ee6f0aa87941142"))
 
 
@@ -156,11 +159,11 @@ class StorytellerServiceTests {
 
         val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", "text", listOf(
             Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321")
-        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true), null, ArrayList())
+        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true), null, ArrayList(), null)
         val preferredTime = PreferredTime(storytellerInput, Time(Instant.now().toEpochMilli()), DayOfWeek.WEDNESDAY)
         (storytellerInput.preferredTimes as ArrayList).add(preferredTime)
 
-        val service = StorytellerService(mockStorytellerDb, mockPreferredTimeDb, storytellerEntityMapperImpl, preferredTimeMapperImpl, mockUserDb)
+        val service = StorytellerService(mockStorytellerDb, mockPreferredTimeDb, storytellerEntityMapperImpl, preferredTimeMapperImpl, mockUserDb, mockOrganizationService)
         assertThrows<Exception> {  service.update(storytellerInput, Base36Encoder.encodeAltId("auth0|648a23ab6ee6f0aa87941142")) }
 
     }
