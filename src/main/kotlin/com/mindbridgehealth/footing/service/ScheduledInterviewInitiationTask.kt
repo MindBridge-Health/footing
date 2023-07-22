@@ -5,20 +5,13 @@ import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.service.entity.ScheduledInterviewEntity
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.twilio.Twilio
-import com.twilio.rest.studio.v2.flow.ExecutionCreator
-import com.twilio.type.PhoneNumber
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import java.lang.IllegalStateException
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.sql.Timestamp
-import java.time.Instant
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.temporal.TemporalField
+import java.time.*
 
 @Component
 class ScheduledInterviewInitiationTask(
@@ -30,6 +23,8 @@ class ScheduledInterviewInitiationTask(
 ) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
+    //Public var to enable testing
+    var clock: Clock = Clock.systemDefaultZone()
 
     init {
         Twilio.init(applicationProperties.twilioSid, applicationProperties.twilioKey)
@@ -97,12 +92,11 @@ class ScheduledInterviewInitiationTask(
 
     //Todo: This will have to take user timezone into account at the very least probably reminder preferences too
     //Todo: Quiet hours? e.g. don't send texts between 9pm and 9am local time
-    fun isTimeToSendReminder(scheduledInterviewEntity: ScheduledInterviewEntity): Boolean {
-        val currentTime = ZonedDateTime.now(ZoneId.of("UTC"))
-        val targetTime = ZonedDateTime.of(currentTime.toLocalDate(), LocalTime.of(15, 0), ZoneId.of("America/New_York"))
+    private fun isTimeToSendReminder(scheduledInterviewEntity: ScheduledInterviewEntity): Boolean {
+        val currentTime = ZonedDateTime.now(clock)
+        val targetTime = scheduledInterviewEntity.scheduledTime?.toInstant()?.plusSeconds(6 * 60 * 60) // 6 hours after scheduled time
 
-        return scheduledInterviewEntity.linkSent!! && currentTime.isAfter(targetTime) && currentTime.isAfter(
-            scheduledInterviewEntity.scheduledTime?.toInstant()?.atZone(ZoneId.of("America/New_York"))?.plusHours(6))
+        return currentTime.isAfter(targetTime?.atZone(ZoneId.of("America/New_York"))) && currentTime.toLocalTime().isAfter(LocalTime.of(15, 0)) // Check if it's after 3 PM
     }
 
     private fun logAndThrow(errorMsg: String) {
