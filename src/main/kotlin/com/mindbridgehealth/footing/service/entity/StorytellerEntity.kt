@@ -28,7 +28,7 @@ class StorytellerEntity: MbUserEntity() {
 
     @OneToOne
     @JoinColumn(name = "organization_id", referencedColumnName = "id")
-    var organization: OrganizationEntity? = null
+    override var organization: OrganizationEntity? = null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
