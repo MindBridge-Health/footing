@@ -21,7 +21,8 @@ class ChroniclerEntityMapperTests {
         chroniclerEntity.firstname = "c"
         chroniclerEntity.ai = true
 
-        val chronicler = Mappers.getMapper(ChroniclerEntityMapper::class.java).entityToModel(chroniclerEntity)
+        val organizationEntityMapperImpl = OrganizationEntityMapperImpl()
+        val chronicler = ChroniclerEntityMapperImpl(organizationEntityMapperImpl, UserMapper(organizationEntityMapperImpl)).entityToModel(chroniclerEntity)
         assertEquals("8ub5lac5.648a23ab6ee6f0aa87941142", chronicler.id)
         assertEquals("d", chronicler.lastname)
         assertEquals("a", chronicler.middlename)

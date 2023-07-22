@@ -1,6 +1,7 @@
 package com.mindbridgehealth.footing.service.mapper
 
 import com.mindbridgehealth.footing.service.entity.BenefactorEntity
+import com.mindbridgehealth.footing.service.entity.OrganizationEntity
 import com.mindbridgehealth.footing.service.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.model.Benefactor
 import com.mindbridgehealth.footing.service.model.Chronicler
@@ -23,6 +24,7 @@ class StorytellerEntityMapperTests {
         storytellerEntity.middlename = "middle"
         storytellerEntity.firstname = "first"
         storytellerEntity.contactMethod = "text"
+        storytellerEntity.organization = OrganizationEntity().apply { this.id = 1; this.altId = "o1"; this.name = "org"}
 
         val benefactorEntity = BenefactorEntity()
         benefactorEntity.id = floor(Math.random() * 1000).toInt()
@@ -39,11 +41,15 @@ class StorytellerEntityMapperTests {
 
         storytellerEntity.benefactors = mutableListOf( benefactorEntity, benefactorEntity2 )
 
+        val userMapper = UserMapper()
+        val organizationEntityMapperImpl = OrganizationEntityMapperImpl()
+        userMapper.organizationEntityMapper = organizationEntityMapperImpl
         val storyteller =  StorytellerEntityMapperImpl(
-            BenefactorEntityMapperImpl(),
-            ChroniclerEntityMapperImpl(),
+            BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+            ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
             PreferredTimeMapperImpl(),
-            OrganizationEntityMapperImpl()
+            organizationEntityMapperImpl,
+            userMapper
         ).entityToModel(storytellerEntity)
 
         assertEquals(storytellerEntity.altId, Base36Encoder.decodeAltId(storyteller.id!!))
@@ -51,21 +57,26 @@ class StorytellerEntityMapperTests {
         assertEquals(storytellerEntity.contactMethod, storyteller.contactMethod)
         assertNotNull("Benefactors should not be null", storyteller.benefactors)
         assertEquals(2, storyteller.benefactors!!.size)
+        assertEquals("pyl", storyteller.organization?.id)
     }
 
     @Test
     fun storytellerToStorytellerData_validModel_validData() {
-        val benefactor = Benefactor( "8ub5lac5.648a23ab6ee6f0aa87941142", "someBenefactor1", "first", "middle", "", "")
-        val benefactor2 = Benefactor( "8ub5lac5.648a23ab6ee6f0aa87941142", "someBenefactor2", "first", "middle", "", "")
-        val chronicler = Chronicler( "8ub5lac5.648a23ab6ee6f0aa87941142", "d","a","c","", "", true)
+        val benefactor = Benefactor( "8ub5lac5.648a23ab6ee6f0aa87941142", "someBenefactor1", "first", "middle", "", "", null)
+        val benefactor2 = Benefactor( "8ub5lac5.648a23ab6ee6f0aa87941142", "someBenefactor2", "first", "middle", "", "", null)
+        val chronicler = Chronicler( "8ub5lac5.648a23ab6ee6f0aa87941142", "d","a","c","", "", true, null)
 
         val storyteller = Storyteller("8ub5lac5.648a23ab6ee6f0aa87941142",  "someName", "first", "middle","", "text", "", mutableListOf(benefactor, benefactor2), chronicler, OnboardingStatus.ONBOARDING_NOT_STARTED, null, null)
 
+        val userMapper = UserMapper()
+        val organizationEntityMapperImpl = OrganizationEntityMapperImpl()
+        userMapper.organizationEntityMapper = organizationEntityMapperImpl
         val mapper = StorytellerEntityMapperImpl(
-            BenefactorEntityMapperImpl(),
-            ChroniclerEntityMapperImpl(),
+            BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+            ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
             PreferredTimeMapperImpl(),
-            OrganizationEntityMapperImpl()
+            organizationEntityMapperImpl,
+            UserMapper()
         )
         val storytellerData = mapper.modelToEntity(storyteller)
 

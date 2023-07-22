@@ -9,9 +9,9 @@ import org.mapstruct.*
 @Mapper(
     componentModel = "spring",
     injectionStrategy = InjectionStrategy.CONSTRUCTOR,
-    uses = [BenefactorEntityMapper::class, ChroniclerEntityMapper::class, PreferredTimeMapper::class, OrganizationEntityMapper::class]
+    uses = [BenefactorEntityMapper::class, ChroniclerEntityMapper::class, PreferredTimeMapper::class, OrganizationEntityMapper::class, UserMapper::class]
 )
-abstract class StorytellerEntityMapper : IdMapper() {
+abstract class StorytellerEntityMapper {
 
     @Mapping(target = "onboardingStatus", ignore = true) //todo Onboarding status
     @Mapping(source = "id", target = "id", ignore = true)

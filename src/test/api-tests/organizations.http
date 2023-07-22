@@ -4,7 +4,7 @@ Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
 {
-  "name": "Organization 1"
+  "name": "Organization 2"
 }
 > {% client.global.set("oid", response.body.id) %}
 
@@ -41,5 +41,63 @@ Authorization: Bearer {{JWT}}
 }
 
 ### Get the Storyteller
-GET {{host}}/api/v1/storytellers/sid
+GET {{host}}/api/v1/storytellers/
 Authorization: Bearer {{JWT}}
+
+### Post Benefactor
+POST {{host}}/api/v1/benefactors/b1
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chat",
+  "lastname": "GPT2.0",
+  "isAi" : true
+}
+> {% client.global.set("bid", response.body) %}
+
+### PUT (Update) Benefactor
+PUT {{host}}/api/v1/benefactors/{{bid}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chat",
+  "lastname": "GPT2.0",
+  "isAi" : true,
+  "organizationId": "{{oid}}"
+}
+
+
+### Get Benefactor
+GET {{host}}/api/v1/benefactors/{{bid}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+### Post Chronicler
+POST {{host}}/api/v1/chroniclers/c2
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chat",
+  "lastname": "GPT2.0",
+  "isAi" : true
+}
+> {% client.global.set("cid", response.body) %}
+
+### PUT (Update) Chronicler
+PUT {{host}}/api/v1/chroniclers/{{cid}}
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "firstname": "Chat",
+  "lastname": "GPT2.0",
+  "isAi" : true,
+  "organizationId": "{{oid}}"
+}
+
+### Get Chronicler
+GET {{host}}/api/v1/chroniclers/{{cid}}
+Content-Type: application/json

@@ -38,10 +38,11 @@ class InterviewServiceTests {
     private val mockScheduledInterviewRepository = mockk<ScheduledInterviewRepository>()
 
     private val storytellerEntityMapperImpl = StorytellerEntityMapperImpl(
-        BenefactorEntityMapperImpl(),
-        com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
+        BenefactorEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())),
+        ChroniclerEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())),
         PreferredTimeMapperImpl(),
-        OrganizationEntityMapperImpl()
+        OrganizationEntityMapperImpl(),
+        UserMapperImpl()
     )
     private val interviewQuestionEntityMapperImpl = InterviewQuestionEntityMapperImpl(
         storytellerEntityMapperImpl,
@@ -50,13 +51,13 @@ class InterviewServiceTests {
     private val interviewEntityMapper = InterviewEntityMapperImpl(
         TimeMapper(),
         storytellerEntityMapperImpl,
-        com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
+        ChroniclerEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())),
         interviewQuestionEntityMapperImpl
     )
 
-    private val chroniclerEntityMapper = ChroniclerEntityMapperImpl()
+    private val chroniclerEntityMapper = ChroniclerEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl()))
 
-    private val scheduledInterviewEntityMapper = ScheduledInterviewEntityMapperImpl(TimeMapper(), storytellerEntityMapperImpl, ChroniclerEntityMapperImpl(), interviewEntityMapper)
+    private val scheduledInterviewEntityMapper = ScheduledInterviewEntityMapperImpl(TimeMapper(), ChroniclerEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())), interviewEntityMapper)
 
     val service = InterviewService(
         mockInterviewDb,
@@ -193,7 +194,7 @@ class InterviewServiceTests {
         every {mockInterviewDb.findByStorytellerId(any())} returns interviewResultList
 
         //Expected Ones
-        val preferredChronicler1 = Chronicler(Base36Encoder.encodeAltId(chroniclerEntity1.altId!!), "Chronicler 1","first", "middle", "email", "mobile", true)
+        val preferredChronicler1 = Chronicler(Base36Encoder.encodeAltId(chroniclerEntity1.altId!!), "Chronicler 1","first", "middle", "email", "mobile", true, null)
         val storyteller1 = Storyteller(Base36Encoder.encodeAltId(storytellerEntity1.altId!!), "Storyteller 1", "first", "middle","email", "mobile", "phone", ArrayList(), preferredChronicler1, OnboardingStatus.ONBOARDING_NOT_STARTED, ArrayList(), null)
         val expectedStory1 = Story(Base36Encoder.encodeAltId(storyEntity1.altId!!), "Story 1", emptyList(), "Once upon a time...", storyteller1)
         val expectedInterviewQuestion1 = InterviewQuestion(Base36Encoder.encodeAltId(interviewQuestionEntity1.altId!!),
@@ -205,7 +206,7 @@ class InterviewServiceTests {
         val expectedInterview1 = Interview(Base36Encoder.encodeAltId(interviewEntity1.altId!!), "interview 1", emptyList(), storyteller1, preferredChronicler1, timeCompleted, true, listOf(expectedInterviewQuestion1))
 
         //Expected Twos
-        val preferredChronicler2 = Chronicler(Base36Encoder.encodeAltId(chroniclerEntity2.altId!!), "Chronicler 2","first", "middle","email",  "mobile", false)
+        val preferredChronicler2 = Chronicler(Base36Encoder.encodeAltId(chroniclerEntity2.altId!!), "Chronicler 2","first", "middle","email",  "mobile", false, null)
         val storyteller2 = Storyteller(Base36Encoder.encodeAltId(storytellerEntity2.altId!!), "Storyteller 2", "first", "middle","email", "mobile", "phone", ArrayList(), preferredChronicler2, OnboardingStatus.ONBOARDING_NOT_STARTED, ArrayList(), null)
         val expectedInterviewQuestion2 = InterviewQuestion(Base36Encoder.encodeAltId(interviewQuestionEntity2.altId!!),
             "question 2",
@@ -306,7 +307,7 @@ class InterviewServiceTests {
 
         assertEquals(name, interview.name)
         assertEquals(false, interview.completed)
-        assertEquals(Chronicler("dlj", "ln", "fn", "mn", "em", "87", true), interview.chronicler)
+        assertEquals(Chronicler("dlj", "ln", "fn", "mn", "em", "87", true, null), interview.chronicler)
         assertEquals(Storyteller("5rm","ln", "fn", null, "em", "98", "text", emptyList(), null, OnboardingStatus.ONBOARDING_NOT_STARTED, emptyList(), null), interview.storyteller)
         assertEquals(InterviewQuestion("lz344", "interview 1_question 1", emptyList(), "1sk", "xcm", null, false, false), interview.interviewQuestions?.first())
     }

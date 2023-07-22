@@ -16,14 +16,14 @@ class BenefactorController(val service: BenefactorService, val mapper: Benefacto
     @GetMapping("/")
     fun get(@AuthenticationPrincipal principal: Jwt): Benefactor {
 
-        val optBenefactor = service.findBenefactorById(principal.subject)
+        val optBenefactor = service.findBenefactorByAltId(principal.subject)
         return optBenefactor.orElseGet { null }
     }
 
     @GetMapping("/{id}")
     fun get(@PathVariable id: String, @AuthenticationPrincipal principal: Jwt): Benefactor {
 
-        val optBenefactor = service.findBenefactorById(
+        val optBenefactor = service.findBenefactorByAltId(
             Base36Encoder.decodeAltId(id)
         )
 
@@ -51,16 +51,16 @@ class BenefactorController(val service: BenefactorService, val mapper: Benefacto
         @RequestBody benefactorCreateDto: BenefactorCreateDto,
         @PathVariable id: String,
     ): String {
-        return service.save(mapper.benefactorCreateDtoToBenefactor(benefactorCreateDto), id)
+        return service.save(mapper.benefactorCreateDtoToBenefactor(benefactorCreateDto), Base36Encoder.decodeAltId(id))
     }
 
     @PutMapping("/{id}")
     fun putOnBehalf(@RequestBody benefactor: BenefactorCreateDto, @PathVariable id: String, ): Benefactor {
-        return service.update(mapper.benefactorCreateDtoToBenefactor(benefactor), id)
+        return service.update(mapper.benefactorCreateDtoToBenefactor(benefactor), Base36Encoder.decodeAltId(id))
     }
 
     @DeleteMapping("/{id}")
     fun deleteOnBehalf(@PathVariable id: String) {
-        service.deactivateBenefactor(id)
+        service.deactivateBenefactor(Base36Encoder.decodeAltId(id))
     }
 }

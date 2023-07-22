@@ -20,7 +20,10 @@ class BenefactorEntityMapperTests {
         benefactorEntity.middlename = "middle"
         benefactorEntity.firstname = "first"
 
-        val benefactor = com.mindbridgehealth.footing.service.mapper.BenefactorEntityMapperImpl().entityToModel(benefactorEntity)
+        val userMapper = UserMapper()
+        val organizationEntityMapperImpl = OrganizationEntityMapperImpl()
+        userMapper.organizationEntityMapper = organizationEntityMapperImpl
+        val benefactor = BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper).entityToModel(benefactorEntity)
         assertEquals("8ub5lac5.648a23ab6ee6f0aa87941142", benefactor.id)
         assertEquals(benefactorEntity.lastname, benefactor.lastname)
         assertEquals(benefactorEntity.middlename, benefactor.middlename)
@@ -30,9 +33,12 @@ class BenefactorEntityMapperTests {
 
     @Test
     fun benefactorToBenefactorEntity_validModel_validData() {
-        val benefactor = Benefactor( "8ub5lac5.648a23ab6ee6f0aa87941142", "someOtherBenefactor", "first", "middle", "", "")
+        val benefactor = Benefactor( "8ub5lac5.648a23ab6ee6f0aa87941142", "someOtherBenefactor", "first", "middle", "", "", null)
 
-        val benefactorEntity = com.mindbridgehealth.footing.service.mapper.BenefactorEntityMapperImpl().modelToEntity(benefactor)
+        val userMapper = UserMapper()
+        val organizationEntityMapperImpl = OrganizationEntityMapperImpl()
+        userMapper.organizationEntityMapper = organizationEntityMapperImpl
+        val benefactorEntity = BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper).modelToEntity(benefactor)
         assertEquals("auth0|648a23ab6ee6f0aa87941142", benefactorEntity.altId?.toString())
         assertEquals(benefactor.lastname, benefactorEntity.lastname)
         assertEquals(benefactorEntity.javaClass, benefactorEntity::class.java)

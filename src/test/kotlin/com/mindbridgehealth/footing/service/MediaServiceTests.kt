@@ -26,10 +26,11 @@ class MediaServiceTests {
     private val mockSmsNotificationService = mockk<SmsNotificationService>()
     private val mediaMapper = MediaEntityMapperImpl(
         StorytellerEntityMapperImpl(
-            BenefactorEntityMapperImpl(),
-            com.mindbridgehealth.footing.service.mapper.ChroniclerEntityMapperImpl(),
+            BenefactorEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())),
+            ChroniclerEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())),
             PreferredTimeMapperImpl(),
-            OrganizationEntityMapperImpl()
+            OrganizationEntityMapperImpl(),
+            UserMapperImpl()
         )
     )
     private val testMedia =
