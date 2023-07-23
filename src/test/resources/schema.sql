@@ -105,6 +105,7 @@ CREATE TABLE IF NOT EXISTS story
     id   MEDIUMINT PRIMARY KEY REFERENCES resource(id),
     storyteller_id MEDIUMINT,
     text LONGTEXT,
+    original_text LONGTEXT,
     summary LONGTEXT,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id)
 );

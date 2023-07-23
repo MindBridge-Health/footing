@@ -37,6 +37,7 @@ class InterviewMapperTests {
         storyEntity.id = floor(Math.random() * 1000).toInt()
         storyEntity.name = "l"
         storyEntity.text = "t"
+        storyEntity.originalText = "t"
         storyEntity.storyteller = storyteller
         val interviewQuestionEntity = InterviewQuestionEntity()
         interviewQuestionEntity.id = floor(Math.random() * 1000).toInt()

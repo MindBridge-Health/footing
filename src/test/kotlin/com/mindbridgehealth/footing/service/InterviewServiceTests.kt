@@ -116,6 +116,7 @@ class InterviewServiceTests {
         storyEntity1.altId = UUID.randomUUID().toString().replace("-", "").substring(0, 8)
         storyEntity1.name = "Story 1"
         storyEntity1.text = "Once upon a time..."
+        storyEntity1.originalText = "Once upon a time..."
         storyEntity1.storyteller = storytellerEntity1
 
         val interviewQuestionEntity1 = InterviewQuestionEntity()
@@ -169,6 +170,7 @@ class InterviewServiceTests {
         storyEntity2.altId = UUID.randomUUID().toString().replace("-", "").substring(0, 8)
         storyEntity2.name = "Story 2"
         storyEntity1.text = "Once upon a time..."
+        storyEntity1.originalText = "Once upon a time..."
         storyEntity2.storyteller = storytellerEntity2
 
         val interviewQuestionEntity2 = InterviewQuestionEntity()
@@ -200,6 +202,7 @@ class InterviewServiceTests {
             Base36Encoder.encodeAltId(storyEntity1.altId!!),
             "Story 1",
             emptyList(),
+            "Once upon a time...",
             "Once upon a time...",
             null,
             storyteller1
