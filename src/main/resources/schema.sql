@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS mb_user
     middlename VARCHAR(128),
     email VARCHAR(128),
     mobile VARCHAR(32),
-    INDEX(alt_id)
+    INDEX(alt_id),
+    organization_id MEDIUMINT,
+    FOREIGN KEY (organization_id) REFERENCES organization(id)
 );
 
 CREATE TABLE IF NOT EXISTS resource
@@ -31,6 +33,11 @@ CREATE TABLE IF NOT EXISTS resource
     alt_id VARCHAR(128) UNIQUE NOT NULL,
     name VARCHAR(128) NOT NULL,
     is_deleted BOOLEAN NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS organization
+(
+    id MEDIUMINT PRIMARY KEY REFERENCES resource(id)
 );
 
 CREATE TABLE IF NOT EXISTS tag
@@ -72,7 +79,7 @@ CREATE TABLE IF NOT EXISTS storyteller
     contact_method VARCHAR(128),
     onboarding_status int,
     FOREIGN KEY (preferred_chronicler_id) REFERENCES chronicler(id),
-    FOREIGN KEY (onboarding_status) REFERENCES  onboarding_status(id)
+    FOREIGN KEY (onboarding_status) REFERENCES onboarding_status(id)
 );
 
 CREATE TABLE IF NOT EXISTS storyteller_benefactor_link
@@ -98,6 +105,7 @@ CREATE TABLE IF NOT EXISTS story
     id   MEDIUMINT PRIMARY KEY REFERENCES resource(id),
     storyteller_id MEDIUMINT,
     text LONGTEXT,
+    summary LONGTEXT,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id)
 );
 
@@ -229,7 +237,7 @@ CREATE TABLE IF NOT EXISTS twilio_data
 );
 
 -- Default Chronicler
-INSERT IGNORE INTO mb_user values (default, '0', 0, true, 'Chat', 'GPT2.0', null, null, null);
+INSERT IGNORE INTO mb_user values (default, '0', 0, true, 'Chat', 'GPT2.0', null, null, null, null);
 SET @lastId := LAST_INSERT_ID();
 INSERT IGNORE INTO chronicler values (@lastId, true);
 

@@ -196,7 +196,14 @@ class InterviewServiceTests {
         //Expected Ones
         val preferredChronicler1 = Chronicler(Base36Encoder.encodeAltId(chroniclerEntity1.altId!!), "Chronicler 1","first", "middle", "email", "mobile", true, null)
         val storyteller1 = Storyteller(Base36Encoder.encodeAltId(storytellerEntity1.altId!!), "Storyteller 1", "first", "middle","email", "mobile", "phone", ArrayList(), preferredChronicler1, OnboardingStatus.ONBOARDING_NOT_STARTED, ArrayList(), null)
-        val expectedStory1 = Story(Base36Encoder.encodeAltId(storyEntity1.altId!!), "Story 1", emptyList(), "Once upon a time...", storyteller1)
+        val expectedStory1 = Story(
+            Base36Encoder.encodeAltId(storyEntity1.altId!!),
+            "Story 1",
+            emptyList(),
+            "Once upon a time...",
+            null,
+            storyteller1
+        )
         val expectedInterviewQuestion1 = InterviewQuestion(Base36Encoder.encodeAltId(interviewQuestionEntity1.altId!!),
             "question 1",
             emptyList(),

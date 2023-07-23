@@ -12,6 +12,10 @@ class StoryEntity: ResourceEntity() {
     @Column(name = "text")
     var text: String? = null
 
+    @Basic
+    @Column(name = "summary")
+    var summary: String? = null
+
     @ManyToOne
     @JoinColumn(name = "storyteller_id", referencedColumnName = "id")
     var storyteller: StorytellerEntity? = null
