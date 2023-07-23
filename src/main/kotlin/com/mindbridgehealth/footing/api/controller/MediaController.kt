@@ -10,6 +10,7 @@ import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.service.MediaService
 import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.util.Base36Encoder
+import com.mindbridgehealth.footing.service.util.SignatureGenerator
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -21,8 +22,6 @@ import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URL
 import java.util.*
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
 
 
 @RestController
@@ -60,7 +59,7 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
         {
             validationUrl = validationUrl.replace("http", "https")
         }
-        val signature = generateSignature(validationUrl, jsonString)
+        val signature = SignatureGenerator.generateSignature(applicationProperties.addPipeKey, validationUrl, jsonString)
         if (xPipeSignature.isNullOrEmpty() || !xPipeSignature.equals(signature)) {
             println(xPipeSignature)
             println(signature)
@@ -109,19 +108,4 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
     @DeleteMapping("/{id}")
     fun deleteMedia(@PathVariable id: String) {
         mediaService.deleteMedia(Base36Encoder.decodeAltId(id))    }
-
-    /**
-     * Generates a base64-encoded signature for a Pipe webhook request.
-     * @param url the webhook url
-     * @param jsonData the data in JSON format
-     * @return the base64-encoded signature
-     */
-    private fun generateSignature(url: String, jsonData: String): String {
-        val dataToSign = url + jsonData
-        val mac = Mac.getInstance("HmacSHA1")
-        val secretKey = SecretKeySpec(applicationProperties.addPipeKey.toByteArray(), "HmacSHA1")
-        mac.init(secretKey)
-        val signatureBytes = mac.doFinal(dataToSign.toByteArray())
-        return Base64.getEncoder().encodeToString(signatureBytes)
-    }
 }

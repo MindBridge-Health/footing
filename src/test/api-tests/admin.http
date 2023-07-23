@@ -1,0 +1,3 @@
+### POST SendUrl to user
+POST {{host}}/api/v1/admin/sendUrl/8ub5lac5.648b65e98860a0c976f61bf7
+Content-Type: application/json

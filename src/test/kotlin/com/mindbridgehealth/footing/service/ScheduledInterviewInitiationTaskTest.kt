@@ -35,7 +35,7 @@ class ScheduledInterviewInitiationTaskTest {
             interviewService,
             interviewQuestionService,
             smsNotificationService,
-            ApplicationProperties("", "", "", "")
+            ApplicationProperties("", "", "", "", "", "")
         )
     }
 
