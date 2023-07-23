@@ -12,7 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.io.IOException
 
 @Component
-class SignatureValidationFilter : OncePerRequestFilter() {
+class SignatureValidationFilter(private val applicationProperties: ApplicationProperties) : OncePerRequestFilter() {
 
     @Value("\${spring.profiles.active}")
     private val activeProfile: String? = null
@@ -33,7 +33,7 @@ class SignatureValidationFilter : OncePerRequestFilter() {
                 {
                     validationUrl = validationUrl.replace("http", "https")
                 }
-                if (SignatureGenerator.validateSignature("key", validationUrl, "", signature)) {
+                if (SignatureGenerator.validateSignature(applicationProperties.mbhKey, validationUrl, "", signature)) {
                     filterChain.doFilter(request, response) // Proceed with serving the static asset
                 } else {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid signature")
