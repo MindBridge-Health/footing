@@ -26,5 +26,5 @@ Content-Type: application/json
 ### Get All questions
 GET  {{host}}/api/v1/questions/
 Content-Type: application/json
-Authorization: "Bearer {JWT}"
+Authorization: Bearer {{JWT}}
 

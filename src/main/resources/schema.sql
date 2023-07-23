@@ -147,8 +147,7 @@ CREATE TABLE IF NOT EXISTS story_group_story_link
 CREATE TABLE IF NOT EXISTS question
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
-
-    text VARCHAR(128),
+    text VARCHAR(1028),
     custom BOOLEAN
 );
 
