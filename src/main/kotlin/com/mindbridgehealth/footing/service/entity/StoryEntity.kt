@@ -13,6 +13,10 @@ class StoryEntity: ResourceEntity() {
     var text: String? = null
 
     @Basic
+    @Column(name = "original_text")
+    var originalText: String? = null
+
+    @Basic
     @Column(name = "summary")
     var summary: String? = null
 

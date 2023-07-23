@@ -24,6 +24,9 @@ class StoryService(private val db: StoryRepository, private val storyMapper: Sto
     }
 
     fun saveEntity(story: StoryEntity): StoryEntity {
+        if(story.originalText == null || story.text == null) {
+            throw Exception("Tried to save a story without text")
+        }
         return db.save(story)
     }
 

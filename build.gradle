@@ -45,6 +45,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.twilio.sdk/twilio
     implementation 'com.twilio.sdk:twilio:9.8.0'
+    implementation 'software.amazon.awssdk:bom:2.20.109'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 

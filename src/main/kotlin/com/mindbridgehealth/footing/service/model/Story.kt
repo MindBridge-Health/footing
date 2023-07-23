@@ -5,6 +5,7 @@ data class Story(
     override val name: String,
     override var tags: List<Tag>? = emptyList(),
     val text: String,
+    val originalText: String,
     val summary: String?,
     val storyteller: Storyteller
 ) : Resource()
