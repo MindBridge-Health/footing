@@ -5,6 +5,7 @@ import com.mindbridgehealth.footing.data.repository.SignatureRepository
 import com.mindbridgehealth.footing.service.entity.SignatureEntity
 import com.mindbridgehealth.footing.service.entity.StorytellerEntity
 import com.mindbridgehealth.footing.service.model.Storyteller
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.mindbridgehealth.footing.service.util.SignatureGenerator
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -25,7 +26,8 @@ class AdminService(
             logger.error("Unable to send link to user ${storyteller.id}, mobile number was null")
             throw Exception("mobile number is null")
         } else {
-            val url = "${applicationProperties.rootUrl}/userhome.html"
+            val encodeAltId = storyteller.altId?.let { Base36Encoder.encodeAltId(it) }
+            val url = "${applicationProperties.rootUrl}/userhome.html?userId=$encodeAltId"
             val sig = SignatureGenerator.generateSignature(applicationProperties.mbhKey, url, "")
             val existingSignatureEntity = signatureRepository.findBySignature(sig)
             existingSignatureEntity.ifPresentOrElse({
@@ -39,7 +41,7 @@ class AdminService(
                 }
                 signatureRepository.save(signatureEntity)
             })
-            val signedUrl = "$url?xsig=$sig"
+            val signedUrl = "$url&xsig=$sig"
             smsNotificationService.sendMessage(storyteller.mobile!!, "Here is your link: $signedUrl")
         }
     }

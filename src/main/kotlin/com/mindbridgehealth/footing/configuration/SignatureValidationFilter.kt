@@ -59,7 +59,11 @@ class SignatureValidationFilter(
     }
 
     private fun extractUserIdFromRequest(request: HttpServletRequest): String {
-        return request.getParameter("userId").let { Base36Encoder.decodeAltId(it) }
+        val userId = request.getParameter("userId")
+        return if (userId != null) {
+            Base36Encoder.decodeAltId(userId)
+        } else
+            ""
     }
 
     private fun extractSignatureFromRequest(request: HttpServletRequest): String {
