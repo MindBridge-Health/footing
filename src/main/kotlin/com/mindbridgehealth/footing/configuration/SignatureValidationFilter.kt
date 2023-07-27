@@ -33,7 +33,7 @@ class SignatureValidationFilter(
             if (request.queryString != null) {
                 val signature = extractSignatureFromRequest(request)
                 val updatedQueryString = removeXsigParameterFromQueryString(request.queryString)
-                val updatedURI = request.requestURI + updatedQueryString
+                val updatedURI = request.requestURI + "?" + updatedQueryString
                 var validationUrl =
                     ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + updatedURI
                 if ("prod" == activeProfile) //App Runner is actually running on http with an https LB in front
@@ -46,7 +46,12 @@ class SignatureValidationFilter(
                         if (it.url == validationUrl && it.userAltId == extractUserIdFromRequest(request)) {
                             filterChain.doFilter(request, response) // Proceed with serving the static asset
                         }
-                    }, { response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid signature") })
+                        else {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid signature")
+                        }
+                    }, {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid signature")
+                    })
                 } else {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid signature")
                 }
@@ -67,11 +72,21 @@ class SignatureValidationFilter(
     }
 
     private fun extractSignatureFromRequest(request: HttpServletRequest): String {
-        return request.getParameter("xsig") ?: ""
+        val queryString = request.queryString
+        val params = queryString?.split("&") ?: emptyList()
+
+        for (param in params) {
+            val parts = param.replaceFirst("=", "|").split("|")
+            if (parts.size == 2 && parts[0] == "xsig") {
+                return parts[1]
+            }
+        }
+
+        return ""
     }
 
     private fun removeXsigParameterFromQueryString(queryString: String): String {
-        val pattern = "&?xsig=[^&]+".toRegex()
+        val pattern = "&xsig=[^&]+".toRegex()
         return queryString.replace(pattern, "")
     }
 
