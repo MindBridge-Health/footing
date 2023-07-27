@@ -187,7 +187,7 @@ class InterviewService(
         val storytellerEntity = storytellerService.findStorytellerEntityByAltId(storytellerId)
         storytellerEntity.getOrElse { throw Exception("Did not find storyteller") }.id?.let {
             return scheduledInterviewRepository.findAllByStorytellerIdOrderByScheduledTimeAsc(it)
-                .filter { s -> s.scheduledTime != null && s.scheduledTime!!.after(Timestamp.from(Instant.now())) }
+                .filter { s -> s.scheduledTime != null && s.scheduledTime!!.after(Timestamp.from(Instant.now().minusSeconds(60))) }
                 .map { s -> scheduledInterviewEntityMapper.entityToModel(s) }
         }
 
