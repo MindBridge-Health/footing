@@ -1,5 +1,7 @@
 package com.mindbridgehealth.footing.configuration
 
+import com.mindbridgehealth.footing.data.repository.SignatureRepository
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.mindbridgehealth.footing.service.util.SignatureGenerator
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
@@ -10,9 +12,13 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.io.IOException
+import java.time.Instant
 
 @Component
-class SignatureValidationFilter(private val applicationProperties: ApplicationProperties) : OncePerRequestFilter() {
+class SignatureValidationFilter(
+    private val applicationProperties: ApplicationProperties,
+    private val signatureRepository: SignatureRepository
+) : OncePerRequestFilter() {
 
     @Value("\${spring.profiles.active}")
     private val activeProfile: String? = null
@@ -28,13 +34,19 @@ class SignatureValidationFilter(private val applicationProperties: ApplicationPr
                 val signature = extractSignatureFromRequest(request)
                 val updatedQueryString = removeXsigParameterFromQueryString(request.queryString)
                 val updatedURI = request.requestURI + updatedQueryString
-                var validationUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + updatedURI
-                if("prod" == activeProfile) //App Runner is actually running on http with an https LB in front
+                var validationUrl =
+                    ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + updatedURI
+                if ("prod" == activeProfile) //App Runner is actually running on http with an https LB in front
                 {
                     validationUrl = validationUrl.replace("http", "https")
                 }
                 if (SignatureGenerator.validateSignature(applicationProperties.mbhKey, validationUrl, "", signature)) {
-                    filterChain.doFilter(request, response) // Proceed with serving the static asset
+                    val optSignatureEntity = signatureRepository.findBySignature(signature)
+                    optSignatureEntity.ifPresentOrElse({
+                        if (it.url == validationUrl && it.userAltId == extractUserIdFromRequest(request)) {
+                            filterChain.doFilter(request, response) // Proceed with serving the static asset
+                        }
+                    }, { response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid signature") })
                 } else {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid signature")
                 }
@@ -44,6 +56,10 @@ class SignatureValidationFilter(private val applicationProperties: ApplicationPr
         } else {
             filterChain.doFilter(request, response)
         }
+    }
+
+    private fun extractUserIdFromRequest(request: HttpServletRequest): String {
+        return request.getParameter("userId").let { Base36Encoder.decodeAltId(it) }
     }
 
     private fun extractSignatureFromRequest(request: HttpServletRequest): String {

@@ -15,7 +15,7 @@ class AdminController(private val adminService: AdminService, private val storyt
 
     @PostMapping("/sendUrl/{sid}")
     fun sendUrl(@PathVariable sid: String) {
-        val storyteller = storytellerService.findStorytellerByAltId(Base36Encoder.decodeAltId(sid)).getOrElse { throw Exception("Didn't find storyteller") }
+        val storyteller = storytellerService.findStorytellerEntityByAltId(Base36Encoder.decodeAltId(sid)).getOrElse { throw Exception("Didn't find storyteller") }
         adminService.sendHomeLinkToUser(storyteller)
     }
 }

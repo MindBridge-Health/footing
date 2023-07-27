@@ -234,6 +234,16 @@ CREATE TABLE IF NOT EXISTS twilio_data
     raw_json json
 );
 
+CREATE TABLE IF NOT EXISTS signature
+(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_alt_id varchar(64) NOT NULL references mb_user(alt_id),
+    url VARCHAR(256),
+    issued TIMESTAMP NOT NULL DEFAULT NOW(),
+    signature VARCHAR(32),
+    INDEX(signature)
+);
+
 -- Default Chronicler
 INSERT IGNORE INTO mb_user values (default, '0', 0, true, 'Chat', 'GPT2.0', null, null, null, null);
 SET @lastId := LAST_INSERT_ID();
