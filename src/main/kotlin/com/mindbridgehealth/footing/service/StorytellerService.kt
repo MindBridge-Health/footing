@@ -47,6 +47,10 @@ class StorytellerService(
         return Optional.empty()
     }
 
+    fun getAllStorytellers(): List<Storyteller> {
+        return db.findAll().map { storytellerMapper.entityToModel(it) }
+    }
+
     fun save(storyteller: Storyteller, altId: String): Storyteller {
         return storytellerMapper.entityToModel(saveEntity(storyteller, altId))
     }
