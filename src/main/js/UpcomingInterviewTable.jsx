@@ -1,6 +1,7 @@
 import React from "react";
 
-export function UpcomingInterviewTable({ upcomingInterviews }) {
+export function UpcomingInterviewTable({ upcomingInterviews, handleDeleteInterview }) {
+
     return (
         <>
             <h1>Upcoming Interviews</h1>
@@ -16,6 +17,9 @@ export function UpcomingInterviewTable({ upcomingInterviews }) {
                     <tr key={index}>
                         <td>{interview.name}</td>
                         <td>{interview.scheduledTime}</td>
+                        <td>
+                            <button onClick={() => handleDeleteInterview(index)} className="delete-button"></button>
+                        </td>
                     </tr>
                 ))}
                 </tbody>

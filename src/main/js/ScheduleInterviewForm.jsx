@@ -105,14 +105,16 @@ export function ScheduleInterviewForm({onSubmit}) {
                             onChange={handleChange}
                         />
                         <br/>
+                        <div>
                         <label htmlFor="usePreferredTime">Use next available preferred time</label>
-                        <input
-                            id="usePreferredTime"
-                            name="usePreferredTime"
-                            type="checkbox"
-                            checked={formData.usePreferredTime}
-                            onChange={handleChange}
-                        />
+                            <input
+                                id="usePreferredTime"
+                                name="usePreferredTime"
+                                type="checkbox"
+                                checked={formData.usePreferredTime}
+                                onChange={handleChange}
+                            />
+                        </div>
                         <br/>
                         <label htmlFor="datePicker">Date and Time of Interview</label>
                         <input

@@ -20,7 +20,7 @@ const StorytellerDetails = () => {
     const location = useLocation();
     const nav = useNavigate()
     const queryParams = new URLSearchParams(location.search);
-    let sid = ""
+    const [ sid, setSid] = useState(null)
     let storyteller = null
 
     if(location.state != null) {
@@ -33,19 +33,23 @@ const StorytellerDetails = () => {
                 // Fetch the accessToken
                 const token = await getAccessTokenSilently();
                 setAccessToken(token);
+                let localSid = null;
 
                 const sidQp = queryParams.get('sid');
                 if(storyteller) {
                     nav({
                         search: `?sid=${storyteller.id}`
                     })
-                    sid = storyteller.id
+                    setSid(storyteller.id)
+                    localSid = storyteller.id
                 } else if(sidQp) {
-                    sid = sidQp
+                    setSid(sidQp)
+                    localSid = sidQp
                 }
                 // Fetch StorytellerDetails
+                console.log("fetching with sid " + localSid)
                 const detailsData = await fetch(
-                    `/api/v1/storytellers/${sid}`,
+                    `/api/v1/storytellers/${localSid}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -58,7 +62,7 @@ const StorytellerDetails = () => {
 
                 // Fetch scheduledInterviews
                 const interviewsData = await fetch(
-                    `/api/v1/interviews/storytellers/${sid}/scheduled:all`,
+                    `/api/v1/interviews/storytellers/${localSid}/scheduled:all`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -75,6 +79,23 @@ const StorytellerDetails = () => {
             }
         })();
     }, [getAccessTokenSilently]);
+
+    // Function to delete scheduled interviews
+    const handleDeleteInterview = async (index) => {
+        const interviewId = scheduledInterviews[index].id
+        console.log("deleting interview " + interviewId)
+
+        fetch(`/api/v1/interviews/scheduled/${interviewId}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        }).then(response => {
+            setScheduledInterviews(scheduledInterviews.filter((_, i) => i !== index))
+        })
+    }
 
     // Function to update the upcoming interviews data when the form is submitted
     const handleInterviewSubmit = async (formData) => {
@@ -96,7 +117,7 @@ const StorytellerDetails = () => {
 
         const queryParams = new URLSearchParams(qParams).toString();
 
-        fetch(`/api/v1/interviews/scheduled/${storyteller.id}?${queryParams}`, {
+        fetch(`/api/v1/interviews/scheduled/${sid}?${queryParams}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -107,7 +128,7 @@ const StorytellerDetails = () => {
             try {
                 // Make sure to use the updated accessToken state
                fetch(
-                    `/api/v1/interviews/storytellers/${storyteller.id}/scheduled:all`,
+                    `/api/v1/interviews/storytellers/${sid}/scheduled:all`,
                     {
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
@@ -126,7 +147,7 @@ const StorytellerDetails = () => {
 
     const updateStoryteller = (storyteller) => {
         getAccessTokenSilently().then((accessToken) => {
-            fetch(`/api/v1/storytellers/${storyteller.id}`, {
+            fetch(`/api/v1/storytellers/${sid}`, {
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
@@ -156,7 +177,7 @@ const StorytellerDetails = () => {
 
     return (
         <div id="interview-view">
-            <UpcomingInterviewTable upcomingInterviews={scheduledInterviews}/>
+            <UpcomingInterviewTable upcomingInterviews={scheduledInterviews} handleDeleteInterview={handleDeleteInterview}/>
             <ScheduleInterviewForm onSubmit={handleInterviewSubmit}/>
             <PreferredTimeTable storyteller={storytellerDetails} updateStorytellerHandler={updateStoryteller}/>
             <PreferredTimeForm storyteller={storytellerDetails} updateStorytellerHandler={updateStoryteller}/>

@@ -199,7 +199,8 @@ class InterviewService(
     }
 
     fun deleteScheduledInterview(scheduledInterviewId: String) {
-        return scheduledInterviewRepository.deleteById(scheduledInterviewId.toInt())
+        val interview = scheduledInterviewRepository.findByAltId(scheduledInterviewId).getOrElse { throw Exception("ScheduledInterview not found") }
+        scheduledInterviewRepository.delete(interview)
     }
 
     //TODO: What happens if you delete an interview that was scheduled?
