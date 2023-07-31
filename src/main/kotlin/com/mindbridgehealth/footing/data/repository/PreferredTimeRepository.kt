@@ -11,4 +11,6 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 interface PreferredTimeRepository: JpaRepository<PreferredTimeEntity, JvmType.Object> {
 
     fun findByStorytellerAndDayOfWeekAndTime(storytellerEntity: StorytellerEntity, dayOfWeek: String, time: Time): Optional<PreferredTimeEntity>
+
+    fun findAllByStoryteller(storytellerEntity: StorytellerEntity): List<PreferredTimeEntity>
 }

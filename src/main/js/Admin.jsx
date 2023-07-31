@@ -3,9 +3,10 @@ import StorytellerList from "./StorytellerList";
 import {Error} from "./Error";
 import {Loading} from "./Loading";
 import {useAccessTokenContext} from "./AccessTokenContext";
+import {useAuth0} from "@auth0/auth0-react";
 
 const AdminPanel = () => {
-    const { getAccessToken } = useAccessTokenContext();
+    const { getAccessTokenSilently} = useAuth0();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [storytellers, setStorytellers] = useState([]);
@@ -13,7 +14,8 @@ const AdminPanel = () => {
     useEffect(() => {
         (async () => {
             try {
-                const accessToken = await getAccessToken();
+                const accessToken = await getAccessTokenSilently();
+                console.log(accessToken)
 
                 const res = await fetch('/api/v1/storytellers/', {
                     method: 'GET',
@@ -34,7 +36,7 @@ const AdminPanel = () => {
                 setLoading(false);
             }
         })();
-    }, [getAccessToken]);
+    }, [getAccessTokenSilently]);
 
     if (loading) {
         return <Loading />;

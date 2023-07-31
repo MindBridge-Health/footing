@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import './main.css'
 import {Loading} from "./Loading";
 import {Error} from "./Error";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {PreferredTimeTable} from "./PreferredTimeTable";
 import {PreferredTimeForm} from "./PreferredTimeForm";
 import {UpcomingInterviewTable} from "./UpcomingInterviewTable";
@@ -18,7 +18,14 @@ const StorytellerDetails = () => {
     const [ scheduledInterviews, setScheduledInterviews ] = useState({})
     const [ preferredTimes, setPreferredTimes ] = useState({})
     const location = useLocation();
-    const { storyteller } = location.state;
+    const nav = useNavigate()
+    const queryParams = new URLSearchParams(location.search);
+    let sid = ""
+    let storyteller = null
+
+    if(location.state != null) {
+         storyteller  = location.state.storyteller;
+    }
 
     useEffect(() => {
         (async () => {
@@ -27,9 +34,18 @@ const StorytellerDetails = () => {
                 const token = await getAccessTokenSilently();
                 setAccessToken(token);
 
+                const sidQp = queryParams.get('sid');
+                if(storyteller) {
+                    nav({
+                        search: `?sid=${storyteller.id}`
+                    })
+                    sid = storyteller.id
+                } else if(sidQp) {
+                    sid = sidQp
+                }
                 // Fetch StorytellerDetails
                 const detailsData = await fetch(
-                    `/api/v1/storytellers/${storyteller.id}`,
+                    `/api/v1/storytellers/${sid}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -42,7 +58,7 @@ const StorytellerDetails = () => {
 
                 // Fetch scheduledInterviews
                 const interviewsData = await fetch(
-                    `/api/v1/interviews/storytellers/${storyteller.id}/scheduled:all`,
+                    `/api/v1/interviews/storytellers/${sid}/scheduled:all`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -58,9 +74,8 @@ const StorytellerDetails = () => {
                 setLoading(false);
             }
         })();
-    }, [getAccessTokenSilently, storyteller.id]);
+    }, [getAccessTokenSilently]);
 
-    //TODO: instead of handling the Submit, handle the new scheduled interviews
     // Function to update the upcoming interviews data when the form is submitted
     const handleInterviewSubmit = async (formData) => {
 
@@ -109,9 +124,27 @@ const StorytellerDetails = () => {
 
     };
 
-    const handleNewPreferredTimes = (preferredTimes) => {
-        setPreferredTimes(preferredTimes)
-    }
+    const updateStoryteller = (storyteller) => {
+        getAccessTokenSilently().then((accessToken) => {
+            fetch(`/api/v1/storytellers/${storyteller.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify(storyteller)
+            }).then((resp) => {
+                if (!resp.ok) {
+                    throw new Error('Error updating preferred times.');
+                }
+                // If the response is successful, call the preferredTimeHandler
+                return resp.json();
+            }).then((data) => {
+                setPreferredTimes(data.preferredTimes)
+            })
+        } )
+    };
 
     if (loading) {
         return <Loading />;
@@ -125,8 +158,8 @@ const StorytellerDetails = () => {
         <div id="interview-view">
             <UpcomingInterviewTable upcomingInterviews={scheduledInterviews}/>
             <ScheduleInterviewForm onSubmit={handleInterviewSubmit}/>
-            <PreferredTimeTable preferredTimes={preferredTimes} preferredTimeHandler={handleNewPreferredTimes}/>
-            <PreferredTimeForm storyteller={storyteller}/>
+            <PreferredTimeTable storyteller={storytellerDetails} updateStorytellerHandler={updateStoryteller}/>
+            <PreferredTimeForm storyteller={storytellerDetails} updateStorytellerHandler={updateStoryteller}/>
         </div>
     )
 }

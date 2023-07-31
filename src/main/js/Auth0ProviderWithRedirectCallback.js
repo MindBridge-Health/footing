@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import {Auth0Client} from "@auth0/auth0-spa-js";
 import AccessTokenContext from './AccessTokenContext'
+import auth0 from "auth0-js";
 
 const Auth0ProviderWithRedirectCallback = ({
                                                children,
@@ -13,51 +14,57 @@ const Auth0ProviderWithRedirectCallback = ({
                                                ...props
                                            }) => {
     const navigate = useNavigate();
-    const location = useLocation();
+
+    const auth0Client = new auth0.WebAuth({
+        domain,
+        clientID: clientId,
+        redirectUri: authorizationParams.redirect_uri,
+        audience: authorizationParams.audience,
+        responseType: authorizationParams.responseType,
+        scope: authorizationParams.scope,
+    });
 
     useEffect(() => {
         const handleRedirectCallback = async () => {
-            if (location.pathname === '/auth-callback') {
-                await auth0Client.handleRedirectCallback();
-                navigate((location.state && location.state.returnTo) || '/');
+            if (window.location.pathname === '/auth-callback') {
+                auth0Client.parseHash(async (err, authResult) => {
+                    console.log(authResult)
+                    if (authResult && authResult.accessToken && authResult.idToken) {
+                        // Store the access token in a cookie (secure and HttpOnly)
+                        console.log(authResult.accessToken)
+                        setAccessTokenCookie(authResult.accessToken);
+                    } else if (err) {
+                        console.log(err)
+                    }
+
+                    // Redirect back to the original location
+                    const returnTo = Cookies.get('returnTo') || '/';
+                    Cookies.remove('returnTo');
+                });
             }
         };
 
         handleRedirectCallback();
-    }, [location.pathname, navigate]);
+    }, [auth0Client]);
 
-    const auth0Client = new Auth0Client({
-        domain,
-        clientId,
-        ...authorizationParams,
-    });
+    const setAccessTokenCookie = (accessToken) => {
+        const expiresInSeconds = 3600; // 1 hour (adjust as needed)
+        Cookies.set('accessToken', accessToken, {
+            expires: new Date(Date.now() + expiresInSeconds * 1000),
+            secure: true, // Set to true in a production environment (requires HTTPS)
+            sameSite: 'strict',
+            httpOnly: true,
+        });
+    };
 
     const getAccessToken = async () => {
         let accessToken = Cookies.get('accessToken');
-
         if (!accessToken) {
             const tokenResponse = await auth0Client.getTokenSilently();
             accessToken = tokenResponse.accessToken;
-
-            // Set the access token in the cookie with a secure flag and HttpOnly
-            const expiresInSeconds = tokenResponse.expiresIn;
-            setAccessTokenCookie(accessToken, expiresInSeconds);
+            setAccessTokenCookie(accessToken);
         }
-
         return accessToken;
-    };
-
-    const setAccessTokenCookie = (accessToken, expiresInSeconds) => {
-        const expirationDate = new Date();
-        expirationDate.setTime(expirationDate.getTime() + expiresInSeconds * 1000);
-
-        const cookieOptions = {
-            expires: expirationDate,
-            path: '/',
-            secure: true, // Enable this if your app is served over HTTPS
-            httpOnly: true,
-        };
-        Cookies.set('accessToken', accessToken, cookieOptions);
     };
 
     return (
@@ -65,7 +72,7 @@ const Auth0ProviderWithRedirectCallback = ({
             {...props}
             domain={domain}
             clientId={clientId}
-            redirectUri={window.location.origin}
+            authorizationParams={authorizationParams}
             onRedirectCallback={(appState) => {
                 navigate((appState && appState.returnTo) || '/');
             }}

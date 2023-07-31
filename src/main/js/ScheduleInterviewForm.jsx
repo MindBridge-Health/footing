@@ -5,7 +5,7 @@ import {Error} from './Error';
 import {useAccessTokenContext} from "./AccessTokenContext";
 
 export function ScheduleInterviewForm({onSubmit}) {
-    const { getAccessToken } = useAccessTokenContext();
+    const {  getAccessTokenSilently } = useAuth0();
     const [isCollapsed, setIsCollapsed] = useState(true);
     const [questions, setQuestions] = useState([]);
     const [loadingQuestions, setLoadingQuestions] = useState(true);
@@ -48,7 +48,7 @@ export function ScheduleInterviewForm({onSubmit}) {
     useEffect(() => {
         (async () => {
             try {
-                const accessToken = await getAccessToken();
+                const accessToken = await getAccessTokenSilently();
 
                 const response = await fetch('/api/v1/questions/', {
                     method: 'GET',
@@ -69,7 +69,7 @@ export function ScheduleInterviewForm({onSubmit}) {
                 setLoadingQuestions(false);
             }
         })();
-    }, [getAccessToken]);
+    }, [getAccessTokenSilently]);
 
     if (loadingQuestions) {
         return <Loading/>;

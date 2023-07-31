@@ -6,6 +6,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.2.0",
     "@auth0/auth0-spa-js": "^2.1.1",
+    "auth0-js": "^9.22.1",
     "js-cookie": "^3.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -15,7 +16,7 @@
   "scripts": {
     "build": "webpack --mode=production --node-env=production",
     "watch": "webpack --watch",
-    "clean": "webpack clean",
+    "clean": "rm ./build/resources/main/static/built/*",
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production"
   },

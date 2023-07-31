@@ -1,10 +1,8 @@
-import React, {useEffect, useState} from "react";
-import {useAccessTokenContext} from "./AccessTokenContext";
-import {Error} from "./Error";
-import {Loading} from "./Loading";
+import React, {useState} from "react";
+import {useAuth0} from "@auth0/auth0-react";
 
-export function PreferredTimeForm({storyteller, preferredTimeHandler}) {
-    const { getAccessToken } = useAccessTokenContext();
+export function PreferredTimeForm({storyteller, updateStorytellerHandler}) {
+    const {  getAccessTokenSilently } = useAuth0();
     const [isCollapsed, setIsCollapsed] = useState(true);
     const [formData, setFormData] = useState( {
         datePicker: ''
@@ -24,7 +22,7 @@ export function PreferredTimeForm({storyteller, preferredTimeHandler}) {
         return date.toLocaleDateString(undefined, options).toUpperCase();
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         const datetimeValue = formData.datePicker
@@ -44,22 +42,12 @@ export function PreferredTimeForm({storyteller, preferredTimeHandler}) {
             storyteller["preferredTimes"].push(pTime)
         }
 
-        fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            },
-            body: JSON.stringify(storyteller)
-        }).then((resp) => {
-                preferredTimeHandler(resp["preferredTimes"])
-        })
-
         // Reset the form after submission
         setFormData({
             datePicker: '',
         });
+
+        updateStorytellerHandler(storyteller);
     };
 
     const handleChange = (event) => {
