@@ -49,6 +49,8 @@ class StorytellerServiceTests {
 
         every { mockPreferredTimeDb.save(any()) } returnsArgument 0
         every { mockPreferredTimeDb.findByStorytellerAndDayOfWeekAndTime(any(), any(), any()) } returns Optional.empty()
+        every { mockPreferredTimeDb.findAllByStoryteller(any())} returns emptyList()
+        every { mockPreferredTimeDb.deleteAll(any()) } returnsArgument 0
 
         val storytellerCaptureSlot = slot<StorytellerEntity>()
 
@@ -113,6 +115,8 @@ class StorytellerServiceTests {
 
         every { mockPreferredTimeDb.save(any()) } returnsArgument 0
         every { mockPreferredTimeDb.findByStorytellerAndDayOfWeekAndTime(any(), any(), any()) } returns Optional.empty()
+        every { mockPreferredTimeDb.findAllByStoryteller(any())} returns emptyList()
+        every { mockPreferredTimeDb.deleteAll(any()) } returnsArgument 0
 
         val storytellerCaptureSlot = slot<StorytellerEntity>()
 
