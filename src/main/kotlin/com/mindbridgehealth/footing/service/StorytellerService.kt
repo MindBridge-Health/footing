@@ -47,6 +47,10 @@ class StorytellerService(
         return Optional.empty()
     }
 
+    fun getAllStorytellers(): List<Storyteller> {
+        return db.findAll().map { storytellerMapper.entityToModel(it) }
+    }
+
     fun save(storyteller: Storyteller, altId: String): Storyteller {
         return storytellerMapper.entityToModel(saveEntity(storyteller, altId))
     }
@@ -60,7 +64,7 @@ class StorytellerService(
             val storytellerEntity = storytellerMapper.modelToEntity(storyteller.copy(id = null))
             storytellerEntity.altId = altId
             val savedEntity = db.save(storytellerEntity)
-            savePreferredTimeEntities(storyteller, savedEntity)
+            savePreferredTimeEntities(savedEntity)
             savedEntity
         }
     }
@@ -81,34 +85,30 @@ class StorytellerService(
         storedEntity.benefactors = storytellerEntity.benefactors
         storedEntity.email = storytellerEntity.email
         storedEntity.organization = storyteller.organization?.id?.let { organizationService.findEntityByAltId(it) }
+        storedEntity.preferredTimes = storytellerEntity.preferredTimes
 
-        val pfes = savePreferredTimeEntities(storyteller, storedEntity)
+        savePreferredTimeEntities(storedEntity)
         val updatedStorytellerEntity = db.save(storedEntity)
-        updatedStorytellerEntity.preferredTimes = pfes
         return updatedStorytellerEntity
     }
 
     //TODO: Footing-4 Move this behind a PreferredTime Service
     private fun savePreferredTimeEntities(
-        storyteller: Storyteller,
         storytellerEntity: StorytellerEntity
-    ): ArrayList<PreferredTimeEntity> {
-        val pfes = ArrayList<PreferredTimeEntity>()
-        storyteller.preferredTimes?.let {
-            preferredTimes -> preferredTimes.forEach {
-                val existingRecord = preferredTimeRepository.findByStorytellerAndDayOfWeekAndTime(
-                    storytellerEntity,
-                    it.dayOfWeek.name,
-                    it.time
-                )
-                if (existingRecord.isEmpty) {
-                    val preferredTimeEntity = preferredTimeMapper.modelToEntity(it)
-                    preferredTimeEntity.storyteller = storytellerEntity
-                    pfes.add(preferredTimeRepository.save(preferredTimeEntity))
-                }
-            }
+    ) {
+        val dbPfes = preferredTimeRepository.findAllByStoryteller(storytellerEntity)
+
+        //Delete times in db not found in update
+        val incomingPfes = storytellerEntity.preferredTimes ?: emptyList()
+        val deletedPfes = dbPfes.filter { !incomingPfes.contains(it) }
+        preferredTimeRepository.deleteAll(deletedPfes)
+
+        //Add times not found in db
+        val newPfes = incomingPfes.filter { !dbPfes.contains(it) }
+        newPfes.forEach {
+            it.storyteller = storytellerEntity
+            preferredTimeRepository.save(it)
         }
-        return pfes
     }
 
     fun deactivateStoryteller(altId: String) {

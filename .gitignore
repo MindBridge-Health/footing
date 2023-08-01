@@ -40,3 +40,8 @@ out/
 .DS_Store
 .AppleDouble
 .LSOverride
+
+### Node ###
+/node
+/node_modules
+.frontend-gradle-plugin

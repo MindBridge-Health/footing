@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
+import java.util.Optional
 import java.util.UUID
 
 @Repository
@@ -22,5 +23,7 @@ interface ScheduledInterviewRepository : JpaRepository<ScheduledInterviewEntity,
     fun findAllByScheduledTime(scheduledTime: Timestamp): Collection<ScheduledInterviewEntity>
 
     fun findAllByLinkSent(linkSent: Boolean): Collection<ScheduledInterviewEntity>
+
+    fun findByAltId(altId: String): Optional<ScheduledInterviewEntity>
 }
 

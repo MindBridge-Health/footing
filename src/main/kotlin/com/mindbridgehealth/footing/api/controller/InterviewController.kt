@@ -43,7 +43,7 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
 
     @PostMapping("/scheduled/{storytellerId}")
     fun scheduleInterviewOnBehalfOf(@AuthenticationPrincipal principal: Jwt, @PathVariable(name = "storytellerId") sid: String, @RequestParam questionId: String, @RequestParam time: Instant?, @RequestParam name: String?, @RequestParam append: Boolean = false): String {
-        return innerScheduleInterview(sid, questionId, time, name, append)
+        return innerScheduleInterview(Base36Encoder.decodeAltId(sid), questionId, time, name, append)
     }
 
     fun innerScheduleInterview(sid: String, questionId: String, time: Instant?, name: String?, append: Boolean = false): String {
