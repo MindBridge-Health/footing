@@ -32,11 +32,11 @@ tasks.named<InstallFrontendTask>("installFrontend") {
     val ciPlatformPresent = providers.environmentVariable("CI").isPresent()
     val lockFilePath = "${project.projectDir}/src/main/resources/static/package-lock.json"
     val retainedMetadataFileNames: Set<String>
-    if (ciPlatformPresent) {
-        // If the host is a CI platform, execute a strict install of dependencies based on the lock file.
-        installScript.set("ci")
-        retainedMetadataFileNames = setOf(lockFilePath)
-    } else {
+//    if (ciPlatformPresent) {
+//        // If the host is a CI platform, execute a strict install of dependencies based on the lock file.
+//        installScript.set("ci")
+//        retainedMetadataFileNames = setOf(lockFilePath)
+//    } else {
         // The naive configuration below allows to skip the task if the last successful execution did not change neither
         // the package.json file, nor the package-lock.json file, nor the node_modules directory. Any other scenario
         // where for example the lock file is regenerated will lead to another execution before the task is "up-to-date"
@@ -50,7 +50,7 @@ tasks.named<InstallFrontendTask>("installFrontend") {
             }
         }
         outputs.file(lockFilePath).withPropertyName("lockFile")
-    }
+//    }
     inputs.files(retainedMetadataFileNames).withPropertyName("metadataFiles")
     outputs.dir("${project.projectDir}/node_modules").withPropertyName("nodeModulesDirectory")
 }
