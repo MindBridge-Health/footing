@@ -13,7 +13,7 @@ const config = {
     devtool: 'source-map',
     entry: path.resolve(__dirname, './src/main/js/index.jsx'),
     output: {
-        path: __dirname + '/build/resources/static/assets/',
+        path: __dirname + '/build/resources/main/static/built/',
         filename: 'bundle.js',
     },
     plugins: [
