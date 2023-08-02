@@ -518,7 +518,6 @@ class InterviewServiceTests {
 
     }
 
-    @Ignore
     @Test
     fun getAllScheduledInterviews_oldInterview_excluded() {
         mockInterviewDb.clear(MockkClear.BEFORE)
@@ -545,7 +544,7 @@ class InterviewServiceTests {
             })
         }
 
-        val nextDayOfWeek: ZonedDateTime = ZonedDateTime.now().plusWeeks(-1).with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
+        val nextDayOfWeek: ZonedDateTime = ZonedDateTime.now().plusWeeks(-2).with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
         val lastWednesday = Timestamp.from(nextDayOfWeek.with(now.toLocalTime()).toInstant())
         every { mockInterviewDb.findByAltId(any()) } answers  { Optional.of(InterviewEntity("Interview1", "i1", null, false, null, storytellerEntity))}
         every { mockStorytellerService.findStorytellerEntityByAltId(any()) } answers { Optional.of(storytellerEntity) }

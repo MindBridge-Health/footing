@@ -45,3 +45,6 @@ out/
 /node
 /node_modules
 .frontend-gradle-plugin
+
+### Webpack output ###
+/src/main/resources/static/built
