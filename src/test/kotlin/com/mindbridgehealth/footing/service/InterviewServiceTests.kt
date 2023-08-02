@@ -518,7 +518,6 @@ class InterviewServiceTests {
 
     }
 
-    @Ignore
     @Test
     fun getAllScheduledInterviews_oldInterview_excluded() {
         mockInterviewDb.clear(MockkClear.BEFORE)
