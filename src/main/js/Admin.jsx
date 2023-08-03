@@ -4,6 +4,7 @@ import {Error} from "./Error";
 import {Loading} from "./Loading";
 import {useAccessTokenContext} from "./AccessTokenContext";
 import {useAuth0} from "@auth0/auth0-react";
+import {AddStorytellerPanel} from "./assets/AddStorytellerPanel";
 
 const AdminPanel = () => {
     const { getAccessTokenSilently} = useAuth0();
@@ -15,7 +16,6 @@ const AdminPanel = () => {
         (async () => {
             try {
                 const accessToken = await getAccessTokenSilently();
-                console.log(accessToken)
 
                 const res = await fetch('/api/v1/storytellers/', {
                     method: 'GET',
@@ -29,6 +29,7 @@ const AdminPanel = () => {
                 }
 
                 const data = await res.json();
+                console.log(data)
                 setStorytellers(data);
                 setLoading(false);
             } catch (error) {
@@ -36,7 +37,30 @@ const AdminPanel = () => {
                 setLoading(false);
             }
         })();
-    }, [getAccessTokenSilently]);
+    }, []);
+
+    const addNewStoryteller = async (storytellerId) => {
+        const accessToken = await getAccessTokenSilently();
+
+        const res = await fetch(`/api/v1/storytellers/${storytellerId}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to fetch storytellers.');
+        }
+
+        const data = await res.json();
+
+        setStorytellers([...storytellers, data])
+    }
+
+    const handleStorytellerDelete = async (storytellerId) => {
+        setStorytellers(storytellers.filter(s => s.id !== storytellerId))
+    }
 
     if (loading) {
         return <Loading />;
@@ -48,7 +72,8 @@ const AdminPanel = () => {
 
     return (
         <div>
-            <StorytellerList storytellers={storytellers} />
+            <StorytellerList storytellers={storytellers} handleStorytellerDelete={handleStorytellerDelete}/>
+            <AddStorytellerPanel handleNewStoryteller={addNewStoryteller}/>
         </div>
     );
 };

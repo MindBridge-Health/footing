@@ -24,7 +24,7 @@ class StorytellerService(
 ) {
 
     fun findStorytellerByAltId(altId: String): Optional<Storyteller> {
-        val optStoryteller = db.findByAltIdAndIsActive(altId, true)
+        val optStoryteller = db.findByAltId(altId)
         if(optStoryteller.isPresent) {
             return Optional.of(storytellerMapper.entityToModel(optStoryteller.get()))
         }
@@ -32,7 +32,7 @@ class StorytellerService(
     }
 
     fun findStorytellerEntityByAltId(altId: String): Optional<StorytellerEntity> {
-        val optStoryteller = db.findByAltIdAndIsActive(altId, true)
+        val optStoryteller = db.findByAltId(altId)
         if(optStoryteller.isPresent) {
             return Optional.of(optStoryteller.get())
         }
@@ -40,7 +40,7 @@ class StorytellerService(
     }
 
     fun findStorytellerEntityById(id: Int): Optional<StorytellerEntity> {
-        val optStoryteller = db.findByIdAndIsActive(id, true)
+        val optStoryteller = db.findById(id)
         if(optStoryteller.isPresent) {
             return Optional.of(optStoryteller.get())
         }
@@ -63,6 +63,7 @@ class StorytellerService(
         } else {
             val storytellerEntity = storytellerMapper.modelToEntity(storyteller.copy(id = null))
             storytellerEntity.altId = altId
+            storytellerEntity.isActive = true
             val savedEntity = db.save(storytellerEntity)
             savePreferredTimeEntities(savedEntity)
             savedEntity
@@ -74,7 +75,7 @@ class StorytellerService(
     }
 
     fun updateEntity(storyteller: Storyteller, altId: String): StorytellerEntity {
-        val storedEntity = db.findByAltIdAndIsActive(altId, true).getOrElse { throw Exception("Unable to find Storyteller to update") }
+        val storedEntity = db.findByAltId(altId).getOrElse { throw Exception("Unable to find Storyteller to update") }
         val storytellerEntity = storytellerMapper.modelToEntity(storyteller)
         storedEntity.firstname = storytellerEntity.firstname
         storedEntity.lastname = storytellerEntity.lastname
@@ -86,6 +87,7 @@ class StorytellerService(
         storedEntity.email = storytellerEntity.email
         storedEntity.organization = storyteller.organization?.id?.let { organizationService.findEntityByAltId(it) }
         storedEntity.preferredTimes = storytellerEntity.preferredTimes
+        storedEntity.isActive = storytellerEntity.isActive
 
         savePreferredTimeEntities(storedEntity)
         val updatedStorytellerEntity = db.save(storedEntity)
@@ -115,6 +117,11 @@ class StorytellerService(
         val storyteller = db.findByAltIdAndIsActive(altId, true).getOrElse { throw Exception() }
         storyteller.isActive = false
         db.save(storyteller)
+    }
+
+    fun hardDeleteStoryteller(altId: String) {
+        val storytellerEntity = db.findByAltId(altId).getOrElse { throw Exception("Storyteller not found") }
+        db.delete(storytellerEntity)
     }
 
 }

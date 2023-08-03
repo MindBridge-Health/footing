@@ -54,6 +54,19 @@ class InterviewService(
             .toList()
     }
 
+    fun findByStorytellerAltId(storytellerId: String): Collection<Interview> {
+        val storytellerQueryEntity = storytellerService.findStorytellerEntityByAltId(storytellerId).getOrElse { throw Exception("Storyteller not found") }
+        val interviewResultData = storytellerQueryEntity.id?.let { db.findByStorytellerId(it) }
+
+        if (interviewResultData != null) {
+            val interviews = interviewResultData.stream()
+                .map { i -> interviewMapper.entityToModel(i) }
+                .toList()
+            return interviews
+        }
+        return emptyList()
+    }
+
 
     fun createInterview(
         name: String,

@@ -1,7 +1,5 @@
 package com.mindbridgehealth.footing.service.model
 
-import java.util.*
-
 data class Chronicler(
     override var id: String?,
     override var lastname: String?,
@@ -10,5 +8,6 @@ data class Chronicler(
     override var email: String?,
     override var mobile: String?,
     val isAi: Boolean? = false,
-    override var organization: Organization?
+    override var organization: Organization?,
+    override var isActive: Boolean?,
 ) : User()

@@ -56,9 +56,9 @@ class StorytellerServiceTests {
 
         every { mockStorytellerDb.save(capture(storytellerCaptureSlot)) } answers { storytellerCaptureSlot.captured.apply { this.id = 1 }}
 
-        val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", "text", listOf(
-            Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321", null)
-        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true, null), null, ArrayList(), null)
+        val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", true, "text", listOf(
+            Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321", null, true)
+        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true, null, true), null, ArrayList(), null)
         val preferredTime = PreferredTime(storytellerInput, Time(Instant.now().toEpochMilli()), DayOfWeek.WEDNESDAY)
         (storytellerInput.preferredTimes as ArrayList).add(preferredTime)
 
@@ -90,9 +90,9 @@ class StorytellerServiceTests {
 
         every { mockStorytellerDb.save(capture(storytellerCaptureSlot)) } answers { storytellerCaptureSlot.captured.apply { this.id = 1 }}
 
-        val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", "text", listOf(
-            Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321", null)
-        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true, null), null, ArrayList(), null)
+        val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", true, "text", listOf(
+            Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321", null, true)
+        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true, null, true), null, ArrayList(), null)
         val preferredTime = PreferredTime(storytellerInput, Time(Instant.now().toEpochMilli()), DayOfWeek.WEDNESDAY)
         (storytellerInput.preferredTimes as ArrayList).add(preferredTime)
 
@@ -107,7 +107,7 @@ class StorytellerServiceTests {
         mockPreferredTimeDb.clear(MockkClear.BEFORE)
         mockUserDb.clear(MockkClear.BEFORE)
 
-        every { mockStorytellerDb.findByAltIdAndIsActive(any(), true) } returns Optional.of(StorytellerEntity().apply {
+        every { mockStorytellerDb.findByAltId(any()) } returns Optional.of(StorytellerEntity().apply {
             this.id = 1
             this.altId = "auth0|648a23ab6ee6f0aa87941142"
             this.isActive = true
@@ -122,9 +122,9 @@ class StorytellerServiceTests {
 
         every { mockStorytellerDb.save(capture(storytellerCaptureSlot)) } answers { storytellerCaptureSlot.captured.apply { this.id = 1 }}
 
-        val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", "text", listOf(
-            Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321", null)
-        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true, null), null, ArrayList(), null)
+        val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", true, "text", listOf(
+            Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321", null, true)
+        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true, null, true), null, ArrayList(), null)
         val preferredTime = PreferredTime(storytellerInput, Time(Instant.now().toEpochMilli()), DayOfWeek.WEDNESDAY)
         (storytellerInput.preferredTimes as ArrayList).add(preferredTime)
 
@@ -152,7 +152,7 @@ class StorytellerServiceTests {
         mockPreferredTimeDb.clear(MockkClear.BEFORE)
         mockUserDb.clear(MockkClear.BEFORE)
 
-        every { mockStorytellerDb.findByAltIdAndIsActive(any(), true) } returns Optional.empty()
+        every { mockStorytellerDb.findByAltId(any()) } returns Optional.empty()
 
         every { mockPreferredTimeDb.save(any()) } returnsArgument 0
         every { mockPreferredTimeDb.findByStorytellerAndDayOfWeekAndTime(any(), any(), any()) } returns Optional.empty()
@@ -161,9 +161,9 @@ class StorytellerServiceTests {
 
         every { mockStorytellerDb.save(capture(storytellerCaptureSlot)) } answers { storytellerCaptureSlot.captured.apply { this.id = 1 }}
 
-        val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", "text", listOf(
-            Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321", null)
-        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true, null), null, ArrayList(), null)
+        val storytellerInput = Storyteller(null, "lastname", "firstname", "middle", "test@test.com", "1231231234", true, "text", listOf(
+            Benefactor(null, "bLastname", "bFirstname", "bMiddlenamer", "btest@btest.com", "3213214321", null, true)
+        ), Chronicler(null, "cLastname", "cFirstname", "cMiddlename", "ctest@ctest.com", "5435435432", true, null, true), null, ArrayList(), null)
         val preferredTime = PreferredTime(storytellerInput, Time(Instant.now().toEpochMilli()), DayOfWeek.WEDNESDAY)
         (storytellerInput.preferredTimes as ArrayList).add(preferredTime)
 

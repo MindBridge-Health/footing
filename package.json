@@ -15,8 +15,8 @@
   },
   "scripts": {
     "build": "webpack --mode=production --node-env=production",
-    "watch": "webpack --watch",
-    "clean": "rm ./src/main/resources/static/built/*",
+    "watch": "webpack --watch --mode=development --node-env=development",
+    "clean": "rm src/main/resources/static/built/*",
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production"
   },

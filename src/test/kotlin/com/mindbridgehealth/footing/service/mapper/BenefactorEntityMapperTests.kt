@@ -33,7 +33,7 @@ class BenefactorEntityMapperTests {
 
     @Test
     fun benefactorToBenefactorEntity_validModel_validData() {
-        val benefactor = Benefactor( "8ub5lac5.648a23ab6ee6f0aa87941142", "someOtherBenefactor", "first", "middle", "", "", null)
+        val benefactor = Benefactor( "8ub5lac5.648a23ab6ee6f0aa87941142", "someOtherBenefactor", "first", "middle", "", "", null, true)
 
         val userMapper = UserMapper()
         val organizationEntityMapperImpl = OrganizationEntityMapperImpl()

@@ -24,7 +24,6 @@ import java.time.temporal.TemporalAdjusters
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.floor
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -197,8 +196,18 @@ class InterviewServiceTests {
         every {mockInterviewDb.findByStorytellerId(any())} returns interviewResultList
 
         //Expected Ones
-        val preferredChronicler1 = Chronicler(Base36Encoder.encodeAltId(chroniclerEntity1.altId!!), "Chronicler 1","first", "middle", "email", "mobile", true, null)
-        val storyteller1 = Storyteller(Base36Encoder.encodeAltId(storytellerEntity1.altId!!), "Storyteller 1", "first", "middle","email", "mobile", "phone", ArrayList(), preferredChronicler1, OnboardingStatus.ONBOARDING_NOT_STARTED, ArrayList(), null)
+        val preferredChronicler1 = Chronicler(
+            Base36Encoder.encodeAltId(chroniclerEntity1.altId!!),
+            "Chronicler 1",
+            "first",
+            "middle",
+            "email",
+            "mobile",
+            true,
+            null,
+            true
+        )
+        val storyteller1 = Storyteller(Base36Encoder.encodeAltId(storytellerEntity1.altId!!), "Storyteller 1", "first", "middle","email", "mobile", true, "phone", ArrayList(), preferredChronicler1, OnboardingStatus.ONBOARDING_NOT_STARTED, ArrayList(), null)
         val expectedStory1 = Story(
             Base36Encoder.encodeAltId(storyEntity1.altId!!),
             "Story 1",
@@ -217,8 +226,18 @@ class InterviewServiceTests {
         val expectedInterview1 = Interview(Base36Encoder.encodeAltId(interviewEntity1.altId!!), "interview 1", emptyList(), storyteller1, preferredChronicler1, timeCompleted, true, listOf(expectedInterviewQuestion1))
 
         //Expected Twos
-        val preferredChronicler2 = Chronicler(Base36Encoder.encodeAltId(chroniclerEntity2.altId!!), "Chronicler 2","first", "middle","email",  "mobile", false, null)
-        val storyteller2 = Storyteller(Base36Encoder.encodeAltId(storytellerEntity2.altId!!), "Storyteller 2", "first", "middle","email", "mobile", "phone", ArrayList(), preferredChronicler2, OnboardingStatus.ONBOARDING_NOT_STARTED, ArrayList(), null)
+        val preferredChronicler2 = Chronicler(
+            Base36Encoder.encodeAltId(chroniclerEntity2.altId!!),
+            "Chronicler 2",
+            "first",
+            "middle",
+            "email",
+            "mobile",
+            false,
+            null,
+            true,
+        )
+        val storyteller2 = Storyteller(Base36Encoder.encodeAltId(storytellerEntity2.altId!!), "Storyteller 2", "first", "middle","email", "mobile", true, "phone", ArrayList(), preferredChronicler2, OnboardingStatus.ONBOARDING_NOT_STARTED, ArrayList(), null)
         val expectedInterviewQuestion2 = InterviewQuestion(Base36Encoder.encodeAltId(interviewQuestionEntity2.altId!!),
             "question 2",
             emptyList(),
@@ -318,8 +337,8 @@ class InterviewServiceTests {
 
         assertEquals(name, interview.name)
         assertEquals(false, interview.completed)
-        assertEquals(Chronicler("dlj", "ln", "fn", "mn", "em", "87", true, null), interview.chronicler)
-        assertEquals(Storyteller("5rm","ln", "fn", null, "em", "98", "text", emptyList(), null, OnboardingStatus.ONBOARDING_NOT_STARTED, emptyList(), null), interview.storyteller)
+        assertEquals(Chronicler("dlj", "ln", "fn", "mn", "em", "87", true, null, true), interview.chronicler)
+        assertEquals(Storyteller("5rm","ln", "fn", null, "em", "98", true, "text", emptyList(), null, OnboardingStatus.ONBOARDING_NOT_STARTED, emptyList(), null), interview.storyteller)
         assertEquals(InterviewQuestion("lz344", "interview 1_question 1", emptyList(), "1sk", "xcm", null, false, false), interview.interviewQuestions?.first())
     }
 

@@ -2,18 +2,21 @@
 
 const path = require('path');
 
-const isProduction = process.env.NODE_ENV == 'production';
+const isProduction = process.env.NODE_ENV === 'production';
 
 
 const stylesHandler = 'style-loader';
 
+let buildPath = process.env.NODE_ENV === 'production' ?
+    __dirname + '/src/main/resources/static/built/' :
+    __dirname + '/build/resources/main/static/built/'
 
 
 const config = {
     devtool: 'source-map',
     entry: path.resolve(__dirname, './src/main/js/index.jsx'),
     output: {
-        path: __dirname + '/src/main/resources/static/built/',
+        path: buildPath,
         filename: 'bundle.js',
     },
     plugins: [
@@ -31,7 +34,7 @@ const config = {
             },
             {
                 test: /\.css$/i,
-                use: [stylesHandler,'css-loader'],
+                use: [stylesHandler, 'css-loader'],
             },
             {
                 test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
@@ -50,8 +53,7 @@ const config = {
 module.exports = () => {
     if (isProduction) {
         config.mode = 'production';
-        
-        
+
     } else {
         config.mode = 'development';
     }
