@@ -1,7 +1,5 @@
 package com.mindbridgehealth.footing.service.model
 
-import java.util.*
-
 data class Chronicler(
     override var id: String?,
     override var lastname: String?,
