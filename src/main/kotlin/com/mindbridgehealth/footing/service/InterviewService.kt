@@ -207,8 +207,12 @@ class InterviewService(
         return emptyList()
     }
 
+    //TODO: Test coverage
     fun markInterviewComplete(interviewId: Int) {
-        db.save(db.findById(interviewId).orElseThrow().apply { this.completed = true })
+        db.save(db.findById(interviewId).orElseThrow().apply {
+            this.completed = true
+            this.timeCompleted = Timestamp.from(Instant.now())
+        })
     }
 
     fun deleteScheduledInterview(scheduledInterviewId: String) {
