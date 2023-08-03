@@ -8,6 +8,7 @@ import {PreferredTimeForm} from "./PreferredTimeForm";
 import {UpcomingInterviewTable} from "./UpcomingInterviewTable";
 import {ScheduleInterviewForm} from "./ScheduleInterviewForm";
 import {useAuth0} from "@auth0/auth0-react";
+import {PreviousInterviewsTable} from "./PreviousInterviewsTable";
 
 const StorytellerDetails = () => {
     const {  getAccessTokenSilently } = useAuth0();
@@ -17,10 +18,10 @@ const StorytellerDetails = () => {
     const [ storytellerDetails, setStorytellerDetails ] = useState({})
     const [ scheduledInterviews, setScheduledInterviews ] = useState({})
     const [ preferredTimes, setPreferredTimes ] = useState({})
+    const [ sid, setSid] = useState(null)
     const location = useLocation();
     const nav = useNavigate()
     const queryParams = new URLSearchParams(location.search);
-    const [ sid, setSid] = useState(null)
     let storyteller = null
 
     if(location.state != null) {
@@ -47,7 +48,6 @@ const StorytellerDetails = () => {
                     localSid = sidQp
                 }
                 // Fetch StorytellerDetails
-                console.log("fetching with sid " + localSid)
                 const detailsData = await fetch(
                     `/api/v1/storytellers/${localSid}`,
                     {
@@ -83,7 +83,6 @@ const StorytellerDetails = () => {
     // Function to delete scheduled interviews
     const handleDeleteInterview = async (index) => {
         const interviewId = scheduledInterviews[index].id
-        console.log("deleting interview " + interviewId)
 
         fetch(`/api/v1/interviews/scheduled/${interviewId}`, {
             method: 'DELETE',
@@ -99,9 +98,6 @@ const StorytellerDetails = () => {
 
     // Function to update the upcoming interviews data when the form is submitted
     const handleInterviewSubmit = async (formData) => {
-
-        console.log('Scheduling Interview');
-        console.log(formData.datePicker);
 
         const formattedDate = formData.usePreferredTime ? undefined : new Date(formData.datePicker).toISOString();
 
@@ -167,6 +163,13 @@ const StorytellerDetails = () => {
         } )
     };
 
+    // Function to handle toggling the active status
+    const handleToggleActiveStatus = () => {
+        storytellerDetails.isActive = !storytellerDetails.isActive
+        setStorytellerDetails(storytellerDetails)
+        updateStoryteller(storytellerDetails)
+    };
+
     if (loading) {
         return <Loading />;
     }
@@ -177,10 +180,17 @@ const StorytellerDetails = () => {
 
     return (
         <div id="interview-view">
+            <div>
+                <h3>Status: {storytellerDetails.isActive ? 'Active' : 'Inactive'}</h3>
+                <button onClick={handleToggleActiveStatus}>
+                    {storytellerDetails.isActive ? 'Deactivate' : 'Activate'}
+                </button>
+            </div>
             <UpcomingInterviewTable upcomingInterviews={scheduledInterviews} handleDeleteInterview={handleDeleteInterview}/>
             <ScheduleInterviewForm onSubmit={handleInterviewSubmit}/>
             <PreferredTimeTable storyteller={storytellerDetails} updateStorytellerHandler={updateStoryteller}/>
             <PreferredTimeForm storyteller={storytellerDetails} updateStorytellerHandler={updateStoryteller}/>
+            <PreviousInterviewsTable storyteller={storytellerDetails}></PreviousInterviewsTable>
         </div>
     )
 }

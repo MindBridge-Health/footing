@@ -3,6 +3,7 @@ package com.mindbridgehealth.footing.api.controller
 import com.mindbridgehealth.footing.api.dto.ScheduleInterviewResponseDto
 import com.mindbridgehealth.footing.api.dto.mapper.ScheduledInterviewDtoMapper
 import com.mindbridgehealth.footing.service.InterviewService
+import com.mindbridgehealth.footing.service.QuestionService
 import com.mindbridgehealth.footing.service.model.Interview
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.springframework.http.HttpStatus
@@ -20,14 +21,21 @@ import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 import java.util.*
 import kotlin.collections.Collection
+import kotlin.jvm.optionals.getOrNull
 
 @RestController
 @RequestMapping("/api/v1/interviews")
-class InterviewController(val service: InterviewService, val dtoMapper: ScheduledInterviewDtoMapper) {
+class InterviewController(val service: InterviewService, val questionService: QuestionService, val dtoMapper: ScheduledInterviewDtoMapper) {
 
     @GetMapping("/{id}")
     fun get(@PathVariable id: String): Interview {
         return service.findInterviewByAltId(Base36Encoder.decodeAltId(id))
+    }
+
+    @GetMapping("/storytellers/{storytellerId}")
+    fun getAllInterviewsForStoryteller(@PathVariable(name="storytellerId") sid: String): Collection<Interview>{
+        val interviews = service.findByStorytellerAltId(Base36Encoder.decodeAltId(sid))
+        return interviews
     }
 
     @PostMapping("/storytellers/{storytellerId}/chroniclers/{chroniclerId}")
@@ -77,12 +85,36 @@ class InterviewController(val service: InterviewService, val dtoMapper: Schedule
         return if(storytellerId.lowercase() == "self")
             service.getAllScheduledInterviews(principal.subject).map { s -> dtoMapper.modelToDto(s) }
         else
-            service.getAllScheduledInterviews(Base36Encoder.decodeAltId(storytellerId)).map { s -> dtoMapper.modelToDto(s) }
+            service.getAllScheduledInterviews(Base36Encoder.decodeAltId(storytellerId)).map {
+                val dto = dtoMapper.modelToDto(it)
+                val q = (it.interview.interviewQuestions as List)[0].questionId?.let { it1 ->
+                    questionService.findQuestionByAltId(
+                        Base36Encoder.decodeAltId(it1)
+                    )
+                }
+                if (q != null && q.isPresent) {
+                    dto.question = q.get()
+                }
+                dto
+            }
     }
 
     @GetMapping("/storytellers/scheduled:all")
     fun getAllAssignedForSelf(@AuthenticationPrincipal principal: Jwt): Collection<ScheduleInterviewResponseDto>? {
-            return service.getAllScheduledInterviews(principal.subject).map { s -> dtoMapper.modelToDto(s) }
+
+        val allScheduledInterviews = service.getAllScheduledInterviews(principal.subject)
+        return allScheduledInterviews.map {
+            val dto = dtoMapper.modelToDto(it)
+            val q = (it.interview.interviewQuestions as List)[0].questionId?.let { it1 ->
+                questionService.findQuestionByAltId(
+                    it1
+                )
+            }
+            if (q != null && q.isPresent) {
+                dto.question = q.get()
+            }
+            dto
+        }
     }
 
     @DeleteMapping("/scheduled/{scheduledInterviewId}")

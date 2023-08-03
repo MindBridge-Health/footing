@@ -55,18 +55,24 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
     fun postOnBehalf(
         @RequestBody storytellerCreateDto: StorytellerCreateDto,
         @PathVariable id: String,
+        @RequestParam idEncoded: Boolean? = false,
     ): String {
-        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), Base36Encoder.decodeAltId(id)).id ?: throw HttpServerErrorException(HttpStatusCode.valueOf(500))
+        val altId = if(idEncoded == true) Base36Encoder.decodeAltId(id) else id
+        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId).id ?: throw HttpServerErrorException(HttpStatusCode.valueOf(500))
     }
 
     @PutMapping("/{id}")
-    fun putOnBehalf(@RequestBody storyteller: StorytellerCreateDto,@PathVariable id: String,): Storyteller {
-        return service.update(mapper.storytellerCreateDtoToStoryteller(storyteller), Base36Encoder.decodeAltId(id))
+    fun putOnBehalf(@RequestBody storyteller: Storyteller,@PathVariable id: String,): Storyteller {
+        return service.update(storyteller, Base36Encoder.decodeAltId(id))
     }
 
     @DeleteMapping("/{id}")
-    fun deleteOnBehalf(@PathVariable id: String) {
-        service.deactivateStoryteller(Base36Encoder.decodeAltId(id))
+    fun deleteOnBehalf(@PathVariable id: String, @RequestParam force: Boolean? = false) {
+        if(force == true) {
+            service.hardDeleteStoryteller(Base36Encoder.decodeAltId(id))
+        } else {
+            service.deactivateStoryteller(Base36Encoder.decodeAltId(id))
+        }
     }
 
 }

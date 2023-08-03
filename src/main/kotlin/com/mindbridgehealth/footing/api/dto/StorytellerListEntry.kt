@@ -6,4 +6,5 @@ data class StorytellerListEntry(
      var id: String?,
      var lastname: String?,
      var firstname: String?,
+     var isActive: Boolean?,
 )

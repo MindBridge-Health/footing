@@ -10,5 +10,6 @@ data class Chronicler(
     override var email: String?,
     override var mobile: String?,
     val isAi: Boolean? = false,
-    override var organization: Organization?
+    override var organization: Organization?,
+    override var isActive: Boolean?,
 ) : User()

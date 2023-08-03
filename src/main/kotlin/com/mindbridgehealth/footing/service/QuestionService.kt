@@ -12,6 +12,14 @@ import kotlin.jvm.optionals.getOrElse
 @Service
 class QuestionService(private val db: QuestionRepository, private val questionMapper: QuestionEntityMapper) {
 
+    fun findQuestionById(id: Int): Optional<Question> {
+        val optionalQuestion = db.findById(id)
+        if(optionalQuestion.isPresent){
+            return Optional.of(questionMapper.entityToModel(optionalQuestion.get()))
+        }
+        return Optional.empty()
+    }
+
     fun findQuestionByAltId(altId: String): Optional<Question> {
         val optionalQuestion = db.findByAltId(altId)
         if(optionalQuestion.isPresent){
