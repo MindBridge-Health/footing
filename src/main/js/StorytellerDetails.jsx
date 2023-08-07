@@ -6,6 +6,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {PreferredTime} from "./PreferredTime";
 import {useAuth0} from "@auth0/auth0-react";
 import {Interviews} from "./Interviews";
+import {StorytellerDetailsTable} from "./StorytellerDetailsTable";
 
 const StorytellerDetails = () => {
     const {  getAccessTokenSilently } = useAuth0();
@@ -103,26 +104,7 @@ const StorytellerDetails = () => {
                     {storytellerDetails.isActive ? 'Deactivate' : 'Activate'}
                 </button>
             </div>
-            <h3>Details</h3>
-            <table>
-                <thead>
-                <tr>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Email</th>
-                    <th>Mobile</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>{storytellerDetails.firstname}</td>
-                    <td>{storytellerDetails.lastname}</td>
-                    <td>{storytellerDetails.email}</td>
-                    <td>{storytellerDetails.mobile}</td>
-                </tr>
-                </tbody>
-            </table>
-
+            <StorytellerDetailsTable storytellerDetails={storytellerDetails}/>
             <Interviews storytellerDetails={storytellerDetails}/>
             <PreferredTime storytellerDetails={storytellerDetails}/>
         </div>
