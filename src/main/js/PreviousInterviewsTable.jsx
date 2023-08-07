@@ -4,24 +4,40 @@ import {useAuth0} from "@auth0/auth0-react";
 export function PreviousInterviewsTable({storyteller}) {
     const {  getAccessTokenSilently } = useAuth0();
     const [interviewsData, setInterviewsData] = useState([])
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         (async () => {
-            const token = await getAccessTokenSilently();
+            try {
+                const token = await getAccessTokenSilently();
 
-            const interviewResponse = await fetch(
-                `/api/v1/interviews/storytellers/${storyteller.id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setInterviewsData(await interviewResponse.json());
-            console.log(interviewsData)
+                const interviewResponse = await fetch(
+                    `/api/v1/interviews/storytellers/${storyteller.id}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const interviewData = await interviewResponse.json();
+                setInterviewsData(interviewData);
+                setLoading(false);
+            } catch (error) {
+                setError(error);
+                setLoading(false);
+            }
         })();
     },[getAccessTokenSilently, storyteller.id]);
 
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    if (error) {
+        return <p>Error: {error.message}</p>;
+    }
 
     return (
         <>
@@ -38,7 +54,7 @@ export function PreviousInterviewsTable({storyteller}) {
                 {interviewsData.map((interview, index) => (
                     <tr key={index}>
                         <td>{interview.name}</td>
-                        <td>{interview.completed? "true" : "false"}</td>
+                        <td>{interview.completed ? "true" : "false"}</td>
                         <td>{interview.timeCompleted}</td>
                     </tr>
                 ))}
@@ -47,3 +63,7 @@ export function PreviousInterviewsTable({storyteller}) {
         </>
     )
 }
+
+
+
+
