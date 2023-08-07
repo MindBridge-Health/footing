@@ -3,12 +3,9 @@ import './main.css'
 import {Loading} from "./Loading";
 import {Error} from "./Error";
 import {useLocation, useNavigate} from "react-router-dom";
-import {PreferredTimeTable} from "./PreferredTimeTable";
-import {PreferredTimeForm} from "./PreferredTimeForm";
-import {UpcomingInterviewTable} from "./UpcomingInterviewTable";
-import {ScheduleInterviewForm} from "./ScheduleInterviewForm";
+import {PreferredTime} from "./PreferredTime";
 import {useAuth0} from "@auth0/auth0-react";
-import {PreviousInterviewsTable} from "./PreviousInterviewsTable";
+import {Interviews} from "./Interviews";
 
 const StorytellerDetails = () => {
     const {  getAccessTokenSilently } = useAuth0();
@@ -16,8 +13,6 @@ const StorytellerDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [ storytellerDetails, setStorytellerDetails ] = useState({})
-    const [ scheduledInterviews, setScheduledInterviews ] = useState({})
-    const [ preferredTimes, setPreferredTimes ] = useState({})
     const [ sid, setSid] = useState(null)
     const location = useLocation();
     const nav = useNavigate()
@@ -58,19 +53,6 @@ const StorytellerDetails = () => {
                 );
                 const details = await detailsData.json();
                 setStorytellerDetails(details);
-                setPreferredTimes(details.preferredTimes)
-
-                // Fetch scheduledInterviews
-                const interviewsData = await fetch(
-                    `/api/v1/interviews/storytellers/${localSid}/scheduled:all`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-                const interviews = await interviewsData.json();
-                setScheduledInterviews(interviews);
 
                 setLoading(false);
             } catch (error) {
@@ -79,67 +61,6 @@ const StorytellerDetails = () => {
             }
         })();
     }, [getAccessTokenSilently]);
-
-    // Function to delete scheduled interviews
-    const handleDeleteInterview = async (index) => {
-        const interviewId = scheduledInterviews[index].id
-
-        fetch(`/api/v1/interviews/scheduled/${interviewId}`, {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            }
-        }).then(response => {
-            setScheduledInterviews(scheduledInterviews.filter((_, i) => i !== index))
-        })
-    }
-
-    // Function to update the upcoming interviews data when the form is submitted
-    const handleInterviewSubmit = async (formData) => {
-
-        const formattedDate = formData.usePreferredTime ? undefined : new Date(formData.datePicker).toISOString();
-
-        const qParams = {
-            append: formData.usePreferredTime,
-            questionId: formData.question,
-            name: formData.interviewName,
-        };
-
-        if (!formData.usePreferredTime && formattedDate) {
-            qParams.time = formattedDate;
-        }
-
-        const queryParams = new URLSearchParams(qParams).toString();
-
-        fetch(`/api/v1/interviews/scheduled/${sid}?${queryParams}`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            }
-        }).then(response => {
-            try {
-                // Make sure to use the updated accessToken state
-               fetch(
-                    `/api/v1/interviews/storytellers/${sid}/scheduled:all`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    }
-                ).then((updatedInterviewsData) =>
-                updatedInterviewsData.json().then((updatedInterviews) =>
-                setScheduledInterviews(updatedInterviews)));
-            } catch (error) {
-                // Handle any error during the second fetch (optional)
-            }
-        })
-
-
-    };
 
     const updateStoryteller = (storyteller) => {
         getAccessTokenSilently().then((accessToken) => {
@@ -153,12 +74,8 @@ const StorytellerDetails = () => {
                 body: JSON.stringify(storyteller)
             }).then((resp) => {
                 if (!resp.ok) {
-                    throw new Error('Error updating preferred times.');
+                    throw new Error('Error active status');
                 }
-                // If the response is successful, call the preferredTimeHandler
-                return resp.json();
-            }).then((data) => {
-                setPreferredTimes(data.preferredTimes)
             })
         } )
     };
@@ -179,18 +96,35 @@ const StorytellerDetails = () => {
     }
 
     return (
-        <div id="interview-view">
+        <div id="storyteller-details">
             <div>
                 <h3>Status: {storytellerDetails.isActive ? 'Active' : 'Inactive'}</h3>
                 <button onClick={handleToggleActiveStatus}>
                     {storytellerDetails.isActive ? 'Deactivate' : 'Activate'}
                 </button>
             </div>
-            <UpcomingInterviewTable upcomingInterviews={scheduledInterviews} handleDeleteInterview={handleDeleteInterview}/>
-            <ScheduleInterviewForm onSubmit={handleInterviewSubmit}/>
-            <PreferredTimeTable storyteller={storytellerDetails} updateStorytellerHandler={updateStoryteller}/>
-            <PreferredTimeForm storyteller={storytellerDetails} updateStorytellerHandler={updateStoryteller}/>
-            <PreviousInterviewsTable storyteller={storytellerDetails}></PreviousInterviewsTable>
+            <h3>Details</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>Firstname</th>
+                    <th>Lastname</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{storytellerDetails.firstname}</td>
+                    <td>{storytellerDetails.lastname}</td>
+                    <td>{storytellerDetails.email}</td>
+                    <td>{storytellerDetails.mobile}</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <Interviews storytellerDetails={storytellerDetails}/>
+            <PreferredTime storytellerDetails={storytellerDetails}/>
         </div>
     )
 }
