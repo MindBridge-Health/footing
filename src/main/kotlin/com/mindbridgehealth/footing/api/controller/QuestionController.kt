@@ -25,7 +25,7 @@ class QuestionController(val service: QuestionService) {
         val question = optionalQuestion.get()
 
         assertValidPermissions(question, principal)
-        return ResponseEntity.status(HttpStatus.CREATED).body(question)
+        return ResponseEntity.status(HttpStatus.OK).body(question)
     }
 
     @GetMapping("/")
@@ -41,7 +41,7 @@ class QuestionController(val service: QuestionService) {
     @PutMapping("/{id}")
     fun put(@AuthenticationPrincipal principal: Jwt, @RequestBody question: Question, @PathVariable id: String): ResponseEntity<Question>  {
         assertValidPermissions(question, principal)
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.update(Base36Encoder.decodeAltId(id), question))
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(service.update(Base36Encoder.decodeAltId(id), question))
     }
 
     private fun assertValidPermissions(
@@ -50,7 +50,7 @@ class QuestionController(val service: QuestionService) {
     ) {
         // Check if the Jwt subject matches the question's owner
         val permissions = principal.claims["permissions"] as List<*>?
-        if (!permissions?.contains("read:userdata")!! && (question.ownerId != null && principal.subject != question.ownerId)) {
+        if ((permissions == null || !permissions.contains("read:userdata")) && (question.ownerId != null && principal.subject != question.ownerId)) {
             throw HttpClientErrorException(HttpStatus.UNAUTHORIZED)
         }
     }
