@@ -13,7 +13,9 @@ import java.time.Instant
 abstract class ScheduledInterviewEntityMapper: IdMapper() {
 
     @Mapping(source="id", target = "id", ignore = true)
+    @Mapping(source = "owner", target = "ownerId", ignore = true)
     abstract fun entityToModel(scheduledInterviewEntity: ScheduledInterviewEntity): ScheduledInterview
     @Mapping(source="id", target = "id", ignore = true)
+    @Mapping(source = "ownerId", target = "owner", ignore = true)
     abstract fun modelToEntity(scheduledInterview: ScheduledInterview): ScheduledInterviewEntity
 }

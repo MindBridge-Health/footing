@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service
 abstract class OrganizationEntityMapper: IdMapper() {
 
     @Mapping(source = "id", target = "id", ignore = true)
+    @Mapping(source = "owner", target = "ownerId", ignore = true)
     abstract fun entityToModel(organizationEntity: OrganizationEntity): Organization
 
     @Mapping(source = "id", target = "id", ignore = true)
+    @Mapping(source = "ownerId", target = "owner", ignore = true)
     abstract fun modelToEntity(organization: Organization): OrganizationEntity
 
 }

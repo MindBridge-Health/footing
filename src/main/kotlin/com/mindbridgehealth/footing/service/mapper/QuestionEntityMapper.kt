@@ -12,9 +12,11 @@ abstract class QuestionEntityMapper: IdMapper() {
 
     @Mapping(source="custom", target = "isCustom")
     @Mapping(source = "id", target = "id", ignore = true)
+    @Mapping(source = "owner", target = "ownerId", ignore = true)
     abstract fun entityToModel(questionEntity: QuestionEntity): Question
 
     @Mapping(source="custom", target = "custom")
     @Mapping(source = "id", target = "id", ignore = true)
+    @Mapping(source = "ownerId", target = "owner", ignore = true)
     abstract fun modelToEntity(question: Question): QuestionEntity
 }

@@ -44,9 +44,11 @@ class InterviewServiceTests {
         OrganizationEntityMapperImpl(),
         UserMapperImpl()
     )
+
+    private val storyEntityMapperImpl = StoryEntityMapperImpl(storytellerEntityMapperImpl)
     private val interviewQuestionEntityMapperImpl = InterviewQuestionEntityMapperImpl(
-        storytellerEntityMapperImpl,
-        com.mindbridgehealth.footing.service.mapper.QuestionEntityMapperImpl()
+        com.mindbridgehealth.footing.service.mapper.QuestionEntityMapperImpl(),
+        storyEntityMapperImpl
     )
     private val interviewEntityMapper = InterviewEntityMapperImpl(
         TimeMapper(),
@@ -164,14 +166,6 @@ class InterviewServiceTests {
         storytellerEntity2.preferredChronicler = chroniclerEntity2
         storytellerEntity2.email = "email"
         storytellerEntity2.mobile = "mobile"
-
-        val storyEntity2 = StoryEntity()
-        storyEntity2.id = uuid2
-        storyEntity2.altId = UUID.randomUUID().toString().replace("-", "").substring(0, 8)
-        storyEntity2.name = "Story 2"
-        storyEntity1.text = "Once upon a time..."
-        storyEntity1.originalText = "Once upon a time..."
-        storyEntity2.storyteller = storytellerEntity2
 
         val interviewQuestionEntity2 = InterviewQuestionEntity()
         interviewQuestionEntity2.id = uuid2

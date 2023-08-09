@@ -4,7 +4,7 @@ import {Error} from "./Error";
 import {Loading} from "./Loading";
 import {useAccessTokenContext} from "./AccessTokenContext";
 import {useAuth0} from "@auth0/auth0-react";
-import {AddStorytellerPanel} from "./assets/AddStorytellerPanel";
+import {AddStorytellerPanel} from "./AddStorytellerPanel";
 
 const AdminPanel = () => {
     const { getAccessTokenSilently} = useAuth0();

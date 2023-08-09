@@ -24,14 +24,16 @@ class MediaServiceTests {
     private val mockMediaStatusRepository = mockk<MediaStatusRepository>()
     private val mockStoryService = mockk<StoryService>()
     private val mockSmsNotificationService = mockk<SmsNotificationService>()
+    val storytellerEntityMapperImpl = StorytellerEntityMapperImpl(
+        BenefactorEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())),
+        ChroniclerEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())),
+        PreferredTimeMapperImpl(),
+        OrganizationEntityMapperImpl(),
+        UserMapperImpl()
+    )
     private val mediaMapper = MediaEntityMapperImpl(
-        StorytellerEntityMapperImpl(
-            BenefactorEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())),
-            ChroniclerEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())),
-            PreferredTimeMapperImpl(),
-            OrganizationEntityMapperImpl(),
-            UserMapperImpl()
-        )
+        storytellerEntityMapperImpl,
+        StoryEntityMapperImpl(storytellerEntityMapperImpl)
     )
     private val testMedia =
         Media(null, "My Media", emptyList(), URI.create("http://somewhere.out.there"), "Video", null, null)

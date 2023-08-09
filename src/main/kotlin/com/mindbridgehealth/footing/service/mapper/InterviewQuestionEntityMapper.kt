@@ -8,17 +8,19 @@ import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.mapstruct.*
 import org.springframework.stereotype.Service
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses=[StorytellerEntityMapper::class, QuestionEntityMapper::class, TimeMapper::class])
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses=[StorytellerEntityMapper::class, QuestionEntityMapper::class, TimeMapper::class, StoryEntityMapper::class])
 abstract class InterviewQuestionEntityMapper(): IdMapper() {
 
     @Mapping(target="interviewId", ignore = true)
     @Mapping(source = "story", target = "response")
     @Mapping(source = "id", target = "id", ignore = true)
+    @Mapping(source = "owner", target = "ownerId", ignore = true)
     abstract fun entityToModel(interviewQuestionEntity: InterviewQuestionEntity): InterviewQuestion
 
     @Mapping(target="interview", ignore = true)
     @Mapping(source = "response", target = "story")
     @Mapping(source = "id", target = "id", ignore = true)
+    @Mapping(source = "ownerId", target = "owner", ignore = true)
     abstract fun modelToEntity(interviewQuestion: InterviewQuestion): InterviewQuestionEntity
 
     @AfterMapping
