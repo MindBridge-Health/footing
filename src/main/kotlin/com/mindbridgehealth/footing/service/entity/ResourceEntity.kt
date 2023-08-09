@@ -28,6 +28,11 @@ abstract class ResourceEntity(): EntityModel() {
     @Column(name = "is_deleted")
     var isDeleted: Boolean? = false
 
+    @ManyToOne
+    @JoinColumn(name = "owner")
+    var owner: MbUserEntity? = null
+
+
     constructor(name: String?, altId: String?) : this() {
         this.name = name
         this.altId = altId ?: UUID.randomUUID().toString().replace("-", "").substring(0, 8)
@@ -35,14 +40,27 @@ abstract class ResourceEntity(): EntityModel() {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val that = other as ResourceEntity
-        return if (id != that.id) false else name == that.name
+        if (javaClass != other?.javaClass) return false
+
+        other as ResourceEntity
+
+        if (id != other.id) return false
+        if (altId != other.altId) return false
+        if (name != other.name) return false
+        if (tags != other.tags) return false
+        if (isDeleted != other.isDeleted) return false
+        if (owner != other.owner) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
-        var result = if (id != null) id.hashCode() else 0
-        result = 31 * result + if (name != null) name.hashCode() else 0
+        var result = id ?: 0
+        result = 31 * result + (altId?.hashCode() ?: 0)
+        result = 31 * result + (name?.hashCode() ?: 0)
+        result = 31 * result + (tags?.hashCode() ?: 0)
+        result = 31 * result + (isDeleted?.hashCode() ?: 0)
+        result = 31 * result + (owner?.hashCode() ?: 0)
         return result
     }
 }

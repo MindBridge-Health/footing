@@ -8,11 +8,13 @@ import org.mapstruct.Mapping
 import org.springframework.stereotype.Service
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses=[TimeMapper::class, StorytellerEntityMapper::class])
-abstract class StoryEntityMapper {
+abstract class StoryEntityMapper: IdMapper() {
 
     @Mapping(source="id", target = "id", ignore = true)
+    @Mapping(source = "owner", target = "ownerId", ignore = true)
     abstract fun entityToModel(storyEntity: StoryEntity): Story
 
     @Mapping(source="id", target = "id", ignore = true)
+    @Mapping(source = "ownerId", target = "owner", ignore = true)
     abstract fun modelToEntity(story: Story): StoryEntity
 }

@@ -18,10 +18,12 @@ abstract class InterviewEntityMapper: IdMapper() {
 
     @Mapping(source="interviewQuestionData", target = "interviewQuestions", ignore = true)
     @Mapping(source = "id", target = "id", ignore = true)
+    @Mapping(source = "owner", target = "ownerId", ignore = true)
     abstract fun entityToModel(interviewEntity: InterviewEntity): Interview
 
     @Mapping(source = "interviewQuestions", target ="interviewQuestionData", ignore = true)
     @Mapping(source = "id", target = "id", ignore = true)
+    @Mapping(source = "ownerId", target = "owner", ignore = true)
     abstract fun modelToEntity(interview: Interview): InterviewEntity
 
     @AfterMapping

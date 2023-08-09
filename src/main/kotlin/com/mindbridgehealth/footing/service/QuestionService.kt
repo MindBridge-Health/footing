@@ -32,7 +32,9 @@ class QuestionService(private val db: QuestionRepository, private val questionMa
         return db.findByAltId(altId)
     }
     fun getAllQuestions(): Collection<Question> {
-        return db.findAll().map { q -> questionMapper.entityToModel(q) }
+        return db.findAll()
+            .filter { q -> q.owner == null }
+            .map { q -> questionMapper.entityToModel(q) }
     }
 
     fun save(question: Question) : String {

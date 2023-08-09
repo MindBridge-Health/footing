@@ -11,16 +11,18 @@ import org.mapstruct.*
 import org.springframework.stereotype.Service
 import java.net.URI
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses=[TimeMapper::class, StorytellerEntityMapper::class])
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses=[TimeMapper::class, StorytellerEntityMapper::class, StoryEntityMapper::class])
 abstract class MediaEntityMapper: IdMapper() {
 
     @Mapping(source = "location", target = "location", ignore = true)
     @Mapping(source = "id", target = "id", ignore = true)
+    @Mapping(source = "owner", target = "ownerId", ignore = true)
     abstract fun entityToModel(mediaEntity: MediaEntity): Media
 
     @Mapping(source = "location", target = "location", ignore = true)
     @Mapping(source = "id", target = "id", ignore = true)
     @Mapping(target = "rawJson", ignore = true)
+    @Mapping(source = "ownerId", target = "owner", ignore = true)
     abstract fun modelToEntity(media: Media): MediaEntity
 
     @AfterMapping

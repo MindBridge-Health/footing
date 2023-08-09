@@ -24,8 +24,8 @@ class StoryService(private val db: StoryRepository, private val storyMapper: Sto
     }
 
     fun saveEntity(story: StoryEntity): StoryEntity {
-        if(story.originalText == null || story.text == null) {
-            throw Exception("Tried to save a story without text")
+        if(story.originalText == null && story.text == null) {
+            story.text = "Not yet transcribed"
         }
         return db.save(story)
     }

@@ -19,14 +19,16 @@ class MediaEntityMapperTests {
         val userMapper = UserMapper()
         val organizationEntityMapperImpl = OrganizationEntityMapperImpl()
         userMapper.organizationEntityMapper = organizationEntityMapperImpl
+        val storytellerEntityMapperImpl = StorytellerEntityMapperImpl(
+            BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+            ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+            PreferredTimeMapperImpl(),
+            organizationEntityMapperImpl,
+            UserMapperImpl()
+        )
         val mem =MediaEntityMapperImpl(
-            StorytellerEntityMapperImpl(
-                BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper),
-                ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
-                PreferredTimeMapperImpl(),
-                organizationEntityMapperImpl,
-                UserMapperImpl()
-            )
+            storytellerEntityMapperImpl,
+            StoryEntityMapperImpl(storytellerEntityMapperImpl)
         )
         val mediaEntity = mem.modelToEntity(media)
 
@@ -45,14 +47,16 @@ class MediaEntityMapperTests {
         val userMapper = UserMapper()
         val organizationEntityMapperImpl = OrganizationEntityMapperImpl()
         userMapper.organizationEntityMapper = organizationEntityMapperImpl
-        val mem = MediaEntityMapperImpl(
-            StorytellerEntityMapperImpl(
-                BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper),
-                ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
-                PreferredTimeMapperImpl(),
-                organizationEntityMapperImpl,
-                UserMapperImpl()
-            )
+        val storytellerEntityMapperImpl = StorytellerEntityMapperImpl(
+            BenefactorEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+            ChroniclerEntityMapperImpl(organizationEntityMapperImpl, userMapper),
+            PreferredTimeMapperImpl(),
+            organizationEntityMapperImpl,
+            UserMapperImpl()
+        )
+        val mem =MediaEntityMapperImpl(
+            storytellerEntityMapperImpl,
+            StoryEntityMapperImpl(storytellerEntityMapperImpl)
         )
         val media = mem.entityToModel(mediaEntity)
 
