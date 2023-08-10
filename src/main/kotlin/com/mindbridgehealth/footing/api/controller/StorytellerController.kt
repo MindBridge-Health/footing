@@ -18,22 +18,24 @@ import org.springframework.web.client.HttpServerErrorException
 @RequestMapping("/api/v1/storytellers")
 class StorytellerController(val service: StorytellerService, val mapper: StorytellerCreateDtoMapper, val storytellerListEntryDtoMapper: StorytellerListEntryDtoMapper) {
 
-    @GetMapping("/")
-    fun get(@AuthenticationPrincipal principal: Jwt): List<StorytellerListEntry> {
+    @GetMapping("/all/")
+    fun getAll(@AuthenticationPrincipal principal: Jwt): List<StorytellerListEntry> {
         val storytellers = service.getAllStorytellers()
         return storytellers.map {
             storytellerListEntryDtoMapper.storytellerToStorytellerListEntry(it)
         }
     }
+
+    @GetMapping("/")
+    fun get(@AuthenticationPrincipal principal: Jwt): Storyteller {
+        val optStoryteller = service.findStorytellerByAltId(principal.subject)
+        return optStoryteller.orElseGet { null }
+    }
+
     @GetMapping("/{id}")
-    fun get(@PathVariable id: String, @AuthenticationPrincipal principal: Jwt): Storyteller {
-        return if ( id == "self") {
-            val optStoryteller = service.findStorytellerByAltId(principal.subject)
-            optStoryteller.orElseGet { null }
-        } else {
-            val optStoryteller = service.findStorytellerByAltId(Base36Encoder.decodeAltId(id))
-            optStoryteller.orElseGet { null }
-        }
+    fun getOnBehalf(@PathVariable id: String, @AuthenticationPrincipal principal: Jwt): Storyteller {
+        val optStoryteller = service.findStorytellerByAltId(Base36Encoder.decodeAltId(id))
+        return optStoryteller.orElseGet { null }
     }
 
     @PostMapping("/")
@@ -43,12 +45,6 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
     ): String {
         val altId = principal.subject
         return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId).id ?: throw HttpClientErrorException(HttpStatusCode.valueOf(404), "Not Found")
-    }
-
-    @PutMapping("/")
-    fun put(@RequestBody storyteller: StorytellerCreateDto, @AuthenticationPrincipal principal: Jwt): Storyteller {
-        val altId = principal.subject
-        return service.update(mapper.storytellerCreateDtoToStoryteller(storyteller), altId)
     }
 
     @PostMapping("/{id}")
@@ -61,13 +57,19 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
         return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId).id ?: throw HttpServerErrorException(HttpStatusCode.valueOf(500))
     }
 
+    @PutMapping("/")
+    fun put(@RequestBody storyteller: StorytellerCreateDto, @AuthenticationPrincipal principal: Jwt): Storyteller {
+        val altId = principal.subject
+        return service.update(mapper.storytellerCreateDtoToStoryteller(storyteller), altId)
+    }
+
     @PutMapping("/{id}")
     fun putOnBehalf(@RequestBody storyteller: Storyteller,@PathVariable id: String,): Storyteller {
         return service.update(storyteller, Base36Encoder.decodeAltId(id))
     }
 
     @DeleteMapping("/{id}")
-    fun deleteOnBehalf(@PathVariable id: String, @RequestParam force: Boolean? = false) {
+    fun delete(@PathVariable id: String, @RequestParam force: Boolean? = false) {
         if(force == true) {
             service.hardDeleteStoryteller(Base36Encoder.decodeAltId(id))
         } else {
