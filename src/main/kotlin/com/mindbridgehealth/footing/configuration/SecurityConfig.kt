@@ -26,7 +26,18 @@ class SecurityConfig(
             .addFilterBefore(signatureValidationFilter, BasicAuthenticationFilter::class.java) // Add the custom filter before other filters
             .authorizeHttpRequests()
             .requestMatchers("/api/v1/health/**", "/api/v1/media*/**", "/api/v1/stories/**","/*", "/images/**", "/error*", "/userhome*", "/assets/*", "/index*", "/built/*", "/mgmtconsole*/**").permitAll()
-            .requestMatchers("/api/v1/storytellers/{id}").hasAuthority("SCOPE_read:userdata")
+            .requestMatchers(
+                "/api/v1/storytellers/",
+                "/api/v1/interview/storytellers/scheduled/",
+                "/api/v1/interview/storytellers/",
+            ).authenticated()
+            .requestMatchers(
+                "/api/v1/admin/**",
+                "/api/v1/storytellers/{id}",
+                "/api/v1/interviews/storytellers/{id}/**",
+                "/api/v1/questions/storytellers/{id}/**",
+                "/api/v1/media/storytellers/{id}/**",
+            ).hasAuthority("SCOPE_read:userdata")
             .anyRequest().authenticated()
             .and().cors()
             .and().oauth2ResourceServer().jwt()

@@ -10,11 +10,15 @@ import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.service.MediaService
 import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.util.Base36Encoder
+import com.mindbridgehealth.footing.service.util.PermissionValidator
 import com.mindbridgehealth.footing.service.util.SignatureGenerator
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatusCode
+import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.context.request.RequestContextHolder
@@ -22,6 +26,7 @@ import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URL
 import java.util.*
+import kotlin.jvm.optionals.getOrElse
 
 
 @RestController
@@ -31,17 +36,22 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
     private val logger = LoggerFactory.getLogger(this::class.java)
     @Value("\${spring.profiles.active}")
     private val activeProfile: String? = null
+    private val objectMapper = jacksonObjectMapper()
     @GetMapping("/{id}")
-    fun get(@PathVariable id: String) = mediaService.findMediaById(Base36Encoder.decodeAltId(id))
+    fun get(@AuthenticationPrincipal principal: Jwt, @PathVariable id: String): Media {
+        val media = mediaService.findMediaById(Base36Encoder.decodeAltId(id)).getOrElse { throw Exception("Did not find media") }
+        PermissionValidator.assertValidPermissions(media, principal)
+        return media
+    }
 
     @GetMapping("/storytellers/{id}")
-    fun getMediaForStoryteller(@PathVariable id: String): Collection<Media> {
+    fun getAllMediaForStoryteller(@PathVariable id: String): Collection<Media> {
         return mediaService.findMediaByStorytellerId(Base36Encoder.decodeAltId(id))
     }
     @PostMapping("/storytellers/{id}")
-    fun postToStoryteller(@RequestBody media: Media, @PathVariable id: String): String = mediaService.associateMediaWithStoryteller(media, id)
-
-    private val objectMapper = jacksonObjectMapper()
+    fun postToStoryteller(@RequestBody media: Media, @PathVariable id: String): String {
+        return mediaService.associateMediaWithStoryteller(media, id)
+    }
 
     @PostMapping("/")
     fun addPipeCallback(@RequestBody jsonString: String): String {
@@ -53,17 +63,14 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
             logger.error("Error handling Media", e)
             throw HttpClientErrorException(HttpStatusCode.valueOf(400))}
         var validationUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + request.requestURI
-        println(jsonString)
-        println(validationUrl)
+
         if("prod" == activeProfile) //App Runner is actually running on http with an https LB in front
         {
             validationUrl = validationUrl.replace("http", "https")
         }
         val signature = SignatureGenerator.generateSignature(applicationProperties.addPipeKey, validationUrl, jsonString)
         if (xPipeSignature.isNullOrEmpty() || !xPipeSignature.equals(signature)) {
-            println(xPipeSignature)
-            println(signature)
-            //throw Exception("Signature did not match!") //ToDo Put this back in
+            throw Exception("Signature did not match!")
         }
 
         return when (event) {
@@ -106,6 +113,9 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
     }
 
     @DeleteMapping("/{id}")
-    fun deleteMedia(@PathVariable id: String) {
-        mediaService.deleteMedia(Base36Encoder.decodeAltId(id))    }
+    fun deleteMedia(@AuthenticationPrincipal principal: Jwt, @PathVariable id: String) {
+        val media = mediaService.findMediaById(Base36Encoder.decodeAltId(id)).getOrElse { throw Exception("Did not find media") }
+        PermissionValidator.assertValidPermissions(media, principal)
+        mediaService.deleteMedia(Base36Encoder.decodeAltId(id))
+    }
 }

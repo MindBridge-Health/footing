@@ -16,7 +16,7 @@ export const Interviews = ({storytellerDetails}) => {
     useEffect(() => {
         if (accessToken) {
             fetch(
-                `/api/v1/interviews/storytellers/${storytellerDetails.id}/scheduled:all`,
+                `/api/v1/interviews/storytellers/${storytellerDetails.id}/scheduled/all`,
                 {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,

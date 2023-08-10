@@ -7,7 +7,6 @@ import com.twilio.security.RequestValidator
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.env.Environment
 import org.springframework.http.ResponseEntity
 import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
@@ -27,7 +26,7 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
     @Value("\${spring.profiles.active}")
     private val activeProfile: String? = null
     @PostMapping("/interview_questions/{id}", consumes = ["application/x-www-form-urlencoded"])
-    fun post(
+    fun twilioCallback(
         @PathVariable("id") id: String,
         @RequestBody body: String,
     ): ResponseEntity<Unit> {

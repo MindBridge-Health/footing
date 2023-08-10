@@ -17,7 +17,7 @@ const AdminPanel = () => {
             try {
                 const accessToken = await getAccessTokenSilently();
 
-                const res = await fetch('/api/v1/storytellers/', {
+                const res = await fetch('/api/v1/storytellers/all/', {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
