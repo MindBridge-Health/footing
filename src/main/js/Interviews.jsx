@@ -49,7 +49,7 @@ export const Interviews = ({storytellerDetails}) => {
 
         const queryParams = new URLSearchParams(qParams).toString();
 
-        fetch(`/api/v1/interviews/scheduled/${storytellerDetails.id}?${queryParams}`, {
+        fetch(`/api/v1/interviews/storytellers/${storytellerDetails.id}/scheduled/?${queryParams}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -60,7 +60,7 @@ export const Interviews = ({storytellerDetails}) => {
             try {
                 // Make sure to use the updated accessToken state
                 fetch(
-                    `/api/v1/interviews/storytellers/${storytellerDetails.id}/scheduled:all`,
+                    `/api/v1/interviews/storytellers/${storytellerDetails.id}/scheduled/all`,
                     {
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
