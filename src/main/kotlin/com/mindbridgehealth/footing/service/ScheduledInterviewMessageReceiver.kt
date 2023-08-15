@@ -1,9 +1,11 @@
 package com.mindbridgehealth.footing.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.service.entity.ScheduledInterviewEntity
 import com.mindbridgehealth.footing.service.util.Base36Encoder
+import com.twilio.Twilio
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.net.URLEncoder
@@ -17,12 +19,17 @@ class ScheduledInterviewMessageReceiver(
     private val interviewService: InterviewService,
     private val interviewQuestionService: InterviewQuestionService,
     private val smsNotificationService: SmsNotificationService,
+    private val applicationProperties: ApplicationProperties
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
     private val objectMapper = ObjectMapper()
 
     @Value("\${application.sqsUrl}")
     private lateinit var sqsQueueUrl: String
+
+    init {
+        Twilio.init(applicationProperties.twilioSid, applicationProperties.twilioKey)
+    }
 
     @SqsListener("\${application.sqsUrl}")
     fun receiveMessage(message: String) {
