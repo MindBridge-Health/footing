@@ -46,7 +46,7 @@ class ScheduledInterviewInitiationTask(
     private fun processScheduledInterview(scheduledInterviewEntity: ScheduledInterviewEntity, tagText: String) {
         val result: SendResult<String> = sqsTemplate.send {
             it.queue(sqsQueueUrl)
-                .payload("{\"id\": \"${scheduledInterviewEntity.id}\", \"tags\": [\"text\": \"${tagText}\"]}") //FIFO Q will dedupe based on content, so we need to differentiate between initial and reminder messages
+                .payload("{\"id\": \"${scheduledInterviewEntity.id}\", \"tags\": [{\"text\": \"${tagText}\"}]}") //FIFO Q will dedupe based on content, so we need to differentiate between initial and reminder messages
                 .messageGroupId("interview-tasks")
         }
         logger.info("Sent SQS: ${result.messageId}, ${result.additionalInformation} ")
