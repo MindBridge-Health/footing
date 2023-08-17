@@ -8,11 +8,13 @@ import com.mindbridgehealth.footing.service.entity.MediaStatusEntity
 import com.mindbridgehealth.footing.service.entity.StoryEntity
 import com.mindbridgehealth.footing.service.mapper.MediaEntityMapper
 import com.mindbridgehealth.footing.service.model.Media
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.Optional
 import kotlin.jvm.optionals.getOrElse
 
 @Service
+@Transactional
 class MediaService(
     private val db: MediaRepository,
     private val mediaStatusDb: MediaStatusRepository,
@@ -37,10 +39,11 @@ class MediaService(
     }
 
     fun associateMediaWithStoryteller(media: Media, storytellerId: String): String {
-        val storyteller = storytellerService.findStorytellerByAltId(storytellerId)
+        val storyteller = storytellerService.findStorytellerEntityByAltId(storytellerId)
             .getOrElse { throw Exception("Could not find storyteller; unable to associate media") }
-        val newMedia = media.copy(storyteller = storyteller)
-        return db.save(mediaMapper.modelToEntity(newMedia)).id.toString()
+        val mediaEntity = mediaMapper.modelToEntity(media)
+        mediaEntity.storyteller = storyteller
+        return db.save(mediaEntity).id.toString()
     }
 
     fun associateMediaWithStorytellerFromInterviewQuestion(media: Media, interviewQuestionId: String, mediaStatus: MediaStatusEntity) {

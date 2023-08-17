@@ -20,7 +20,7 @@ class TwilioCallbackService(
     private val interviewService: InterviewService
 ) {
 
-    private val logger = LoggerFactory.getLogger(TwilioCallbackService::class.java)
+    private val logger = LoggerFactory.getLogger(this::class.java)
     fun handleCallback(interviewQuestionId: String, callbackData: Map<String, String>) {
         val twilioStatus = TwilioStatus().apply {
             this.callSid = callbackData["CallSid"]
