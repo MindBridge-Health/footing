@@ -8,12 +8,14 @@ import com.mindbridgehealth.footing.data.repository.StorytellerRepository
 import com.mindbridgehealth.footing.service.mapper.PreferredTimeMapper
 import com.mindbridgehealth.footing.service.mapper.StorytellerEntityMapper
 import com.mindbridgehealth.footing.service.model.Storyteller
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
 
 
 @Service
+@Transactional
 class StorytellerService(
     private val db: StorytellerRepository,
     private val preferredTimeRepository: PreferredTimeRepository,
@@ -22,6 +24,7 @@ class StorytellerService(
     private val userDb: MindBridgeUserRepository,
     private val organizationService: OrganizationService
 ) {
+
 
     fun findStorytellerByAltId(altId: String): Optional<Storyteller> {
         val optStoryteller = db.findByAltId(altId)

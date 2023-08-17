@@ -1,10 +1,8 @@
 package com.mindbridgehealth.footing.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.service.entity.ScheduledInterviewEntity
-import com.twilio.Twilio
 import io.awspring.cloud.sqs.operations.SendResult
 import io.awspring.cloud.sqs.operations.SqsTemplate
 import org.slf4j.LoggerFactory
@@ -23,7 +21,7 @@ class ScheduledInterviewInitiationTask(
     private val logger = LoggerFactory.getLogger(this::class.java)
     private val objectMapper = ObjectMapper()
 
-    @Value("\${application.sqsUrl}")
+    @Value("\${application.interviewSqsUrl}")
     private lateinit var sqsQueueUrl: String
     //Public var to enable testing
     var clock: Clock = Clock.systemDefaultZone()

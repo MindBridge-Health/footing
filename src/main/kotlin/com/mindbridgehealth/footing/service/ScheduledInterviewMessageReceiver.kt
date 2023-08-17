@@ -19,19 +19,19 @@ class ScheduledInterviewMessageReceiver(
     private val interviewService: InterviewService,
     private val interviewQuestionService: InterviewQuestionService,
     private val smsNotificationService: SmsNotificationService,
-    private val applicationProperties: ApplicationProperties
+    applicationProperties: ApplicationProperties
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
     private val objectMapper = ObjectMapper()
 
-    @Value("\${application.sqsUrl}")
+    @Value("\${application.interviewSqsUrl}")
     private lateinit var sqsQueueUrl: String
 
     init {
         Twilio.init(applicationProperties.twilioSid, applicationProperties.twilioKey)
     }
 
-    @SqsListener("\${application.sqsUrl}")
+    @SqsListener("\${application.interviewSqsUrl}")
     fun receiveMessage(message: String) {
         val incomingScheduledInterviewEntity = objectMapper.readValue(message, ScheduledInterviewEntity::class.java)
         logger.debug(objectMapper.writer().writeValueAsString(incomingScheduledInterviewEntity))
