@@ -12,4 +12,6 @@ interface MediaRepository: JpaRepository<MediaEntity, Int> {
     fun findByStorytellerId(id: Int): Collection<MediaEntity>
 
     fun findByAltId(altId: String): Optional<MediaEntity>
+
+    fun findAllByLocationAndStorytellerId(location: String, id: Int): Collection<MediaEntity>
 }
