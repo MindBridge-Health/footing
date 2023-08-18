@@ -9,4 +9,6 @@ data class ApplicationProperties(
     val twilioSid: String,
     val twilioKey: String,
     val rootUrl: String,
-    val mbhKey: String)
+    val mbhKey: String,
+    val uploadS3Uri: String,
+    val uploadSqsUrl: String)

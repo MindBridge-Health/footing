@@ -43,6 +43,10 @@ class MediaService(
             .getOrElse { throw Exception("Could not find storyteller; unable to associate media") }
         val mediaEntity = mediaMapper.modelToEntity(media)
         mediaEntity.storyteller = storyteller
+        val mediaEntries = db.findAllByLocationAndStorytellerId(mediaEntity.location!!, storyteller.id!!)
+        if(!mediaEntries.isEmpty()) {
+            throw Exception("Duplicate Entry")
+        }
         return db.save(mediaEntity).id.toString()
     }
 
