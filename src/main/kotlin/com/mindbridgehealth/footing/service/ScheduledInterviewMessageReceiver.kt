@@ -5,6 +5,7 @@ import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.service.entity.ScheduledInterviewEntity
 import com.mindbridgehealth.footing.service.util.Base36Encoder
+import com.mindbridgehealth.footing.service.util.SignatureGenerator
 import com.twilio.Twilio
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -19,7 +20,7 @@ class ScheduledInterviewMessageReceiver(
     private val interviewService: InterviewService,
     private val interviewQuestionService: InterviewQuestionService,
     private val smsNotificationService: SmsNotificationService,
-    applicationProperties: ApplicationProperties
+    private val applicationProperties: ApplicationProperties
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
     private val objectMapper = ObjectMapper()
@@ -65,13 +66,15 @@ class ScheduledInterviewMessageReceiver(
         val questionId = interviewQuestion.question?.altId
         val encodedQuestion =
             URLEncoder.encode(interviewQuestionText, StandardCharsets.UTF_8.toString())
-        val url = "http://app.mindbridgehealth.com/interview.html?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&rtel=$number&question=$encodedQuestion&interview_id=$interviewAltId&interview_question_id=$interviewQuestionId&question_id=$questionId"
+        val url = "${applicationProperties.interviewBaseUrl}?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&interview_question_id=$interviewQuestionId"
+        val signature = SignatureGenerator.generateSignature(applicationProperties.mbhKey, url, "")
+        val signedUrl = "$url&signature=$signature"
 
         if(!scheduledInterviewEntity.linkSent!!) {
             val questionString =
                 "Here is your question for your MindBridge Health interview: $interviewQuestionText"
             logger.debug("Sending initial interview: ${scheduledInterviewEntity.name}")
-            smsNotificationService.sendInterviewLink(number!!, name, questionString, url, interviewAltId, interviewQuestionId)
+            smsNotificationService.sendInterviewLink(number!!, name, questionString, signedUrl, interviewAltId, interviewQuestionId)
 
             scheduledInterviewEntity.linkSent = true
             scheduledInterviewRepository.save(scheduledInterviewEntity)

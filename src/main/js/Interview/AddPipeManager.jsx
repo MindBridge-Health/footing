@@ -1,0 +1,580 @@
+import React, {useEffect, useState} from 'react';
+import { Helmet } from 'react-helmet';
+
+function mobileCheck() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    return /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(userAgent);
+}
+
+function AddPipeManager({ pipeId }) {
+    const embeddedHtmlJs = `<!doctype html>
+<html lang="en" dir="ltr">
+
+    <head>
+        <script src="https://kit.fontawesome.com/5ae2e7f845.js" crossorigin="anonymous"></script>
+
+        <meta charset="utf-8" />
+        <title>MindBridge Health - Your Interview</title>
+        <meta name="theme-color" content="#2f55d4">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Eternal Conversations - Preserve Your Loved One's Legacy with Eternal Conversations - The Ultimate Life Storytelling Solution" />
+        <meta name="keywords" content="Story Telling, Document your life" />
+        <meta name="author" content="MindBridge Health" />
+        <meta name="email" content="support@mindbridgehealth.com" />
+        <meta name="website" content="https://www.mindbridgehealth.com" />
+        <meta name="Version" content="v1.0.0" />
+
+        <!-- favicon -->
+        <link rel="shortcut icon" href="assets/images/favicon.ico" />
+        
+        <!-- Add pipe --> 
+        <link rel="stylesheet" href="https://cdn.addpipe.com/2.0/pipe.css">
+        <script type="text/javascript" src="https://cdn.addpipe.com/2.0/pipe.js"></script>
+
+        <!-- Video js -->
+        <link href="https://vjs.zencdn.net/8.3.0/video-js.css" rel="stylesheet" />
+        <!-- Css -->
+        <!-- Bootstrap Css -->
+        <link href="assets/css/bootstrap.css" id="bootstrap-style" class="theme-opt" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/libs/@iconscout/unicons/css/line.css" type="text/css" rel="stylesheet" />
+        <!-- Style Css-->
+        <link href="assets/css/style.css" id="color-opt" class="theme-opt" rel="stylesheet" type="text/css" />
+        <style>
+            .addpipe2-widget .blinking {
+                animation: blinkingText 1.2s infinite;
+            }
+
+            @keyframes blinkingText {
+                0%  { color: red; }
+                49% { color: red; }
+                60% { color: transparent; }
+                99% { color:transparent;  }
+                100% { color: red;    }
+            }
+
+            .addpipe2-widget {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+            }
+
+            .addpipe2-widget .pipeRecordRTC {
+                max-width: 100%;
+            }
+
+            /* .addpipe2-widget.content #recorder-custom-id-flash,
+            .addpipe2-widget .content #recorder-custom-id {
+                max-width: 100%;
+            } */
+
+            .addpipe2-widget .video-actions-progress {
+                text-align: center;
+                font-size: 15px;
+            }
+
+            .addpipe2-widget .video-actions {
+                display: flex;
+                justify-content: center;
+            }
+
+            .addpipe2-widget .video-actions .btn {
+                width: 150px;
+                height: 40px;
+                color: white;
+                font-weight: bold;
+                margin: 10px;
+            }
+
+            .addpipe2-widget .btn-green {
+                background: #00a82e;
+            }
+
+            .addpipe2-widget .video-actions .btn-red {
+                background: red;
+            }
+
+            .addpipe2-widget .submit-action {
+                width: 100%;
+                text-align: center;
+                color: white;
+            }
+            
+
+            .addpipe2-widget .pipeMobileRecorder .pipeFileInput {
+                background:#2f55d4;
+                color:white;
+                font-weight: normal;
+                cursor: pointer;
+                border: 0;
+                border-radius: 10px;
+                text-align: center;
+                margin: 70px 15px 0 15px;
+                font-weight: 500;
+            }
+
+            .addpipe2-widget .pipeMobileRecorder .pipeFileInput:hover,
+            .addpipe2-widget .pipeMobileRecorder .pipeFileInput:focus,
+            .addpipe2-widget .pipeMobileRecorder .pipeFileInput:active {
+                background:#2f55d4;
+                opacity: 0.9;
+            }
+
+            .addpipe2-widget .pipeMobileRecorder .pipeFileInput span {
+                display: block;
+                line-height: 1.2;
+            }
+
+            .addpipe2-widget .pipeMobileRecorder .pipeFileInput span:first-child {
+                margin-bottom: 5px;
+            }
+
+            #addContentPipeUploadVideo-submit-action {
+                padding: 10px;
+            }
+
+            /* Video js */
+            .video-js .vjs-control-bar {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                bottom: -30px !important;
+                background-color: black !important;
+            }
+
+            /* Always show control bar */
+            .video-js.vjs-static-controls .vjs-control-bar {
+                display:block;
+            }
+
+            /* Don't fade out controls */
+            .video-js.vjs-static-controls.vjs-has-started.vjs-user-inactive.vjs-playing .vjs-control-bar {
+                opacity: 1;
+                visibility: visible; 
+            }
+
+            /* Align poster to top */
+            .video-js.vjs-static-controls .vjs-poster {
+                background-position: 50% 0;
+            }
+
+            /* Override tech height:100% */
+            .video-js.vjs-static-controls .vjs-tech {
+                height: auto;
+                height: calc(100% - 30px);
+            } 
+        </style>
+    </head>
+
+    <body>
+
+        <section>
+            <div class="mobile-messaging">
+                <div class="d-flex" style="margin-bottom: 0px;">
+                    <img src="images/logo.png" height="48" class="logo-light-mode" alt="MindBridge Health Logo">
+                </div>
+                <div class="mt-2"><p style="margin-top: 30px;">Question: <span id="question_val">??</span></p></div>
+                <div class="mobile-messaging__preview" style="height: 175px">
+                    <!--  ADD PIPE WIDGET START -->
+                    <div id="addpipe2-widget" class="addpipe2-widget d-none">
+                        <div class="addpipe2-widget__content">
+                            <div id="addContentPipeUploadVideo" style="padding-bottom: 25px;"></div>
+                            <div id="addContentPipeUploadVideo-actions" class="hide">
+                                <div class="video-actions">
+                                    <button type="button" class="btn btn-red record-action">Record</button>
+                                    <button type="button" class="btn btn-red stop-action hide">Stop</button>
+                                    <button type="button" class="btn btn-green play-action" disabled="disabled">Play</button>
+                                </div>
+                                <div class="video-actions-progress hide">
+                                    <span class="blinking">Recording...</span>
+                                </div>
+                                <div class="video-alerts hide">
+                                    <div class="alert alert-danger">
+                                        <i class="fa fa-warning">&nbsp;</i> <strong>Your Microphone is off!</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="addContentPipeUploadVideo-submit-action" class="d-none">
+                                <button type="button" class="btn btn-green submit-action">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                     <!--  ADD PIPE WIDGET END -->
+                </div>
+                <div class="mobile-messaging__actions">
+                    <div class="text-center"><small>Click play above to watch</small></div>
+
+                    <p class="" style="margin-bottom: 0px; margin-top: 10px;">Ways to respond:</p>
+                    <div class="d-flex flex-wrap align-items-center justify-content-between">
+                        <div class="mt-2" style="width: 48%;">
+                            <a id="mobile-messaging__action__phone" href="#" class="btn btn-primary text-center shadow-lg" style="width: 100%;padding:25px 0;font-size: 25px;">
+                                <span class="d-inline-block ms-2"><i class="fa fa-phone" aria-hidden="true"></i><br>Voice Call</span>
+                            </a>
+                        </div>
+                        <div class="mt-2" style="width: 48%;">
+                            <button id="mobile-messaging__action__video" class="btn btn-primary text-center shadow-lg" style="width: 100%;padding:25px 0;font-size: 25px;">
+                                <span class="d-inline-block ms-2"><i class="fa fa-video-camera" aria-hidden="true"></i><br>Video</span>
+                            </button>
+                        </div>
+                        <!--
+                        <div class="mt-2" style="width: 48%;">
+                            <button id="mobile-messaging__action__text-pictures" class="btn btn-primary w-100 shadow-lg" style="width: 100%;padding:25px 0;font-size: 22px;">
+                                <span class="d-inline-block ms-2"><i class="fa fa-camera" aria-hidden="true"></i><br>Add Pictures</span>
+                            </button>
+                        </div>
+                        <div class="mt-2" style="width: 48%;">
+                            <a id="mobile-messaging__action__help" href="#" class="btn btn-primary text-center shadow-lg" style="width: 100%;padding:21px 0;font-size: 25px;">
+                                <span class="d-inline-block ms-2"><i class="fa fa-question" aria-hidden="true"></i><br>Help</span>
+                            </a>
+                        </div>
+                        -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="modal" id="callingModal">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content">
+                    <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                        <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div class="text-center my-5">
+                            <svg style="width:20px;fill:#2f55d4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg>
+                            Calling Your Phone
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- JAVASCRIPT -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <!-- Video js -->
+        <script src="https://vjs.zencdn.net/8.3.0/video.min.js"></script>
+        <!-- SLIDER -->
+        <script src="assets/libs/tiny-slider/min/tiny-slider.js"></script>
+        <!-- Main Js -->
+        <script src="assets/libs/feather-icons/feather.min.js"></script>
+        <script src="assets/js/plugins.init.js"></script><!--Note: All init js like tiny slider, counter, countdown, maintenance, lightbox, gallery, swiper slider, aos animation etc.-->
+        <script src="assets/js/app.js"></script><!--Note: All important javascript like page loader, menu, sticky menu, menu-toggler, one page menu etc. -->
+        <script>
+            const uparams = new URLSearchParams(window.location.search);
+
+            document.querySelector('#mobile-messaging__action__phone')
+                .setAttribute('href', '#');
+
+            document.getElementById('question_val').innerHTML = uparams.get('question');
+                
+            const messagePreviewEl = document.querySelector('.mobile-messaging__preview');
+            messagePreviewEl.innerHTML = ${`
+                <video
+                    id="my-video"
+                    class="video-js"
+                    style="width:100%;height:100%;object-fit: cover;" 
+                    controls
+                    preload="auto"
+                    data-setup='{"responsive": true, "inactivityTimeout": 0}'
+                >
+                    <source src="https://ec-tomcat.s3.amazonaws.com/${new URLSearchParams(window.location.search).get('interview_question_id')}.mp4#t=0.1" type="video/mp4" />
+                    <p class="vjs-no-js">
+                    To view this video please enable JavaScript, and consider upgrading to a
+                    web browser that
+                    <a href="https://videojs.com/html5-video-support/" target="_blank"
+                        >supports HTML5 video</a
+                    >
+                    </p>
+                </video>
+                \${messagePreviewEl.innerHTML}
+            `};
+
+            // document.querySelector('.mobile-messaging__preview > img').addEventListener('click', function (el) {
+            //     document.querySelector('.mobile-messaging__preview img').classList.add('d-none');
+            //     document.querySelector('.mobile-messaging__preview .video-js').classList.remove('d-none');
+            //     document.querySelector('.mobile-messaging__preview video').play();
+            // });
+
+            document.querySelector('#mobile-messaging__action__video').addEventListener('click', function (el) {
+                if (!mobileCheck()) {
+                    document.querySelector('.mobile-messaging__preview img').classList.add('d-none');
+                    document.querySelector('.mobile-messaging__preview .video-js').classList.add('d-none');
+                    document.querySelector('#addpipe2-widget').classList.remove('d-none');
+                    new PipeManager('addContentPipeUploadVideo');
+                } else {
+                    $('.addpipe2-widget .pipeMobileRecorder .pipeFileInput').trigger('click');
+                }
+            });
+
+            document.querySelector('#addContentPipeUploadVideo-submit-action > button').addEventListener('click', function () {
+                window.eternalConversation.recorders['addContentPipeUploadVideo'].save();
+            });
+
+            document.querySelector('#mobile-messaging__action__phone').addEventListener('click', function () {
+                const myModal = new bootstrap.Modal(document.getElementById('callingModal'));
+                myModal.show();
+                setTimeout(function() {
+                    myModal.hide();
+                }, 10000);
+
+                $.ajax({
+                    method: 'GET',
+                    url: \`http://54.210.42.229:5000/interview?number=${new URLSearchParams(window.location.search).get('rtel')}&question=${new URLSearchParams(window.location.search).get('question')}&interview_question_id=${new URLSearchParams(window.location.search).get('interview_question_id')}\`,
+                    success: function (data) {
+                        console.log(data);
+                    }
+                })
+            });
+
+            //Code here for doing something when the add images button is pressed - TJL4 7/25/2023
+            //document.querySelector('#mobile-messaging__action__text-pictures').addEventListener('click', function () {
+            //    $.ajax({
+            //        method: 'GET',
+            //        url: 'https://dummyjson.com/products/1',
+            //        success: function (data) {
+            //            console.log(data);
+            //        }
+            //    })
+            //});
+
+            function mobileCheck() {
+                let check = false;
+                (function(a){if(/(android|bb\\d+|meego).+mobile|avantgo|bada\\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\\-(n|u)|c55\\/|capi|ccwa|cdm\\-|cell|chtm|cldc|cmd\\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\\-s|devi|dica|dmob|do(c|p)o|ds(12|\\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\\-|_)|g1 u|g560|gene|gf\\-5|g\\-mo|go(\\.w|od)|gr(ad|un)|haie|hcit|hd\\-(m|p|t)|hei\\-|hi(pt|ta)|hp( i|ip)|hs\\-c|ht(c(\\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\\-(20|go|ma)|i230|iac( |\\-|\\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\\/)|klon|kpt |kwc\\-|kyo(c|k)|le(no|xi)|lg( g|\\/(k|l|u)|50|54|\\-[a-w])|libw|lynx|m1\\-w|m3ga|m50\\/|ma(te|ui|xo)|mc(01|21|ca)|m\\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\\-2|po(ck|rt|se)|prox|psio|pt\\-g|qa\\-a|qc(07|12|21|32|60|\\-[2-7]|i\\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\\-|oo|p\\-)|sdk\\/|se(c(\\-|0|1)|47|mc|nd|ri)|sgh\\-|shar|sie(\\-|m)|sk\\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\\-|v\\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\\-|tdg\\-|tel(i|m)|tim\\-|t\\-mo|to(pl|sh)|ts(70|m\\-|m3|m5)|tx\\-9|up(\\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\\-|your|zeto|zte\\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
+                return check;
+            };
+
+            function PipeManager(pipeId) {
+                window.eternalConversation = window.eternalConversation || {};
+                var customPipeParams = null;
+                const isMobile = mobileCheck();
+            
+                var manager = this;
+                manager.$wrapper = jQuery('#addpipe2-widget-' + pipeId);
+                
+                var $actions = jQuery('#' + pipeId + '-actions');
+                var $recordAction = $actions.find(".record-action");
+                var $stopAction = $actions.find(".stop-action");
+                var $playAction = $actions.find(".play-action");
+                //I don't know if this payload format is correct. tjl 7/15/2023
+                var $payloadData = \`"{\\"interview_question_id\\":\\"${new URLSearchParams(window.location.search).get('interview_question_id')}\\"}"\`;
+                var pipeParams = jQuery.extend({
+                    size: {
+                        width: 328,
+                        height: 260
+                    },
+                    qualityurl: "avq/1080p.xml",
+                    accountHash: "7a76e06de83f876246de13993cd7287a",
+                    eid:"pTSnwh",
+                    mrt:1500,
+                    avrec:1,
+                    dup: 1,
+                    sis: 0,
+                    asv: 0,
+                    cornerradius: 0,
+                    bgCol: "0x71767b",
+                    menuCol: "0xffffff",
+                    showMenu: 0,
+                    normalCol: "0xffffff",
+                    overCol: "0xe0e0e0",
+                    payload: $payloadData
+                }, customPipeParams || {});
+            
+                var micLevel = 1;
+                var micLevelLastChecked = (new Date()).getTime();
+            
+                PipeSDK.insert(pipeId, pipeParams, function(recorderObject) {
+                    // document.querySelector('.mobile-messaging__actions').classList.add('d-none');
+                    // document.querySelector('#addContentPipeUploadVideo-back-action').classList.remove('d-none');
+
+                    window.eternalConversation.recorders = window.eternalConversation.recorders || {}
+                    window.eternalConversation.recorders[pipeId] = recorderObject;
+
+                    recorderObject.onReadyToRecord = function(id, type) {
+                        manager.dispatchPipeEvent('onReadyToRecord', {pipeId: pipeId});
+                        $actions.removeClass('hide');
+
+                        $recordAction.on('click', function () {
+                            manager.$wrapper.addClass('addpipe2-widget--recording');
+                            recorderObject.record();
+                        })
+
+                        $stopAction.on('click', function () {
+                            manager.$wrapper.removeClass('addpipe2-widget--recording');
+
+                            recorderObject.stopVideo();
+                        })
+
+                        $playAction.on('click', function () {
+                            if ($(this).hasClass('playing')) {
+                                recorderObject.pause();
+
+                                return;
+                            }
+
+                            recorderObject.playVideo();
+                        })
+                    }
+
+                    recorderObject.btStopRecordingPressed = function () {
+                        manager.dispatchPipeEvent('btStopRecordingPressed', {pipeId: pipeId});
+
+                        $stopAction.addClass('hide');
+                        $recordAction.text('Re-Record').removeClass('hide').attr('disabled', 'disabled');
+                        $actions.find('.video-actions-progress').addClass('hide');
+                    }
+
+                    recorderObject.btPlayPressed = function() {
+                        manager.dispatchPipeEvent('btPlayPressed', {pipeId: pipeId});
+
+                        $playAction.addClass('playing').text('Stop');
+                        $recordAction.attr('disabled', 'disabled');
+                    }
+
+                    recorderObject.btPausePressed = function() {
+                        manager.dispatchPipeEvent('btPausePressed', {pipeId: pipeId});
+
+                        $playAction.removeClass('playing').text('Play');
+                        $recordAction.removeAttr('disabled');
+                    }
+
+                    recorderObject.onRecordingStarted = function() {
+                        // document.querySelector('#addContentPipeUploadVideo-submit-action').classList.add('hide');
+                        manager.dispatchPipeEvent('onRecordingStarted', {pipeId: pipeId});
+
+                        $playAction.attr('disabled', 'disabled');
+                        $recordAction.addClass('hide');
+                        $stopAction.attr('disabled', 'disabled').removeClass('hide');
+                        $actions.find('.video-actions-progress').removeClass('hide');
+
+                        micLevel = 1;
+                        micLevelLastChecked = (new Date()).getTime();
+
+                        setTimeout(() => {
+                            $stopAction.removeAttr('disabled')
+                        }, 3000);
+                    }
+
+                    recorderObject.onUploadDone = function(recorderId, streamName, streamDuration, audioCodec, videoCodec, fileType, audioOnly, location){
+                        console.log('onUploadDone');
+
+                        // if (!isMobile) {
+                        //     document.querySelector('#addContentPipeUploadVideo-submit-action').classList.remove('hide');
+                        // }
+
+                        manager.dispatchPipeEvent('onUploadDone', {
+                            recorder: recorderObject,
+                            pipeId: pipeId,
+                            recorderId: recorderId,
+                            streamName: streamName,
+                            streamDuration: streamDuration,
+                            audioCodec: audioCodec,
+                            videoCodec: videoCodec,
+                            filetype: fileType,
+                            audioOnly: audioOnly,
+                            location: location
+                        });
+
+                        $playAction.removeAttr('disabled');
+                        $recordAction.removeAttr('disabled');
+                    }
+
+                    recorderObject.onSaveOk = function(recorderId, streamName, streamDuration, cameraName, micName, audioCodec, videoCodec, filetype, videoId, audioOnly, location){
+                        console.log('onSaveOk')
+                        manager.dispatchPipeEvent('onSaveOk', {
+                            pipeId: pipeId,
+                            recorderId: recorderId,
+                            streamName: streamName,
+                            streamDuration: streamDuration,
+                            cameraName: cameraName,
+                            micName: micName,
+                            audioCodec: audioCodec,
+                            videoCodec: videoCodec,
+                            filetype: filetype,
+                            videoId: videoId,
+                            audioOnly: audioOnly,
+                            location: location
+                        });
+
+                        $playAction.removeAttr('disabled');
+                        $recordAction.removeAttr('disabled');
+                    }
+
+                    // Mobile
+                    recorderObject.onVideoUploadSuccess = function(recorderId, filename, filetype, videoId, audioOnly, location) {
+                        console.log('onVideoUploadSuccess')
+                        manager.dispatchPipeEvent('onVideoUploadSuccess', {
+                            pipeId: pipeId,
+                            recorderId: recorderId,
+                            filename: filename,
+                            filetype: filetype,
+                            videoId: videoId,
+                            audioOnly: audioOnly,
+                            location: location
+                        });
+
+                        $('.pipeFileInput')
+                            .html('<span>Upload Complete.</span><span>Click to record again or upload a replacement</span>');
+                    }
+
+                    recorderObject.onVideoUploadProgress = function () {
+                        document.querySelector('.mobile-messaging__preview img').classList.add('d-none');
+                        document.querySelector('.mobile-messaging__preview video').classList.add('d-none');
+                        document.querySelector('#addpipe2-widget').classList.remove('d-none');
+                    }
+
+                    // Desktop
+                    recorderObject.onDesktopVideoUploadSuccess = function(recorderId, filename, filetype, videoId, audioOnly, location){
+                        console.log('onDesktopVideoUploadSuccess')
+                        manager.dispatchPipeEvent('ec.addPipe.onDesktopVideoUploadSuccess', {
+                            pipeId: pipeId,
+                            recorderId: recorderId,
+                            filename: filename,
+                            filetype: filetype,
+                            videoId: videoId,
+                            audioOnly: audioOnly,
+                            location: location
+                        });
+                    }
+
+                    recorderObject.onMicActivityLevel = function(recorderId, currentActivityLevel) {
+                        var now = (new Date()).getTime();
+
+                        micLevel = currentActivityLevel
+                        
+                        if ((now - micLevelLastChecked) <= 5000 && micLevel <= 0) {
+                            return;
+                        }
+
+                        micLevelLastChecked = now;
+
+                        if (!manager.$wrapper.hasClass('addpipe2-widget--recording')) {
+                            return;
+                        }
+
+                        if (micLevel > 0) {
+                            $actions.find('.video-alerts').addClass('hide');
+
+                            return;
+                        }
+
+                        $actions.find('.video-alerts').removeClass('hide');
+                    }
+                });
+            }
+
+            PipeManager.prototype.dispatchPipeEvent = function (event, payload) {
+                document.dispatchEvent(new CustomEvent('addpipe2.' + payload.pipeId + '.' + event, {detail: payload}));
+            }
+
+            new PipeManager('addContentPipeUploadVideo');
+        </script>
+    </body>
+</html>
+`;
+
+    return <div dangerouslySetInnerHTML={{ __html: embeddedHtmlJs }} />;
+
+}
+
+export default AddPipeManager;

@@ -36,7 +36,7 @@ class MediaServiceTests {
         StoryEntityMapperImpl(storytellerEntityMapperImpl)
     )
     private val testMedia =
-        Media(null, "My Media", emptyList(), URI.create("http://somewhere.out.there"), "Video", null, null)
+        Media(null, "My Media", emptyList(), URI.create("http://somewhere.out.there"), "Video", null, null, null)
 
     @Test
     fun associateMediaWithStorytellerFromInterviewQuestion_HappyPath() {
@@ -216,7 +216,8 @@ class MediaServiceTests {
             URI.create("http://new.location"),
             "video",
             null,
-            null
+            null,
+            null,
         )
         val storedStatus = "stored successful"
         val videoName = "example.mp4"

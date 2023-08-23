@@ -29,7 +29,7 @@ class SignatureValidationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        if (request.requestURI == "/userhome.html") {
+        if (request.requestURI == "/userhome.html" || request.requestURI == "/interview.html") {
             if (request.queryString != null) {
                 val signature = extractSignatureFromRequest(request)
                 val updatedQueryString = removeXsigParameterFromQueryString(request.queryString)

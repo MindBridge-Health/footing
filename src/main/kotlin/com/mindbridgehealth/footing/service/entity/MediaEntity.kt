@@ -31,6 +31,11 @@ class MediaEntity: ResourceEntity() {
     @Basic
     @Column(name = "raw_json", columnDefinition = "json")
     var rawJson: String? = null
+
+    @Basic
+    @Column(name = "thumbnail")
+    var thumbnail: String? = null
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -42,7 +47,11 @@ class MediaEntity: ResourceEntity() {
         if (type != other.type) return false
         if (storyteller != other.storyteller) return false
         if (story != other.story) return false
-        return rawJson == other.rawJson
+        if (status != other.status) return false
+        if (rawJson != other.rawJson) return false
+        if (thumbnail != other.thumbnail) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
@@ -51,9 +60,10 @@ class MediaEntity: ResourceEntity() {
         result = 31 * result + (type?.hashCode() ?: 0)
         result = 31 * result + (storyteller?.hashCode() ?: 0)
         result = 31 * result + (story?.hashCode() ?: 0)
+        result = 31 * result + (status?.hashCode() ?: 0)
         result = 31 * result + (rawJson?.hashCode() ?: 0)
+        result = 31 * result + (thumbnail?.hashCode() ?: 0)
         return result
     }
-
 
 }

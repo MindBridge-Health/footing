@@ -27,7 +27,7 @@ class AdminService(
             throw Exception("mobile number is null")
         } else {
             val encodeAltId = storyteller.altId?.let { Base36Encoder.encodeAltId(it) }
-            val url = "${applicationProperties.rootUrl}/userhome.html?userId=$encodeAltId"
+            val url = "${applicationProperties.rootUrl}/interview.html?userId=$encodeAltId"
             val sig = SignatureGenerator.generateSignature(applicationProperties.mbhKey, url, "")
             val existingSignatureEntity = signatureRepository.findBySignature(sig)
             existingSignatureEntity.ifPresentOrElse({
