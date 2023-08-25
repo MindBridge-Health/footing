@@ -1,11 +1,13 @@
 package com.mindbridgehealth.footing.service.util
 
+import org.slf4j.LoggerFactory
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 object SignatureGenerator {
 
+    private val logger = LoggerFactory.getLogger(this::class.java)
     /**
      * Generates a base64-encoded signature for a Pipe webhook request.
      * @param key the key with which to sign
@@ -23,7 +25,8 @@ object SignatureGenerator {
     }
 
     fun validateSignature(key: String, url: String, jsonData: String, signature: String): Boolean {
-        println(generateSignature(key, url, jsonData))
-        return signature == generateSignature(key, url, jsonData)
+        val generatedSignature = generateSignature(key, url, jsonData)
+        logger.info("in: $signature gen: $generatedSignature" )
+        return signature == generatedSignature
     }
 }

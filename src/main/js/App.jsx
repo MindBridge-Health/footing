@@ -1,10 +1,11 @@
-import AdminPanel from "./Admin";
+import AdminPanel from "./admin/Admin";
 import {useAuth0, withAuthenticationRequired} from '@auth0/auth0-react';
 import {Route, Routes} from "react-router-dom";
-import {Nav} from "./Nav";
-import {Error} from "./Error";
-import StorytellerDetails from "./StorytellerDetails";
+import {Nav} from "./admin/Nav";
+import {Error} from "./admin/Error";
+import StorytellerDetails from "./admin/StorytellerDetails";
 import Cookies from "js-cookie";
+import InterviewApp from "./Interview/InterviewApp";
 
 const React = require('react');
 const ReactDOM = require('react-dom');
@@ -35,6 +36,7 @@ function App() {
             {error && <Error message={error.message} />}
             <Routes>
                 <Route path="/" />
+                <Route path="/interview" element={<InterviewApp />} />
                 <Route exact path="/admin" element={<ProtectedUsers />} />
                 <Route exact path="/storytellerDetails" element={<ProtectedStoryteller/>} />
             </Routes>

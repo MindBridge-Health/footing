@@ -125,6 +125,7 @@ CREATE TABLE IF NOT EXISTS media
     story_id MEDIUMINT,
     raw_json json,
     media_status_id MEDIUMINT,
+    thumbnail VARCHAR(128),
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
     FOREIGN KEY (story_id) REFERENCES story(id),
     FOREIGN KEY (media_status_id) REFERENCES media_status(id)

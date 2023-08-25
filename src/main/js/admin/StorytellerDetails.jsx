@@ -8,6 +8,7 @@ import {useAuth0} from "@auth0/auth0-react";
 import {Interviews} from "./Interviews";
 import {StorytellerDetailsTable} from "./StorytellerDetailsTable";
 import ImageUpload from "./ImageUpload";
+import ImagePreview from "./ImagePreview";
 
 const StorytellerDetails = () => {
     const {  getAccessTokenSilently } = useAuth0();
@@ -108,6 +109,8 @@ const StorytellerDetails = () => {
             <StorytellerDetailsTable storytellerDetails={storytellerDetails}/>
             <Interviews storytellerDetails={storytellerDetails}/>
             <PreferredTime storytellerDetails={storytellerDetails}/>
+            <h1>Images</h1>
+            <ImagePreview storytellerId={storytellerDetails.id} />
             <h1>Image Upload</h1>
             <ImageUpload storytellerId={storytellerDetails.id} />
         </div>

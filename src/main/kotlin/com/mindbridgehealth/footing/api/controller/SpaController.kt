@@ -8,9 +8,9 @@ import org.springframework.web.servlet.ModelAndView
 @Controller
 class SpaController {
 
-    @RequestMapping("/mgmtconsole/{path:(?!index)}**")
+    @RequestMapping("/console/{path:(?!index)}**")
     fun forwardToIndex(): ModelAndView {
-        println("forwarding")
-        return ModelAndView("forward:/mgmtconsole/index.html")
+        println("Forwarding")
+        return ModelAndView("forward:/console/index.html")
     }
 }

@@ -11,4 +11,6 @@ data class ApplicationProperties(
     val rootUrl: String,
     val mbhKey: String,
     val uploadS3Uri: String,
-    val uploadSqsUrl: String)
+    val uploadSqsUrl: String,
+    val interviewBaseUrl: String,
+    )

@@ -25,7 +25,21 @@ class SecurityConfig(
         http.csrf().disable()// I don't think we need CSRF as we're using other forms to validate the request
             .addFilterBefore(signatureValidationFilter, BasicAuthenticationFilter::class.java) // Add the custom filter before other filters
             .authorizeHttpRequests()
-            .requestMatchers("/api/v1/health/**", "/api/v1/media*/**", "/api/v1/stories/**","/*", "/images/**", "/error*", "/userhome*", "/assets/*", "/index*", "/built/*", "/mgmtconsole*/**").permitAll()
+            .requestMatchers(
+                "/api/v1/health/**",
+                "/api/v1/media*/**",
+                "/api/v1/stories/**",
+                "/*",
+                "/images/**",
+                "/error*",
+                "/home*/**",
+                "/interview*/**",
+                "/assets/**",
+                "/index*",
+                "/built/*",
+                "/console*/**",
+                "/api/v1/uploads/images/proxy/**",
+            ).permitAll()
             .requestMatchers(
                 "/api/v1/storytellers/",
                 "/api/v1/interview/storytellers/scheduled/",
