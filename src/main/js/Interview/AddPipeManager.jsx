@@ -24,147 +24,6 @@ function AddPipeManager({ pipeId }) {
         <meta name="website" content="https://www.mindbridgehealth.com" />
         <meta name="Version" content="v1.0.0" />
 
-        <!-- favicon -->
-        <link rel="shortcut icon" href="assets/images/favicon.ico" />
-        
-        <!-- Add pipe --> 
-        <link rel="stylesheet" href="https://cdn.addpipe.com/2.0/pipe.css">
-        <script type="text/javascript" src="https://cdn.addpipe.com/2.0/pipe.js"></script>
-
-        <!-- Video js -->
-        <link href="https://vjs.zencdn.net/8.3.0/video-js.css" rel="stylesheet" />
-        <!-- Css -->
-        <!-- Bootstrap Css -->
-        <link href="assets/css/bootstrap.css" id="bootstrap-style" class="theme-opt" rel="stylesheet" type="text/css" />
-        <!-- Icons Css -->
-        <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-        <link href="assets/libs/@iconscout/unicons/css/line.css" type="text/css" rel="stylesheet" />
-        <!-- Style Css-->
-        <link href="assets/css/style.css" id="color-opt" class="theme-opt" rel="stylesheet" type="text/css" />
-        <style>
-            .addpipe2-widget .blinking {
-                animation: blinkingText 1.2s infinite;
-            }
-
-            @keyframes blinkingText {
-                0%  { color: red; }
-                49% { color: red; }
-                60% { color: transparent; }
-                99% { color:transparent;  }
-                100% { color: red;    }
-            }
-
-            .addpipe2-widget {
-                display: flex;
-                justify-content: center;
-                width: 100%;
-            }
-
-            .addpipe2-widget .pipeRecordRTC {
-                max-width: 100%;
-            }
-
-            /* .addpipe2-widget.content #recorder-custom-id-flash,
-            .addpipe2-widget .content #recorder-custom-id {
-                max-width: 100%;
-            } */
-
-            .addpipe2-widget .video-actions-progress {
-                text-align: center;
-                font-size: 15px;
-            }
-
-            .addpipe2-widget .video-actions {
-                display: flex;
-                justify-content: center;
-            }
-
-            .addpipe2-widget .video-actions .btn {
-                width: 150px;
-                height: 40px;
-                color: white;
-                font-weight: bold;
-                margin: 10px;
-            }
-
-            .addpipe2-widget .btn-green {
-                background: #00a82e;
-            }
-
-            .addpipe2-widget .video-actions .btn-red {
-                background: red;
-            }
-
-            .addpipe2-widget .submit-action {
-                width: 100%;
-                text-align: center;
-                color: white;
-            }
-            
-
-            .addpipe2-widget .pipeMobileRecorder .pipeFileInput {
-                background:#2f55d4;
-                color:white;
-                font-weight: normal;
-                cursor: pointer;
-                border: 0;
-                border-radius: 10px;
-                text-align: center;
-                margin: 70px 15px 0 15px;
-                font-weight: 500;
-            }
-
-            .addpipe2-widget .pipeMobileRecorder .pipeFileInput:hover,
-            .addpipe2-widget .pipeMobileRecorder .pipeFileInput:focus,
-            .addpipe2-widget .pipeMobileRecorder .pipeFileInput:active {
-                background:#2f55d4;
-                opacity: 0.9;
-            }
-
-            .addpipe2-widget .pipeMobileRecorder .pipeFileInput span {
-                display: block;
-                line-height: 1.2;
-            }
-
-            .addpipe2-widget .pipeMobileRecorder .pipeFileInput span:first-child {
-                margin-bottom: 5px;
-            }
-
-            #addContentPipeUploadVideo-submit-action {
-                padding: 10px;
-            }
-
-            /* Video js */
-            .video-js .vjs-control-bar {
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                bottom: -30px !important;
-                background-color: black !important;
-            }
-
-            /* Always show control bar */
-            .video-js.vjs-static-controls .vjs-control-bar {
-                display:block;
-            }
-
-            /* Don't fade out controls */
-            .video-js.vjs-static-controls.vjs-has-started.vjs-user-inactive.vjs-playing .vjs-control-bar {
-                opacity: 1;
-                visibility: visible; 
-            }
-
-            /* Align poster to top */
-            .video-js.vjs-static-controls .vjs-poster {
-                background-position: 50% 0;
-            }
-
-            /* Override tech height:100% */
-            .video-js.vjs-static-controls .vjs-tech {
-                height: auto;
-                height: calc(100% - 30px);
-            } 
-        </style>
     </head>
 
     <body>
@@ -573,7 +432,22 @@ function AddPipeManager({ pipeId }) {
 </html>
 `;
 
-    return <div dangerouslySetInnerHTML={{ __html: embeddedHtmlJs }} />;
+    return (
+        <>
+        <Helmet>
+            <link rel="shortcut icon" href="assets/images/favicon.ico" />
+            <link rel="stylesheet" href="https://cdn.addpipe.com/2.0/pipe.css" />
+            <script type="text/javascript" src="https://cdn.addpipe.com/2.0/pipe.js"></script>
+            <link href="https://vjs.zencdn.net/8.3.0/video-js.css" rel="stylesheet" />
+            <link href="assets/css/bootstrap.css" id="bootstrap-style" class="theme-opt" rel="stylesheet" type="text/css" />
+            <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+            <link href="assets/libs/@iconscout/unicons/css/line.css" type="text/css" rel="stylesheet" />
+            <link href="assets/css/style.css" id="color-opt" class="theme-opt" rel="stylesheet" type="text/css" />
+            <link href="assets/css/interview.css" id="interview-style" class="theme-opt" rel="stylesheet" type="text/css" />
+        </Helmet>
+            <div dangerouslySetInnerHTML={{ __html: embeddedHtmlJs }} />;
+        </>
+    )
 
 }
 

@@ -43,7 +43,7 @@ class SignatureValidationFilter(
                 if (SignatureGenerator.validateSignature(applicationProperties.mbhKey, validationUrl, "", signature)) {
                     val optSignatureEntity = signatureRepository.findBySignature(signature)
                     optSignatureEntity.ifPresentOrElse({
-                        if (it.url == validationUrl && it.userAltId == extractUserIdFromRequest(request)) {
+                        if (it.url == validationUrl ) { //&& it.userAltId == extractUserIdFromRequest(request)
                             filterChain.doFilter(request, response) // Proceed with serving the static asset
                         }
                         else {

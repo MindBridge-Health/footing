@@ -33,7 +33,7 @@ class SecurityConfig(
                 "/images/**",
                 "/error*",
                 "/home*/**",
-                "/interview*",
+                "/interview*/**",
                 "/assets/**",
                 "/index*",
                 "/built/*",

@@ -3,7 +3,9 @@ package com.mindbridgehealth.footing.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
+import com.mindbridgehealth.footing.data.repository.SignatureRepository
 import com.mindbridgehealth.footing.service.entity.ScheduledInterviewEntity
+import com.mindbridgehealth.footing.service.entity.SignatureEntity
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.mindbridgehealth.footing.service.util.SignatureGenerator
 import com.twilio.Twilio
@@ -13,6 +15,8 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.springframework.beans.factory.annotation.Value
+import java.sql.Timestamp
+import java.time.Instant
 
 @Component
 class ScheduledInterviewMessageReceiver(
@@ -20,7 +24,8 @@ class ScheduledInterviewMessageReceiver(
     private val interviewService: InterviewService,
     private val interviewQuestionService: InterviewQuestionService,
     private val smsNotificationService: SmsNotificationService,
-    private val applicationProperties: ApplicationProperties
+    private val applicationProperties: ApplicationProperties,
+    private val signatureRepository: SignatureRepository,
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
     private val objectMapper = ObjectMapper()
@@ -66,9 +71,17 @@ class ScheduledInterviewMessageReceiver(
         val questionId = interviewQuestion.question?.altId
         val encodedQuestion =
             URLEncoder.encode(interviewQuestionText, StandardCharsets.UTF_8.toString())
-        val url = "${applicationProperties.interviewBaseUrl}?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&interview_question_id=$interviewQuestionId"
+        val url = "${applicationProperties.interviewBaseUrl}?cid=6w7x8y9z&mid=1a2b3c4b&rid=12345&interview_question_id=$interviewQuestionId&rtel=$number&question=$encodedQuestion&interview_id=$interviewAltId&question_id=$questionId"
         val signature = SignatureGenerator.generateSignature(applicationProperties.mbhKey, url, "")
-        val signedUrl = "$url&signature=$signature"
+        val signedUrl = "$url&xsig=$signature"
+        val signatureEntity = SignatureEntity().apply {
+            this.userAltId = interview.storyteller?.altId
+            this.url = url
+            this.issued = Timestamp.from(Instant.now())
+            this.signature = signature
+        }
+
+        signatureRepository.save(signatureEntity)
 
         if(!scheduledInterviewEntity.linkSent!!) {
             val questionString =
