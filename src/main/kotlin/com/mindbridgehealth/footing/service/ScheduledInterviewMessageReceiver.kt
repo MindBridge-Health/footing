@@ -81,6 +81,7 @@ class ScheduledInterviewMessageReceiver(
             this.signature = signature
         }
 
+        logger.info("Saving Signature ${this.toString()}")
         signatureRepository.save(signatureEntity)
 
         if(!scheduledInterviewEntity.linkSent!!) {
