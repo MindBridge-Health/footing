@@ -15,7 +15,7 @@ createRoot(document.getElementById('react')).render(
                     audience: 'https://footing.mindbridgehealth.com',
                     scope: 'openid profile email read:userdata',
                     responseType: 'token id_token',
-                    redirect_uri: window.location.origin + "/console/index.html",
+                    redirect_uri: window.location.origin + "/index.html",
                 }}
             >
                 <App />
