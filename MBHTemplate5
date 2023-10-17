@@ -1,0 +1,177 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CloudFormation stack for MindBridge Health",
+    "Parameters": {},
+    "Metadata": {},
+    "Resources": {
+        "FootingDatabase" : {
+            "Type": "AWS::RDS::DBCluster",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+                "AllocatedStorage": 0,
+                "DeletionProtection": true
+            }
+        },
+        "EcrAccessRole" : {
+            "Type": "AWS::IAM::Role",
+            "DeletionPolicy": "Retain",
+            "Properties" : {
+
+            }
+        },
+        "FootingServiceAutoScalingPolicy" : {
+            "Type": "AWS::AppRunner::AutoScalingConfiguration",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+                "AutoScalingConfigurationName": "FootingServiceAutoScalingPolicy",
+                "MaxConcurrency": 100,
+                "MinSize": 1,
+                "MaxSize": 25
+            }
+        },
+        "FootingService": {
+            "Type": "AWS::AppRunner::Service",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+                "ServiceName": "FootingService",
+                "InstanceConfiguration": {
+                    "Cpu": "0.5 vCPU",
+                    "Memory": "1 GB"
+                },
+                "AutoScalingConfigurationArn" : "FootingServiceAutoScalingPolicy",
+                "IngressConfiguration": {
+                    "IsPubliclyAccessible": true
+                },
+                "SourceConfiguration": {
+                    "AuthenticationConfiguration": {
+                        "AccessRoleArn": "arn:aws:iam::732842978186:role/service-role/AppRunnerECRAccessRole"
+                    },
+                    "AutoDeploymentsEnabled": false,
+                    "ImageRepository": {
+                        "ImageIdentifier": "",
+                        "ImageRepositoryType": "ECR",
+                        "ImageConfiguration": {
+                            "Port": "8080",
+                            "RuntimeEnvironmentSecrets": [
+                                {
+                                    "Name": "AWS_S3_BUCKET",
+                                    "Value": "{{resolve:ssm:footing_upload_s3_bucket}}"
+                                },
+                                {
+                                    "Name": "DB_NAME",
+                                    "Value": "{{resolve:ssm:footing_mysql_db}}"
+                                },
+                                {
+                                    "Name": "DB_USER",
+                                    "Value": "{{resolve:ssm-secure:footing_mysql_user}}"
+                                },
+                                {
+                                    "Name": "INTERVIEW_BASE_URL",
+                                    "Value": "{{resolve:ssm:footing_interview_base_url}}"
+                                },
+                                {
+                                    "Name": "MBH_KEY",
+                                    "Value": "{{resolve:ssm-secure:footing_mbh_key}}"
+                                },
+                                {
+                                    "Name": "MYSQL_HOST",
+                                    "Value": "{{resolve:ssm:footing_mysql_host}}"
+                                },
+                                {
+                                    "Name": "MYSQL_PASS",
+                                    "Value": "{{resolve:ssm-secure:footing_mysql_pass}}"
+                                },
+                                {
+                                    "Name": "MYSQL_PORT",
+                                    "Value": "{{resolve:ssm:footing_mysql_port}}"
+                                },
+                                {
+                                    "Name": "SQS_URL",
+                                    "Value": "{{resolve:ssm:footing_interview_sqs_url}}"
+                                },
+                                {
+                                    "Name": "TWILIO_KEY",
+                                    "Value": "{{resolve:ssm-secure:footing_twilio_key}}"
+                                },
+                                {
+                                    "Name": "TWILIO_SID",
+                                    "Value": "{{resolve:ssm-secure:footing_twilio_sid}}"
+                                },
+                                {
+                                    "Name": "UPLOAD_S3_URI",
+                                    "Value": "{{resolve:ssm:footing_upload_s3_uri}}"
+                                },
+                                {
+                                    "Name": "UPLOAD_SQS_URL",
+                                    "Value": "{{resolve:ssm:footing_upload_sqs_url}}"
+                                }
+                            ],
+                            "RuntimeEnvironmentVariables": [
+                                {
+                                    "Name": "ROOT_URL",
+                                    "Value": "https://pb5a9nhpcb.us-east-1.awsapprunner.com"
+                                },
+                                {
+                                    "Name": "spring_profiles_active",
+                                    "Value": "prod"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "263b26df-b4a6-4eca-aad7-64abb510cd2a"
+                }
+            },
+            "DependsOn": [
+                "SMSNotificationQueue",
+                "UploadAssociationQueue",
+                "FootingImageRepo",
+                "UploadBucket"
+            ]
+        },
+        "SMSNotificationQueue": {
+            "Type": "AWS::SQS::Queue",
+            "DeletionPolicy": "Retain",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "ef1f2c65-4036-4113-9ff4-b7fa6af8b5d5"
+                }
+            }
+        },
+        "UploadAssociationQueue": {
+            "Type": "AWS::SQS::Queue",
+            "DeletionPolicy": "Retain",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "c581f860-0233-4bfa-afb6-70c4e3a537fc"
+                }
+            }
+        },
+        "UploadBucket": {
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "bcaab7da-4f89-49b8-b5cf-1bfc35dd0483"
+                }
+            },
+            "DependsOn": []
+        },
+        "FootingImageRepo": {
+            "Type": "AWS::ECR::Repository",
+            "DeletionPolicy": "Retain",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "4e83e46f-216f-4d43-8481-224412fd8262"
+                }
+            }
+        }
+    }
+}
