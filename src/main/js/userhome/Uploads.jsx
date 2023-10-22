@@ -14,7 +14,6 @@ function Uploads({ storytellerId }) {
     useEffect(() => {
         async function fetchImageUrls() {
             try {
-                console.log('fetching');
                 // Fetch image URLs from your backend API
                  const token = await getAccessTokenSilently();
                     const response = await fetch(`/api/v1/media/storytellers/`,
@@ -31,7 +30,6 @@ function Uploads({ storytellerId }) {
                     const urls = data.map(item => `${item.location}`);
                     setImageUrls(urls);
                     setLoadingImages(false);
-                    console.log('fetched');
 
             } catch (error) {
                 setErrorImages(error);
@@ -40,7 +38,6 @@ function Uploads({ storytellerId }) {
         }
 
         fetchImageUrls();
-        console.log('useEffect ended');
     }, []);
 
     if (loadingImages) {

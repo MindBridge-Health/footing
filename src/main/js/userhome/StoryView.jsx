@@ -3,13 +3,16 @@ import {useAuth0} from "@auth0/auth0-react";
 import {Loading} from "../Loading";
 import {Error} from "../Error";
 import Uploads from "./Uploads"
+import {useSearchParams} from "react-router-dom";
 
-const StoryView = (storyId) => {
+const StoryView = () => {
     const { getAccessTokenSilently } = useAuth0();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [story, setStory] = useState(null)
+    const [story, setStory] = useState(null);
+    const [searchParams, setSearchParams] = useSearchParams();
 
+    const storyId = searchParams.get('storyId');
 
     useEffect(() => {
         (async () => {
@@ -26,7 +29,9 @@ const StoryView = (storyId) => {
                         },
                     }
                 );
-                setStory(storyData);
+
+                const storyMap = await storyData.json()
+                setStory(storyMap);
 
                 setLoading(false);
             } catch (error) {
@@ -34,7 +39,7 @@ const StoryView = (storyId) => {
                 setLoading(false);
             }
         })();
-    }, [getAccessTokenSilently]);
+    }, [getAccessTokenSilently, storyId]);
 
 
     if (loading) {
@@ -42,8 +47,25 @@ const StoryView = (storyId) => {
     }
 
     if (error) {
+        console.log(error);
         return <Error message={error.message} />;
     }
+
+    return (
+        <div className="flex-container">
+            <div className="content">
+                <div className="detail-group">
+                    <label>Story:</label>
+                        <span>{story.story}</span>
+                </div>
+
+                <div className="detail-group">
+                    <label>Original Transcription:</label>
+                    <span>{story.originalText}</span>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default StoryView

@@ -6,5 +6,8 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface StoryRepository : JpaRepository<StoryEntity, Int>
+interface StoryRepository : JpaRepository<StoryEntity, Int> {
+
+    fun findByAltId(altId: String) : Optional<StoryEntity>
+}
 

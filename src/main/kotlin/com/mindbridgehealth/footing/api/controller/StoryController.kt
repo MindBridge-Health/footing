@@ -1,13 +1,16 @@
 package com.mindbridgehealth.footing.api.controller
 
 import com.mindbridgehealth.footing.configuration.ApplicationProperties
+import com.mindbridgehealth.footing.service.StoryService
 import com.mindbridgehealth.footing.service.TwilioCallbackService
 import com.mindbridgehealth.footing.service.util.Base36Encoder
+import org.springframework.security.oauth2.jwt.Jwt
 import com.twilio.security.RequestValidator
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.RequestContextHolder
@@ -15,10 +18,11 @@ import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URLDecoder
+import kotlin.jvm.optionals.getOrElse
 
 @RestController
 @RequestMapping("/api/v1/stories")
-class StoryController(applicationProperties: ApplicationProperties, val twilioCallbackService: TwilioCallbackService) {
+class StoryController(applicationProperties: ApplicationProperties, val twilioCallbackService: TwilioCallbackService, val storyService: StoryService) {
 
     private val validator: RequestValidator = RequestValidator(applicationProperties.twilioKey)
     private val logger = LoggerFactory.getLogger(StoryController::class.java)
@@ -52,6 +56,18 @@ class StoryController(applicationProperties: ApplicationProperties, val twilioCa
         paramMap["x-twilio-signature"] = xTwilioSignature
         twilioCallbackService.handleCallback( Base36Encoder.decodeAltId(id), paramMap)
         return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/{id}")
+    fun getStoryById(@AuthenticationPrincipal principal: Jwt,  @PathVariable("id") id : String) : Map<String, String?>? {
+        val story = storyService.findStoryByAltId(Base36Encoder.decodeAltId(id)).getOrElse { throw Exception() }
+        if (story.ownerId != principal.subject) {
+            println("owner ${story.ownerId}, principal: ${principal.subject}")
+        }
+
+        val storyMap = mapOf("story" to story.text, "originalText" to story.originalText)
+        println("StoryMap: $storyMap")
+        return storyMap
     }
 
     private fun decodeParameters(parameters: MultiValueMap<String, String>, encoding: String): HashMap<String, String> {

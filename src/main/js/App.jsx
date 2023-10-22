@@ -7,6 +7,7 @@ import StorytellerDetails from "./admin/StorytellerDetails";
 import Cookies from "js-cookie";
 import InterviewApp from "./Interview/InterviewApp";
 import UserHome from "./userhome/UserHome"
+import StoryView from "./userhome/StoryView";
 
 const React = require('react');
 const ReactDOM = require('react-dom');
@@ -39,6 +40,7 @@ function App() {
                     <Route path="/" element={<UserHome />} />
                     <Route path="/index.html" element={<UserHome />} />
                     <Route path="/interview" element={<InterviewApp />} />
+                    <Route path="/story" element={<StoryView />}/>
                     <Route exact path="/admin" element={<ProtectedUsers />} />
                     <Route exact path="/storytellerDetails" element={<ProtectedStoryteller/>} />
                 </Routes>

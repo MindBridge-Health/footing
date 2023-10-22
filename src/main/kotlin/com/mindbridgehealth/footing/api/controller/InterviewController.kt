@@ -1,9 +1,11 @@
 package com.mindbridgehealth.footing.api.controller
 
+import com.mindbridgehealth.footing.api.dto.InterviewResponseDto
 import com.mindbridgehealth.footing.api.dto.ScheduleInterviewResponseDto
 import com.mindbridgehealth.footing.api.dto.mapper.ScheduledInterviewDtoMapper
 import com.mindbridgehealth.footing.service.InterviewService
 import com.mindbridgehealth.footing.service.QuestionService
+import com.mindbridgehealth.footing.service.StoryService
 import com.mindbridgehealth.footing.service.model.Interview
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.mindbridgehealth.footing.service.util.PermissionValidator
@@ -24,7 +26,7 @@ import kotlin.collections.Collection
 
 @RestController
 @RequestMapping("/api/v1/interviews")
-class InterviewController(val service: InterviewService, val questionService: QuestionService, val dtoMapper: ScheduledInterviewDtoMapper) {
+class InterviewController(val service: InterviewService, val questionService: QuestionService, val storyService: StoryService, val dtoMapper: ScheduledInterviewDtoMapper) {
 
     @GetMapping("/{id}")
     fun get(@AuthenticationPrincipal principal: Jwt, @PathVariable id: String): Interview {
@@ -35,7 +37,6 @@ class InterviewController(val service: InterviewService, val questionService: Qu
 
     @GetMapping("/storytellers/")
     fun getAllInterviewsForSelf(@AuthenticationPrincipal principal: Jwt): Collection<Interview> {
-        println(principal.subject)
         return service.findByStorytellerAltId(principal.subject)
     }
 

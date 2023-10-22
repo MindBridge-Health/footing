@@ -14,6 +14,18 @@ class StoryService(private val db: StoryRepository, private val storyMapper: Sto
     fun findStoryById(id: String): Optional<Story> {
         val optionalStory = db.findById(id.toInt())
         if(optionalStory.isPresent) {
+            println("storyOwner: ${optionalStory.get().owner}")
+            println("storyteller: ${optionalStory.get().storyteller?.id}")
+            return Optional.of(storyMapper.entityToModel(optionalStory.get()))
+        }
+        return Optional.empty()
+    }
+
+    fun findStoryByAltId(altId: String) : Optional<Story> {
+        val optionalStory = db.findByAltId(altId)
+        if(optionalStory.isPresent) {
+            println("storyOwner: ${optionalStory.get().owner}")
+            println("storyteller: ${optionalStory.get().storyteller?.id}")
             return Optional.of(storyMapper.entityToModel(optionalStory.get()))
         }
         return Optional.empty()

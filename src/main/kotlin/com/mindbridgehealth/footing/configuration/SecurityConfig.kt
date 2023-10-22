@@ -38,6 +38,7 @@ class SecurityConfig(
                 "/index*",
                 "/built/*",
                 "/console*/**",
+                "/console/story/**",
                 "/api/v1/uploads/images/proxy/**",
             ).permitAll()
             .requestMatchers(
