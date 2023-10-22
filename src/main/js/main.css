@@ -1,0 +1,401 @@
+:root {
+    --expanded-width: 150px; /* or whatever width you want when the navbar is expanded */
+    --collapsed-width: 50px; /* or whatever width you want when the navbar is collapsed */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+    background-color: #f4f4f4;
+    color: #000;
+}
+
+.container {
+    margin-left: 0;
+    padding-left: 0;
+    margin-right: 0;
+    padding-right: 0;
+    max-width: none;
+    display: flex;
+    justify-content: space-between;  /* optional: push children to both ends */
+    align-items: flex-start;         /* optional: align children at the top */
+}
+
+.flex-container {
+    display: flex; /* Enable flex on the container */
+    width: 100%;
+    transition: transform 0.5s;
+}
+
+.header {
+    background-color: #282828;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 60px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000; /* ensure header is always on top */
+    border-bottom: 1px solid #444;
+}
+.header-nav {
+    display: flex;
+    gap: 20px;
+}
+.header-nav.a {
+    color: #fff;
+}
+.header-right {
+    display: flex;
+    gap: 20px;
+    justify-content: right;
+}
+
+.company-logo {
+    width: 40px;
+    height: 40px;
+    background-image: url("assets/Mind_Only_Transparent.png");
+    background-repeat: no-repeat;
+    background-position: center; /* Center the SVG within the button */
+    background-size: contain; /* Scale the image to ensure it's entirely contained within the box */
+}
+
+.logout-button {
+    background-color: #404040;
+    color: #ffffff;
+    border-color: #000;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.login-button {
+    background-color: #404040;
+    color: #ffffff;
+    border-color: #000;
+}
+
+.left-navbar {
+    background-color: #20124d;
+    width: var(--expanded-width);
+    transition: width 0.3s ease; /* Optional transition */
+    height: calc(100vh - 60px); /* minus the height of the header */
+    position: fixed;
+    top: 60px; /* height of the header */
+    overflow-y: auto;
+    justify-content: right;
+}
+.left-navbar.collapsed {
+    width: var(--collapsed-width);
+    transition: width 0.3s ease; /* Optional transition */
+}
+.left-navbar button {
+    width: 100%;
+    padding: 15px;
+    text-align: left;
+    border: none;
+    background: #20124d;
+    color: #fff;
+    cursor: pointer;
+}
+
+.left-navbar button:hover {
+    color: #25afaf;
+}
+
+.collapse-button-div {
+    top: 0;
+    right: 0;
+    background: none;
+    transition: transform 0.5s;
+}
+
+.collapse-button {
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.5s;
+    vertical-align: middle;
+    text-align: center;
+    padding-right: 15px;
+    color: white;
+}
+
+.collapse-button.expanded {
+    border: none;
+    width: 100%;
+    height: 40px;
+    vertical-align: middle;
+    text-align: right;
+    transition: transform 0.5s;
+}
+
+.collapse-button.collapsed {
+    border: none;
+    width: 100%;
+    height: 40px;
+    vertical-align: middle;
+    text-align: right;
+    transition: transform 0.5s;
+}
+
+.collapse-button:focus {
+    outline: none;
+}
+
+.content {
+    padding: 80px;
+    flex-grow: 1;
+    height: 100vh; /* minus the height of the header */
+    overflow-y: auto;
+    background: #f9f9f9;
+    position: relative;
+    transition: width 0.3s ease; /* Optional transition */
+}
+
+.content.expanded {
+    margin-left: var(--expanded-width);
+    transition: width 0.3s ease; /* Optional transition */
+}
+
+.content.collapsed {
+    margin-left: var(--collapsed-width);
+    transition: width 0.3s ease; /* Optional transition */
+}
+
+.detail-card {
+    color: #282828;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detail-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #000;
+}
+
+.detail-group label {
+    font-weight: bold;
+    margin-right: 10px;
+    color: #000;
+}
+
+.detail-group span {
+    flex-grow: 1;
+    margin-left: 10px;
+    color: #000;
+}
+
+.detail-group input {
+    flex-grow: 1;
+    margin-left: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #000;
+}
+
+.detail-actions {
+    display: flex;
+    justify-content: space-between;
+    color: #000;
+}
+
+a.nav-item {
+    color: #fff
+}
+
+a.nav-item:hover {
+    color: #25afaf;
+}
+/* older stuff */
+
+.btn-margin {
+    margin-top: 7px
+}
+
+.profile-area img {
+    max-width: 150px;
+    margin-bottom: 20px;
+}
+
+.panel-body h3 {
+    margin-top: 0;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table th, table td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+    color: #282828;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #282828;
+}
+
+h2 {
+    color: #20124d;
+}
+
+h3 {
+    color: blue;
+}
+
+/* Error View Styles */
+#error-view {
+    color: red;
+}
+
+/* Interview View Styles */
+#interview-view {
+    padding: 20px;
+}
+
+/* Upcoming Interviews Table Styles */
+#upcomingInterviews {
+    border-collapse: collapse;
+    width: auto; /* Use auto width to fit the content */
+    margin-bottom: 20px; /* Add some spacing at the bottom */
+}
+
+#upcomingInterviews th,
+#upcomingInterviews td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#upcomingInterviews th {
+    background-color: #282828;
+    color: white;
+}
+
+/* Schedule Interview Form Styles */
+#interview-schedule-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+#interview-schedule-form label {
+    color: blue;
+    margin-bottom: 5px;
+}
+
+#interview-schedule-form select,
+#interview-schedule-form input[type="text"],
+#interview-schedule-form input[type="checkbox"],
+#interview-schedule-form input[type="datetime-local"],
+#interview-schedule-form button {
+    margin-bottom: 10px;
+    padding: 8px;
+}
+
+#interview-schedule-form button {
+    background-color: blue;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* Preferred Times Table Styles */
+#preferredTimes {
+    border-collapse: collapse;
+    width: auto; /* Use auto width to fit the content */
+    margin-bottom: 20px; /* Add some spacing at the bottom */
+}
+
+#preferredTimes th,
+#preferredTimes td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#preferredTimes th {
+    background-color: #282828;
+    color: white;
+}
+
+/* Preferred Time Form Styles */
+#preferred-time-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+#preferred-time-form label {
+    color: blue;
+    margin-bottom: 5px;
+}
+
+#preferred-time-form input[type="datetime-local"],
+#preferred-time-form button {
+    margin-bottom: 10px;
+    padding: 8px;
+}
+
+#preferred-time-form button {
+    background-color: blue;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.collapsible-heading {
+    cursor: pointer;
+}
+
+.delete-button {
+    /* Add any button styling you want here */
+    background-color: #f0f0f0;
+    padding: 10px;
+    border: none;
+    background-image: url("./assets/trash.svg");
+    background-size: 20px 20px; /* Adjust the SVG size as needed */
+    background-repeat: no-repeat;
+    background-position: center; /* Center the SVG within the button */
+}
+
+label {
+    padding-right: 20px;
+}
+
+/* Profile Image style */
+.profile-image {
+    max-width: 150px;  /* optional: you can set a specific width */
+    margin-left: 20px; /* optional: space between details and image */
+}

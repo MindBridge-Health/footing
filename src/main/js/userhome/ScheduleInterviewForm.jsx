@@ -82,7 +82,8 @@ export function ScheduleInterviewForm({onSubmit}) {
     return (
         <>
             <div className="collapsible">
-                <h2 className="collapsible-heading" onClick={handleToggleCollapsible}>Schedule Interview</h2>
+                <h3 className="collapsible-heading" onClick={handleToggleCollapsible}>Schedule Interview</h3>
+                <span onClick={handleToggleCollapsible}>Click to expand</span>
                 {!isCollapsed && (
                 <div className="collapsible-content">
                     <form id="interview-schedule-form" onSubmit={handleSubmit}>

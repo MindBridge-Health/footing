@@ -89,6 +89,7 @@ dependencies {
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    testImplementation("junit:junit:4.13.1")
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     compileOnly("javax.persistence:javax.persistence-api:2.2")

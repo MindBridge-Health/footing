@@ -35,6 +35,7 @@ class InterviewController(val service: InterviewService, val questionService: Qu
 
     @GetMapping("/storytellers/")
     fun getAllInterviewsForSelf(@AuthenticationPrincipal principal: Jwt): Collection<Interview> {
+        println(principal.subject)
         return service.findByStorytellerAltId(principal.subject)
     }
 

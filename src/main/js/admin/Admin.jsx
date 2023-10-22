@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import StorytellerList from "./StorytellerList";
-import {Error} from "./Error";
-import {Loading} from "./Loading";
-import {useAccessTokenContext} from "./AccessTokenContext";
+import {Error} from "../Error";
+import {Loading} from "../Loading";
+import {useAccessTokenContext} from "../AccessTokenContext";
 import {useAuth0} from "@auth0/auth0-react";
 import {AddStorytellerPanel} from "./AddStorytellerPanel";
 
