@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import './main.css'
-import {Loading} from "./Loading";
-import {Error} from "./Error";
+import '../main.css'
+import {Loading} from "../Loading";
+import {Error} from "../Error";
 import {useLocation, useNavigate} from "react-router-dom";
 import {PreferredTime} from "./PreferredTime";
 import {useAuth0} from "@auth0/auth0-react";

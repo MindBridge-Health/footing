@@ -3,8 +3,10 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import {Loading} from "../Loading";
 import {Error} from "../Error";
+import {useAuth0} from "@auth0/auth0-react";
 
-function ImagePreview({ storytellerId }) {
+function Uploads({ storytellerId }) {
+    const { getAccessTokenSilently } = useAuth0();
     const [imageUrls, setImageUrls] = useState([]);
     const [loadingImages, setLoadingImages] = useState(true)
     const [errorImages, setErrorImages] = useState(null)
@@ -12,16 +14,23 @@ function ImagePreview({ storytellerId }) {
     useEffect(() => {
         async function fetchImageUrls() {
             try {
-                console.log('fetching');
                 // Fetch image URLs from your backend API
-                const response = await fetch(`/api/v1/media/storytellers/${storytellerId}`);
-                const data = await response.json();
+                 const token = await getAccessTokenSilently();
+                    const response = await fetch(`/api/v1/media/storytellers/`,
+                        {
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${token}`,
+                            }
+                        });
+                    const data = await response.json();
 
-                // Extract the 'location' field from each object to get image URLs
-                const urls = data.map(item => `${item.location}`);
-                setImageUrls(urls);
-                setLoadingImages(false);
-                console.log('fetched');
+                    // Extract the 'location' field from each object to get image URLs
+                    const urls = data.map(item => `${item.location}`);
+                    setImageUrls(urls);
+                    setLoadingImages(false);
+
             } catch (error) {
                 setErrorImages(error);
                 console.error('Error fetching image URLs:', error);
@@ -29,7 +38,6 @@ function ImagePreview({ storytellerId }) {
         }
 
         fetchImageUrls();
-        console.log('useEffect ended');
     }, []);
 
     if (loadingImages) {
@@ -53,4 +61,4 @@ function ImagePreview({ storytellerId }) {
     );
 }
 
-export default ImagePreview;
+export default Uploads;

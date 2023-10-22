@@ -10,6 +10,7 @@ data class StorytellerCreateDto(
     var firstname: String?,
     var middlename: String?,
     var mobile: String?,
+    var email: String?,
     var contactMethod: String?,
     var preferredTimes: Collection<PreferredTime>?,
     var organizationId: String?

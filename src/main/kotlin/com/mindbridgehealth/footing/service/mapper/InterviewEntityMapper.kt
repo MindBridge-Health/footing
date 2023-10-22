@@ -34,6 +34,7 @@ abstract class InterviewEntityMapper: IdMapper() {
     private fun mapInterviewQuestionToInterviewQuestionEntity(interviewQuestion: InterviewQuestion, interviewEntity: InterviewEntity): InterviewQuestionEntity {
         val interviewQuestionEntity = InterviewQuestionEntity()
         interviewQuestionEntity.interview = interviewEntity
+        interviewQuestionEntity.story = interviewEntity.interviewQuestionData?.first()?.story
         return interviewQuestionEntity
     }
 

@@ -90,7 +90,7 @@ class StorytellerService(
         storedEntity.email = storytellerEntity.email
         storedEntity.organization = storyteller.organization?.id?.let { organizationService.findEntityByAltId(it) }
         storedEntity.preferredTimes = storytellerEntity.preferredTimes
-        storedEntity.isActive = storytellerEntity.isActive
+        storedEntity.isActive = if(storytellerEntity.isActive != null) storytellerEntity.isActive else storedEntity.isActive
 
         savePreferredTimeEntities(storedEntity)
         val updatedStorytellerEntity = db.save(storedEntity)

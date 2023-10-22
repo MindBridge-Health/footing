@@ -59,6 +59,17 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
         return mediaByStorytellerId
     }
 
+    @GetMapping("/storytellers/")
+    fun getAllMediaForSelf(@AuthenticationPrincipal principal: Jwt): Collection<Media> {
+        val mediaByStorytellerId = mediaService.findMediaByStorytellerId(principal.subject)
+        mediaByStorytellerId.map {
+            if( it.location.toString().startsWith("s3")) {
+                it.location = URI.create("${getServiceUrl()}/api/v1/uploads/images/proxy/${it.location.toString().substringAfterLast('/')}")
+            }
+        }
+        return mediaByStorytellerId
+    }
+
     @PostMapping("/storytellers/{id}")
     fun postToStoryteller(@RequestBody media: Media, @PathVariable id: String): String {
         return mediaService.associateMediaWithStoryteller(media, id)

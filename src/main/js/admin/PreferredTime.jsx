@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {PreferredTimeForm} from "./PreferredTimeForm";
-import {Error} from "./Error";
+import {Error} from "../Error";
 import {useAuth0} from "@auth0/auth0-react";
 import {PreferredTimeTable} from "./PreferredTimeTable";
 
