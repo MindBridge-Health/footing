@@ -18,7 +18,7 @@ export function UpcomingInterviewTable({ upcomingInterviews, handleDeleteIntervi
                     <tr key={index}>
                         <td>{interview.name}</td>
                         <td>{interview.scheduledTime}</td>
-                        <td>{interview.question.text}</td>
+                        <td>{interview.question?.text}</td>
                         <td>
                             <button onClick={() => handleDeleteInterview(index)} className="delete-button"></button>
                         </td>
