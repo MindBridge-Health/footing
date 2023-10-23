@@ -20,7 +20,7 @@ const UserHome = () => {
                 // Fetch the accessToken
                 const token = await getAccessTokenSilently();
 
-                // Fetch StorytellerDetails
+                // Attempt to fetch StorytellerDetails
                 const detailsData = await fetch(
                     `/api/v1/storytellers/`,
                     {
@@ -29,8 +29,33 @@ const UserHome = () => {
                         },
                     }
                 );
-                const details = await detailsData.json();
-                setStorytellerDetails(details);
+
+                // If the user doesn't exist (assuming a 404 for not found), create the user
+                if (detailsData.status !== 200) {
+                    const createUserResponse = await fetch(`/api/v1/storytellers/`, {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            lastname: user.family_name,
+                            firstname: user.given_name,
+                            email: user.email,
+                        })
+                    });
+
+                    // Check if user creation was successful
+                    if (!createUserResponse.ok) {
+                        throw new Error("Failed to create user");
+                    }
+
+                    const details = await createUserResponse.json();
+                    setStorytellerDetails(details);
+                } else {
+                    const details = await detailsData.json();
+                    setStorytellerDetails(details);
+                }
 
                 setLoading(false);
             } catch (error) {
@@ -38,7 +63,9 @@ const UserHome = () => {
                 setLoading(false);
             }
         })();
-    }, [getAccessTokenSilently]);
+    }, []);
+
+
 
     const scrollToSection = (sectionId) => {
         document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
@@ -49,7 +76,14 @@ const UserHome = () => {
     }
 
     if (error) {
-        return <Error message={error.message} />;
+        return (
+            <div className="flex-container">
+                <div className="content" >
+                    <Error message={error.message} />
+                    <div>Try refreshing the page</div>
+                </div>
+            </div>
+        );
     }
 
 
