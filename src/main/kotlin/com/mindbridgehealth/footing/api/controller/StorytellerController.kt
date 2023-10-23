@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
+import kotlin.jvm.optionals.getOrElse
 
 @RestController
 @RequestMapping("/api/v1/storytellers")
@@ -29,22 +30,22 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
     @GetMapping("/")
     fun get(@AuthenticationPrincipal principal: Jwt): Storyteller {
         val optStoryteller = service.findStorytellerByAltId(principal.subject)
-        return optStoryteller.orElseGet { null }
+        return optStoryteller.getOrElse { throw HttpClientErrorException(HttpStatusCode.valueOf(404), "Not Found") }
     }
 
     @GetMapping("/{id}")
     fun getOnBehalf(@PathVariable id: String, @AuthenticationPrincipal principal: Jwt): Storyteller {
         val optStoryteller = service.findStorytellerByAltId(Base36Encoder.decodeAltId(id))
-        return optStoryteller.orElseGet { null }
+        return optStoryteller.getOrElse { throw HttpClientErrorException(HttpStatusCode.valueOf(404), "Not Found") }
     }
 
     @PostMapping("/")
     fun post(
         @RequestBody storytellerCreateDto: StorytellerCreateDto,
         @AuthenticationPrincipal principal: Jwt
-    ): String {
+    ): Storyteller {
         val altId = principal.subject
-        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId).id ?: throw HttpClientErrorException(HttpStatusCode.valueOf(404), "Not Found")
+        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId)
     }
 
     @PostMapping("/{id}")
@@ -52,9 +53,9 @@ class StorytellerController(val service: StorytellerService, val mapper: Storyte
         @RequestBody storytellerCreateDto: StorytellerCreateDto,
         @PathVariable id: String,
         @RequestParam idEncoded: Boolean? = false,
-    ): String {
+    ): Storyteller {
         val altId = if(idEncoded == true) Base36Encoder.decodeAltId(id) else id
-        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId).id ?: throw HttpServerErrorException(HttpStatusCode.valueOf(500))
+        return service.save(mapper.storytellerCreateDtoToStoryteller(storytellerCreateDto), altId)
     }
 
     @PutMapping("/")

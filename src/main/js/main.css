@@ -398,4 +398,5 @@ label {
 .profile-image {
     max-width: 150px;  /* optional: you can set a specific width */
     margin-left: 20px; /* optional: space between details and image */
+    border: black 1px solid
 }
