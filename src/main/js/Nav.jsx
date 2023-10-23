@@ -18,7 +18,7 @@ export function Nav() {
                 setRoles(claims['https://app.footing.com/roles'])
             }
         })();
-    }, [getAccessTokenSilently])
+    }, [])
 
 
 

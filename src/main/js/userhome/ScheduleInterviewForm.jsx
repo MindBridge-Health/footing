@@ -69,7 +69,7 @@ export function ScheduleInterviewForm({onSubmit}) {
                 setLoadingQuestions(false);
             }
         })();
-    }, [getAccessTokenSilently]);
+    }, []);
 
     if (loadingQuestions) {
         return <Loading/>;

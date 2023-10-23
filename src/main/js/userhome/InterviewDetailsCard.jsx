@@ -16,7 +16,7 @@ export const InterviewDetailsCard = ({storytellerDetails}) => {
     useEffect(() => {
         if (accessToken) {
             fetch(
-                `/api/v1/interviews/storytellers/${storytellerDetails.id}/scheduled/all`,
+                `/api/v1/interviews/storytellers/scheduled/all`,
                 {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
@@ -49,7 +49,7 @@ export const InterviewDetailsCard = ({storytellerDetails}) => {
 
         const queryParams = new URLSearchParams(qParams).toString();
 
-        fetch(`/api/v1/interviews/storytellers/${storytellerDetails.id}/scheduled/?${queryParams}`, {
+        fetch(`/api/v1/interviews/storytellers/scheduled/?${queryParams}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -60,7 +60,7 @@ export const InterviewDetailsCard = ({storytellerDetails}) => {
             try {
                 // Make sure to use the updated accessToken state
                 fetch(
-                    `/api/v1/interviews/storytellers/${storytellerDetails.id}/scheduled/all`,
+                    `/api/v1/interviews/storytellers/scheduled/all`,
                     {
                         headers: {
                             Authorization: `Bearer ${accessToken}`,

@@ -6,7 +6,7 @@ import Auth0ProviderWithRedirectCallback from "./Auth0ProviderWithRedirectCallba
 
 
 createRoot(document.getElementById('react')).render(
-    <React.StrictMode>
+
         <BrowserRouter basename="/console">
             <Auth0ProviderWithRedirectCallback
                 domain='dev-7hxmzq06wywhbaqg.us.auth0.com'
@@ -21,5 +21,5 @@ createRoot(document.getElementById('react')).render(
                 <App />
             </Auth0ProviderWithRedirectCallback>
         </BrowserRouter>
-    </React.StrictMode>
+
 );

@@ -33,7 +33,7 @@ class SecurityConfig(
                 "/images/**",
                 "/error*",
                 "/home*/**",
-                "/interview*/**",
+                "/interviews*/**",
                 "/assets/**",
                 "/index*",
                 "/built/*",
@@ -42,9 +42,9 @@ class SecurityConfig(
                 "/api/v1/uploads/images/proxy/**",
             ).permitAll()
             .requestMatchers(
-                "/api/v1/storytellers/",
-                "/api/v1/interview/storytellers/scheduled/",
-                "/api/v1/interview/storytellers/",
+                "/api/v1/storytellers/**",
+                "/api/v1/interviews/storytellers/scheduled/**",
+                "/api/v1/interviews/storytellers/**",
             ).authenticated()
             .requestMatchers(
                 "/api/v1/admin/**",
