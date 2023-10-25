@@ -72,73 +72,76 @@ const StorytellerDetailsCard = ({storytellerDetails}) => {
     };
 
     return (
-        <div className="container">
-            <div>
-            <div className="detail-group">
-                <label>Firstname:</label>
-                {isEditing ? (
-                    <input
-                        type="text"
-                        value={editedValues.firstname || localStorytellerDetails.firstname}
-                        onChange={(e) => handleInputChange('firstname', e.target.value)}
-                    />
-                ) : (
-                    <span>{localStorytellerDetails.firstname}</span>
-                )}
-            </div>
+        <div>
+            <h1>Details</h1>
+            <div className="container">
+                <div>
+                <div className="detail-group">
+                    <label>Firstname:</label>
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            value={editedValues.firstname || localStorytellerDetails.firstname}
+                            onChange={(e) => handleInputChange('firstname', e.target.value)}
+                        />
+                    ) : (
+                        <span>{localStorytellerDetails.firstname}</span>
+                    )}
+                </div>
 
-            <div className="detail-group">
-                <label>Lastname:</label>
-                {isEditing ? (
-                    <input
-                        type="text"
-                        value={editedValues.lastname || localStorytellerDetails.lastname}
-                        onChange={(e) => handleInputChange('lastname', e.target.value)}
-                    />
-                ) : (
-                    <span>{localStorytellerDetails.lastname}</span>
-                )}
-            </div>
+                <div className="detail-group">
+                    <label>Lastname:</label>
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            value={editedValues.lastname || localStorytellerDetails.lastname}
+                            onChange={(e) => handleInputChange('lastname', e.target.value)}
+                        />
+                    ) : (
+                        <span>{localStorytellerDetails.lastname}</span>
+                    )}
+                </div>
 
-            <div className="detail-group">
-                <label>Email:</label>
-                {isEditing ? (
-                    <input
-                        type="text"
-                        value={editedValues.email || localStorytellerDetails.email}
-                        onChange={(e) => handleInputChange('email', e.target.value)}
-                    />
-                ) : (
-                    <span>{localStorytellerDetails.email}</span>
-                )}
-            </div>
+                <div className="detail-group">
+                    <label>Email:</label>
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            value={editedValues.email || localStorytellerDetails.email}
+                            onChange={(e) => handleInputChange('email', e.target.value)}
+                        />
+                    ) : (
+                        <span>{localStorytellerDetails.email}</span>
+                    )}
+                </div>
 
-            <div className="detail-group">
-                <label>Mobile:</label>
-                {isEditing ? (
-                    <input
-                        type="text"
-                        value={editedValues.mobile || localStorytellerDetails.mobile}
-                        onChange={(e) => handleInputChange('mobile', e.target.value)}
-                    />
-                ) : (
-                    <span>{localStorytellerDetails.mobile}</span>
-                )}
-            </div>
+                <div className="detail-group">
+                    <label>Mobile:</label>
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            value={editedValues.mobile || localStorytellerDetails.mobile}
+                            onChange={(e) => handleInputChange('mobile', e.target.value)}
+                        />
+                    ) : (
+                        <span>{localStorytellerDetails.mobile}</span>
+                    )}
+                </div>
 
-            <div className="detail-actions">
-                {isEditing ? (
-                    <>
-                        <button onClick={handleSaveAll}>Save All</button>
-                        <button onClick={handleCancel}>Cancel</button>
-                    </>
-                ) : (
-                    <button onClick={handleEdit}>Edit</button>
-                )}
-            </div>
-            </div>
-            <div className="profile-image">
-                <img alt="profile picture" src={user.picture}/>
+                <div className="detail-actions">
+                    {isEditing ? (
+                        <>
+                            <button onClick={handleSaveAll}>Save All</button>
+                            <button onClick={handleCancel}>Cancel</button>
+                        </>
+                    ) : (
+                        <button onClick={handleEdit}>Edit</button>
+                    )}
+                </div>
+                </div>
+                <div className="profile-image">
+                    <img alt="profile picture" src={user.picture}/>
+                </div>
             </div>
         </div>
     );

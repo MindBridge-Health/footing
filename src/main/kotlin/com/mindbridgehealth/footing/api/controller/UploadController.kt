@@ -30,7 +30,13 @@ class UploadController(private val s3UploadService: S3UploadService, private val
     @GetMapping("/storytellers/{storytellerId}/{imageName}/upload-url")
     fun getPresignedUrlOnBehalfOf(@AuthenticationPrincipal principal: Jwt, @PathVariable storytellerId: String, @PathVariable imageName: String): ResponseEntity<String> {
         val preSignedUrl = s3UploadService.generatePresignedUrlForObject(imageName, Duration.ofMinutes(15), Base36Encoder.decodeAltId(storytellerId))
-        logger.info("Presigned Url (Controller): $preSignedUrl")
+        return ResponseEntity.ok(preSignedUrl)
+    }
+
+    @GetMapping("/storytellers/{imageName}/upload-url")
+    fun getPresignedUrlForSelf(@AuthenticationPrincipal principal: Jwt, @PathVariable imageName: String): ResponseEntity<String> {
+        val storytellerId = principal.subject
+        val preSignedUrl = s3UploadService.generatePresignedUrlForObject(imageName, Duration.ofMinutes(15), storytellerId)
         return ResponseEntity.ok(preSignedUrl)
     }
 

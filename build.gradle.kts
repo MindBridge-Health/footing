@@ -101,6 +101,7 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-s3:1.12.92")
     implementation("com.amazonaws:aws-java-sdk-sts:1.12.92")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.im4java:im4java:1.4.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("com.ninja-squad:springmockk:4.0.2")

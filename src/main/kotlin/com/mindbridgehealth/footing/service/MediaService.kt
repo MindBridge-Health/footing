@@ -35,7 +35,16 @@ class MediaService(
 
     fun findMediaByStorytellerId(id: String): Collection<Media> {
         val storytellerId = storytellerService.findStorytellerEntityByAltId(id).getOrElse { throw Exception("Storyteller not found") }.id ?: throw Exception("Storyteller not found")
-        return  db.findByStorytellerId(storytellerId).map { mediaMapper.entityToModel(it) }
+        return  db.findByStorytellerIdAndTypeNotIgnoreCase(storytellerId, "heic").map { mediaMapper.entityToModel(it) }
+    }
+
+    fun findMediaByStorytellerIdAndName(id: String, name: String): Optional<Media> {
+        val storytellerId = storytellerService.findStorytellerEntityByAltId(id).getOrElse { throw Exception("Storyteller not found") }.id ?: throw Exception("Storyteller not found")
+        val optionalMediaEntity = db.findByStorytellerIdAndName(storytellerId, name)
+        if (optionalMediaEntity.isPresent) {
+            return Optional.of(mediaMapper.entityToModel(optionalMediaEntity.get()))
+        }
+        return Optional.empty()
     }
 
     fun associateMediaWithStoryteller(media: Media, storytellerId: String): String {

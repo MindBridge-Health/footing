@@ -4,6 +4,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import {Loading} from "../Loading";
 import {Error} from "../Error";
 import {useAuth0} from "@auth0/auth0-react";
+import ImageUpload from "./ImageUpload";
 
 function Uploads({ storytellerId }) {
     const { getAccessTokenSilently } = useAuth0();
@@ -40,6 +41,24 @@ function Uploads({ storytellerId }) {
         fetchImageUrls();
     }, []);
 
+    const checkForNewImage = async (imageName) => {
+        const token = await getAccessTokenSilently();
+        const response = await fetch(`/api/v1/media/storytellers/names/${imageName}/events`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            const data = await response.json()
+            const newImageUrl = data.location
+            console.log(data)
+            console.log(newImageUrl)
+            setImageUrls([...imageUrls, newImageUrl]);
+    };
+
     if (loadingImages) {
         return <Loading/>;
     }
@@ -50,13 +69,15 @@ function Uploads({ storytellerId }) {
 
     return (
         <div>
-            <h1>Uploaded Images</h1>
-            <img key="testy" src="http://localhost:8080/api/v1/uploads/images/proxy/8ub5lac5.648b65e98860a0c976f61bf7_IMG_3951.HEIC" alt="Image 3"/>
+            <h1>Images</h1>
+            <h2>Uploaded Images</h2>
             <Carousel>
                 {imageUrls.map((imageUrl, index) => (
                     <img key={`Image_${index}`} src={imageUrl} alt={`Image ${index}`} />
                 ))}
             </Carousel>
+            <h2>Upload New Image</h2>
+            <ImageUpload storytellerId={storytellerId} newImageCallback={checkForNewImage}/>
         </div>
     );
 }

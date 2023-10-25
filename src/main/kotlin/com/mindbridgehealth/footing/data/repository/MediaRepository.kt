@@ -11,7 +11,11 @@ interface MediaRepository: JpaRepository<MediaEntity, Int> {
 
     fun findByStorytellerId(id: Int): Collection<MediaEntity>
 
+    fun findByStorytellerIdAndTypeNotIgnoreCase(id: Int, type: String): Collection<MediaEntity>
+
     fun findByAltId(altId: String): Optional<MediaEntity>
 
     fun findAllByLocationAndStorytellerId(location: String, id: Int): Collection<MediaEntity>
+
+    fun findByStorytellerIdAndName(id: Int, name: String): Optional<MediaEntity>
 }
