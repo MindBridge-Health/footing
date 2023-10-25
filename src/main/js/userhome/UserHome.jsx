@@ -80,7 +80,6 @@ const UserHome = () => {
             <div className="flex-container">
                 <div className="content" >
                     <Error message={error.message} />
-                    <div>Try refreshing the page</div>
                 </div>
             </div>
         );
@@ -106,15 +105,12 @@ const UserHome = () => {
                         </div>
                         <div className={`content ${isNavExpanded ? 'expanded' : 'collapsed'}`}>
                             <div id="details-section" className="detail-card">
-                                <h2>Details</h2>
                                 <StorytellerDetailsCard storytellerDetails={storytellerDetails} />
                             </div>
                             <div id="interviews-section" className="detail-card">
-                                <h2>Interviews</h2>
                                 <InterviewDetailsCard storytellerDetails={storytellerDetails} />
                             </div>
                             <div id="images-section" className="detail-card">
-                                <h2>Images</h2>
                                 <Uploads storytellerId={storytellerDetails.id}></Uploads>
                             </div>
                         </div>

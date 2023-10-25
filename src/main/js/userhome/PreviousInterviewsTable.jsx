@@ -42,7 +42,7 @@ export function PreviousInterviewsTable({storyteller}) {
 
     return (
         <>
-            <h1>Previous Interviews</h1>
+            <h2>Previous Interviews</h2>
             <table id="previousInterviews">
                 <thead>
                 <tr>

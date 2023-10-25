@@ -43,7 +43,6 @@ function ImagePreview({ storytellerId }) {
     return (
         <div>
             <h1>Uploaded Images</h1>
-            <img key="testy" src="http://localhost:8080/api/v1/uploads/images/proxy/8ub5lac5.648b65e98860a0c976f61bf7_IMG_3951.HEIC" alt="Image 3"/>
             <Carousel>
                 {imageUrls.map((imageUrl, index) => (
                     <img key={`Image_${index}`} src={imageUrl} alt={`Image ${index}`} />

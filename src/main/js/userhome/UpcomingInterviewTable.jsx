@@ -4,7 +4,7 @@ export function UpcomingInterviewTable({ upcomingInterviews, handleDeleteIntervi
 
     return (
         <>
-            <h1>Upcoming Interviews</h1>
+            <h2>Upcoming Interviews</h2>
             <table id="upcomingInterviews">
                 <thead>
                 <tr>

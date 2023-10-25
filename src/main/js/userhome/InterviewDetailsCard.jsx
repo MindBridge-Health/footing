@@ -93,6 +93,7 @@ export const InterviewDetailsCard = ({storytellerDetails}) => {
 
     return (
         <div id="interview-view">
+            <h1>Interviews</h1>
             <UpcomingInterviewTable upcomingInterviews={scheduledInterviews} handleDeleteInterview={handleDeleteInterview}/>
             <ScheduleInterviewForm onSubmit={handleInterviewSubmit}/>
             <PreviousInterviewsTable storyteller={storytellerDetails}></PreviousInterviewsTable>

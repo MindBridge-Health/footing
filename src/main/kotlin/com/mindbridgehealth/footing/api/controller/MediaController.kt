@@ -1,6 +1,5 @@
 package com.mindbridgehealth.footing.api.controller
 
-import com.amazonaws.HttpMethod
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.mindbridgehealth.footing.api.dto.addpipe.AddPipeEvent
@@ -18,7 +17,6 @@ import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatusCode
-import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
@@ -26,11 +24,12 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.net.URI
 import java.net.URL
-import java.time.Duration
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
+import org.springframework.http.MediaType
 
 
 @RestController
@@ -68,6 +67,26 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
             }
         }
         return mediaByStorytellerId
+    }
+
+    @GetMapping("/storytellers/names/{name}/events")
+    fun getNewMediaForSelf(@AuthenticationPrincipal principal: Jwt, @PathVariable name: String): Media? {
+
+        var checks = 0
+        while(checks < 5) {
+            val mediaByStorytellerId = mediaService.findMediaByStorytellerIdAndName(principal.subject, name.replace(".heic", ".jpg").replace(".HEIC", ".jpg"))
+            if (mediaByStorytellerId.isPresent) {
+                val media = mediaByStorytellerId.get()
+                if (media.location.toString().startsWith("s3")) {
+                    media.location = URI.create("${getServiceUrl()}/api/v1/uploads/images/proxy/${media.location.toString().substringAfterLast('/')}")
+                }
+                return media
+            }
+            checks++
+            Thread.sleep(5000) // Sleep for 5 seconds before checking again
+        }
+
+        return null
     }
 
     @PostMapping("/storytellers/{id}")
