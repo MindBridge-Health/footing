@@ -72,10 +72,4 @@ class Base36EncoderTests {
 
     }
 
-    @Test
-    fun foo() {
-        val id = "398b11dd"
-
-        println(Base36Encoder.decodeAltId(id))
-    }
 }
