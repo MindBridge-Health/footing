@@ -1,5 +1,6 @@
 package com.mindbridgehealth.footing.data.client
 
+import com.mindbridgehealth.footing.service.util.Base36Encoder
 import org.slf4j.LoggerFactory
 import com.twilio.rest.studio.v2.flow.ExecutionCreator
 import com.twilio.type.PhoneNumber
@@ -16,8 +17,8 @@ class TwilioCallService {
         val parameters = mapOf(
             "firstname" to firstname,
             "question" to question,
-            "interview_id" to interviewId,
-            "interview_question_id" to interviewQuestionId
+            "interview_id" to Base36Encoder.encodeAltId(interviewId),
+            "interview_question_id" to Base36Encoder.encodeAltId(interviewQuestionId)
         )
 
         val client =

@@ -71,4 +71,11 @@ class Base36EncoderTests {
         assertEquals(altId, decoded)
 
     }
+
+    @Test
+    fun foo() {
+        val id = "398b11dd"
+
+        println(Base36Encoder.decodeAltId(id))
+    }
 }
