@@ -1,5 +1,6 @@
 package com.mindbridgehealth.footing.service
 
+import com.mindbridgehealth.footing.data.client.TwilioCallService
 import com.mindbridgehealth.footing.data.repository.InterviewRepository
 import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.service.entity.*
@@ -36,6 +37,7 @@ class InterviewServiceTests {
     private val mockInterviewQuestionService = mockk<InterviewQuestionService>()
     private val mockChroniclerService = mockk<ChroniclerService>()
     private val mockScheduledInterviewRepository = mockk<ScheduledInterviewRepository>()
+    private val mockTwilioCallService = mockk<TwilioCallService>()
 
     private val storytellerEntityMapperImpl = StorytellerEntityMapperImpl(
         BenefactorEntityMapperImpl(OrganizationEntityMapperImpl(), UserMapper(OrganizationEntityMapperImpl())),
@@ -69,8 +71,8 @@ class InterviewServiceTests {
         mockInterviewQuestionService,
         interviewEntityMapper,
         mockScheduledInterviewRepository,
-        scheduledInterviewEntityMapper
-
+        scheduledInterviewEntityMapper,
+        mockTwilioCallService
     )
 
     @Test
@@ -250,8 +252,8 @@ class InterviewServiceTests {
             mockInterviewQuestionService,
             interviewEntityMapper,
             mockScheduledInterviewRepository,
-            scheduledInterviewEntityMapper
-
+            scheduledInterviewEntityMapper,
+            mockTwilioCallService
         )
         val interviews = service.findByStorytellerId(uuid1.toString())
 
@@ -277,8 +279,8 @@ class InterviewServiceTests {
             mockInterviewQuestionService,
             interviewEntityMapper,
             mockScheduledInterviewRepository,
-            scheduledInterviewEntityMapper
-
+            scheduledInterviewEntityMapper,
+            mockTwilioCallService
         )
 
         val name = "interview 1"
