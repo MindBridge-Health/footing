@@ -54,6 +54,8 @@ class TwilioCallbackService(
                 this.storyteller = storyteller
             }
             val savedStoryEntity = storyService.saveEntity(storyEntity)
+            interviewQuestion.story = savedStoryEntity
+            interviewQuestionService.save(interviewQuestion)
 
             twilioData.apply {
                 this.story = savedStoryEntity

@@ -185,6 +185,7 @@ class TwilioCallbackServiceTests {
             this.interview = interviewEntity
         }
         every { mockInterviewQuestionService.findEntityByAltId(any())} returns Optional.of(interviewQuestionEntity)
+        every { mockInterviewQuestionService.save(any<InterviewQuestionEntity>())} returns interviewQuestionEntity
         val storyEntityCaptureSlot = CapturingSlot<StoryEntity>()
         every { mockStoryService.saveEntity(capture(storyEntityCaptureSlot)) } answers {storyEntityCaptureSlot.captured.apply { this.id = 1 }}
         every { mockSmsNotificationService.sendInterviewLink(any(), any(), any(), any(), any(), any()) } just runs
