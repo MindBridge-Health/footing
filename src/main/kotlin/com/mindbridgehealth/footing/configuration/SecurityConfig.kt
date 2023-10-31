@@ -40,6 +40,7 @@ class SecurityConfig(
                 "/console*/**",
                 "/console/story/**",
                 "/api/v1/uploads/images/proxy/**",
+                "/api/v1/initiate/**", //TODO: Needs better security
             ).permitAll()
             .requestMatchers(
                 "/api/v1/storytellers/**",

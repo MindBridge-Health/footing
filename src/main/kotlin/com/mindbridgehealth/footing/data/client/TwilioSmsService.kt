@@ -5,10 +5,9 @@ import com.twilio.rest.studio.v2.flow.ExecutionCreator
 import com.twilio.type.PhoneNumber
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.lang.IllegalStateException
 
 @Service
-class TwilioSnsService: SmsNotificationService {
+class TwilioSmsService: SmsNotificationService {
 
     val logger = LoggerFactory.getLogger(this::class.java)
     val generalMessageFlowId = "FW11bebd1ed9beede70cbf003a811115b1"

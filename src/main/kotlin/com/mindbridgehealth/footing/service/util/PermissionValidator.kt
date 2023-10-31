@@ -13,7 +13,16 @@ object PermissionValidator {
         userId: String? = principal.subject
     ) {
         val permissions = principal.claims["permissions"] as List<*>?
-        if ((permissions == null || !permissions.contains("read:userdata")) && (resource.ownerId != null && resource.ownerId != null && principal.subject != resource.ownerId && userId != resource.ownerId )) {
+        if ((permissions == null || !permissions.contains("read:userdata")) && (resource.ownerId != null && principal.subject != resource.ownerId && userId != resource.ownerId )) {
+            throw HttpClientErrorException(HttpStatus.UNAUTHORIZED)
+        }
+    }
+
+    fun assertValidPermissions(
+        resource: Resource,
+        userId: String?
+    ) {
+        if ((resource.ownerId != null && userId != resource.ownerId )) {
             throw HttpClientErrorException(HttpStatus.UNAUTHORIZED)
         }
     }

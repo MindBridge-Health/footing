@@ -131,7 +131,6 @@ class InterviewController(val service: InterviewService, val questionService: Qu
         return Base36Encoder.encodeAltId(service.scheduleInterview(Base36Encoder.decodeAltId(storytellerId), Base36Encoder.decodeAltId(interviewId), time, name, append))
     }
 
-
     @DeleteMapping("/storytellers/{storytellerId}/scheduled/{scheduledInterviewId}")
     fun deleteScheduledInterview(@PathVariable storytellerId: String, @PathVariable scheduledInterviewId: String) {
         service.deleteScheduledInterview(Base36Encoder.decodeAltId(scheduledInterviewId))

@@ -1,5 +1,6 @@
 package com.mindbridgehealth.footing.service
 
+import com.mindbridgehealth.footing.data.client.TwilioCallService
 import com.mindbridgehealth.footing.data.repository.InterviewRepository
 import com.mindbridgehealth.footing.data.repository.ScheduledInterviewRepository
 import com.mindbridgehealth.footing.service.entity.InterviewEntity
@@ -29,7 +30,8 @@ class InterviewService(
     private val interviewQuestionService: InterviewQuestionService,
     private val interviewMapper: InterviewEntityMapper,
     private val scheduledInterviewRepository: ScheduledInterviewRepository,
-    private val scheduledInterviewEntityMapper: ScheduledInterviewEntityMapper
+    private val scheduledInterviewEntityMapper: ScheduledInterviewEntityMapper,
+    private val twilioCallService: TwilioCallService
 ) {
 
     fun findInterviewByAltId(interviewId: String): Interview {
@@ -205,6 +207,20 @@ class InterviewService(
         }
 
         return emptyList()
+    }
+
+    fun initiateInterview(interviewId: String) {
+        val interviewEntity = db.findByAltId(interviewId).getOrElse { throw Exception("Interview not found") }
+        interviewEntity.storyteller?.firstname
+        interviewEntity.interviewQuestionData?.get(0)?.let {
+            twilioCallService.triggerInterviewCall(
+                interviewEntity.storyteller?.firstname!!,
+                interviewEntity.storyteller?.mobile!!,
+                it.question?.text!!,
+                interviewId,
+                it.altId!!
+            )
+        }
     }
 
     //TODO: Test coverage
