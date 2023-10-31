@@ -310,8 +310,8 @@
                 }, 10000);
 
                 $.ajax({
-                    method: 'GET',
-                    url: `http://54.210.42.229:5000/interview?number=${uparams.get('rtel')}&question=${uparams.get('question')}&interview_question_id=${uparams.get('interview_question_id')}`,
+                    method: 'POST',
+                    url: `/api/v1/initiate/${uparams.get('interview_id')}?interview_question_id=${uparams.get('interview_question_id')}&rtel=${uparams.get('rtel')}`,
                     success: function (data) {
                         console.log(data);
                     }
