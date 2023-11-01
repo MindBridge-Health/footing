@@ -71,9 +71,11 @@ const AdminPanel = () => {
     }
 
     return (
-        <div>
-            <StorytellerList storytellers={storytellers} handleStorytellerDelete={handleStorytellerDelete}/>
-            <AddStorytellerPanel handleNewStoryteller={addNewStoryteller}/>
+        <div className="flex-container">
+            <div className="content">
+                <StorytellerList storytellers={storytellers} handleStorytellerDelete={handleStorytellerDelete}/>
+                <AddStorytellerPanel handleNewStoryteller={addNewStoryteller}/>
+            </div>
         </div>
     );
 };

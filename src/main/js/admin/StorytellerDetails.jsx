@@ -99,7 +99,7 @@ const StorytellerDetails = () => {
     }
 
     return (
-        <div id="storyteller-details">
+        <div className="content" id="storyteller-details">
             <div>
                 <h3>Status: {storytellerDetails.isActive ? 'Active' : 'Inactive'}</h3>
                 <button onClick={handleToggleActiveStatus}>
