@@ -28,7 +28,10 @@ function Uploads({ storytellerId }) {
                     const data = await response.json();
 
                     // Extract the 'location' field from each object to get image URLs
-                    const urls = data.map(item => `${item.location}`);
+                    const urls = data.map(item => ({
+                        url: `${item.location}`,
+                            type: `${item.type}`
+                    }));
                     setImageUrls(urls);
                     setLoadingImages(false);
 
@@ -72,12 +75,21 @@ function Uploads({ storytellerId }) {
             <h1>Images</h1>
             <h2>Uploaded Images</h2>
             <Carousel>
-                {imageUrls.map((imageUrl, index) => (
-                    <img key={`Image_${index}`} src={imageUrl} alt={`Image ${index}`} />
-                ))}
+                {imageUrls.map((media, index) => {
+                    if (media.type === "mp4") {
+                        return (
+                            <video key={`Media_${index}`} controls width="320" height="240">
+                                <source src={media.url} type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                        );
+                    } else {
+                        return <img key={`Media_${index}`} src={media.url} alt={`Image ${index}`} />;
+                    }
+                })}
             </Carousel>
             <h2>Upload New Image</h2>
-            <ImageUpload storytellerId={storytellerId} newImageCallback={checkForNewImage}/>
+            <ImageUpload storytellerId={storytellerId} newImageCallback={checkForNewImage} />
         </div>
     );
 }

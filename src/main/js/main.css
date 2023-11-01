@@ -224,6 +224,14 @@ a.nav-item {
 a.nav-item:hover {
     color: #25afaf;
 }
+
+a.body-nav-item {
+    color: #0a53be;
+}
+
+a.body-nav-item:hover {
+    color: #25afaf;
+}
 /* older stuff */
 
 .btn-margin {
