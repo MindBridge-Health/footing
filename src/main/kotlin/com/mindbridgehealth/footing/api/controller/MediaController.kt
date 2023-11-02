@@ -122,6 +122,7 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
 
         val signature = SignatureGenerator.generateSignature(applicationProperties.addPipeKey, validationUrl, jsonString)
         if (xPipeSignature.isNullOrEmpty() || !xPipeSignature.equals(signature)) {
+            logger.error("Sig Mismatch xPipe: $xPipeSignature, gen: $signature")
             throw Exception("Signature did not match!")
         }
 
