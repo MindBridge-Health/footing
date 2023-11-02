@@ -18,11 +18,11 @@ class S3UploadService(private val amazonS3: AmazonS3) { // Inject AmazonS3 insta
     @Value("\${aws.bucket.name}")
     private val bucketName: String = "" // Set your S3 bucket name in application.properties
 
-    fun generatePresignedUrlForObject(key: String, duration: Duration, storytellerId: String): String {
-        return generatePresignedUrlForObject(key, duration, storytellerId, HttpMethod.PUT)
+    fun generatePresignedUrlForObject(key: String, duration: Duration): String {
+        return generatePresignedUrlForObject(key, duration, HttpMethod.PUT)
     }
 
-    fun generatePresignedUrlForObject(key: String, duration: Duration, storytellerId: String, httpMethod: HttpMethod): String {
+    fun generatePresignedUrlForObject(key: String, duration: Duration, httpMethod: HttpMethod): String {
         val expiration = Date(System.currentTimeMillis() + duration.toMillis())
 
         val generatePresignedUrlRequest = GeneratePresignedUrlRequest(bucketName, key)
@@ -31,17 +31,6 @@ class S3UploadService(private val amazonS3: AmazonS3) { // Inject AmazonS3 insta
 
         val preSignedUrl = amazonS3.generatePresignedUrl(generatePresignedUrlRequest)
 
-        logger.info("Presigned Url: $preSignedUrl")
-
         return preSignedUrl.toString()
-    }
-
-    fun getObject(objectKey: String): ByteArray {
-            val getObjectRequest = GetObjectRequest(bucketName, objectKey)
-
-            val s3Object = amazonS3.getObject(getObjectRequest)
-            val objectStream = s3Object.objectContent
-
-            return objectStream.readAllBytes()
     }
 }

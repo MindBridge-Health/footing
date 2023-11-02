@@ -22,41 +22,21 @@ class UploadController(private val s3UploadService: S3UploadService, private val
 
     @GetMapping("/{imageName}/upload-url")
     fun getPresignedUrl(@AuthenticationPrincipal principal: Jwt, @PathVariable imageName: String): ResponseEntity<String> {
-        val preSignedUrl = s3UploadService.generatePresignedUrlForObject(imageName, Duration.ofMinutes(15), principal.subject)
+        val preSignedUrl = s3UploadService.generatePresignedUrlForObject(imageName, Duration.ofMinutes(15))
         return ResponseEntity.ok(preSignedUrl)
     }
 
     //TODO: Can a benefactor upload on behalf of?
     @GetMapping("/storytellers/{storytellerId}/{imageName}/upload-url")
     fun getPresignedUrlOnBehalfOf(@AuthenticationPrincipal principal: Jwt, @PathVariable storytellerId: String, @PathVariable imageName: String): ResponseEntity<String> {
-        val preSignedUrl = s3UploadService.generatePresignedUrlForObject(imageName, Duration.ofMinutes(15), Base36Encoder.decodeAltId(storytellerId))
+        val preSignedUrl = s3UploadService.generatePresignedUrlForObject(imageName, Duration.ofMinutes(15))
         return ResponseEntity.ok(preSignedUrl)
     }
 
     @GetMapping("/storytellers/{imageName}/upload-url")
     fun getPresignedUrlForSelf(@AuthenticationPrincipal principal: Jwt, @PathVariable imageName: String): ResponseEntity<String> {
-        val storytellerId = principal.subject
-        val preSignedUrl = s3UploadService.generatePresignedUrlForObject(imageName, Duration.ofMinutes(15), storytellerId)
+        val preSignedUrl = s3UploadService.generatePresignedUrlForObject(imageName, Duration.ofMinutes(15))
         return ResponseEntity.ok(preSignedUrl)
-    }
-
-    @GetMapping("/proxy/{imageName}")
-    fun proxyImage(@PathVariable("imageName") imageName: String): ResponseEntity<ByteArray> {
-
-        return try {
-            val imageResponse = s3UploadService.getObject(imageName)
-            val headers = HttpHeaders()
-            if (imageName.endsWith(".jpg", true) || imageName.endsWith(".jpeg", true)) {
-                headers.contentType = MediaType.IMAGE_JPEG
-            } else if (imageName.endsWith(".png", true)) {
-                headers.contentType = MediaType.IMAGE_PNG
-            } else if (imageName.endsWith(".heic", true)) {
-                headers.contentType = MediaType.valueOf("image/heic")
-            }
-            ResponseEntity(imageResponse, headers, HttpStatus.OK)
-        } catch (e: IOException) {
-            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
-        }
     }
 
 }
