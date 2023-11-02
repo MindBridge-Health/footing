@@ -47,7 +47,7 @@ const Storyteller = ({ storyteller, handleStorytellerDelete }) => {
                 <Link
                     to={"/storytellerDetails"}
                     state={{ storyteller }}
-                    className={`nav-item nav-link${
+                    className={`body-item ${
                         pathname === "/storytellerDetails" ? " active" : ""
                     }`}
                 >

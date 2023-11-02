@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useAuth0} from "@auth0/auth0-react";
+import {Link} from "react-router-dom";
 
 export function PreviousInterviewsTable({storyteller}) {
     const {  getAccessTokenSilently } = useAuth0();
@@ -54,7 +55,14 @@ export function PreviousInterviewsTable({storyteller}) {
                 {interviewsData.map((interview, index) => (
                     <tr key={index}>
                         <td>{interview.name}</td>
-                        <td>{interview.completed ? "true" : "false"}</td>
+                        <td>
+                            {interview.completed
+                                ? interview.interviewQuestions[0] && interview.interviewQuestions[0].response
+                                    ? <Link to={`/story?storyId=${interview.interviewQuestions[0].response.id}`}>true</Link>
+                                    : "true"
+                                : "false"
+                            }
+                        </td>
                         <td>{interview.timeCompleted}</td>
                     </tr>
                 ))}

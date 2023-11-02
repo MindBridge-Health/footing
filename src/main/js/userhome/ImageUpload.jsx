@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useAuth0} from "@auth0/auth0-react";
 
-function ImageUpload({storytellerId, newImageCallback}) {
+function ImageUpload({storytellerId, storyId, newImageCallback}) {
     const {  getAccessTokenSilently } = useAuth0();
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [uploadProgress, setUploadProgress] = useState({});
@@ -29,10 +29,10 @@ function ImageUpload({storytellerId, newImageCallback}) {
             setUploadProgress(progressBars);
 
             for (const selectedFile of selectedFiles) {
-                const imageName = `${storytellerId}_${selectedFile.name}`
+                const imageName = `${storytellerId}_${storyId}_${selectedFile.name}`
                 const endpointUrl = storytellerId
                     ? `/api/v1/uploads/images/storytellers/${imageName}/upload-url`
-                    : `/api/v1/uploads/images/upload-url`;
+                    : `/api/v1/uploads/images/${imageName}/upload-url`;
                 const response = await fetch(endpointUrl, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
@@ -49,7 +49,7 @@ function ImageUpload({storytellerId, newImageCallback}) {
                 const options = {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': selectedFile.type,
+                        'Content-Type': selectedFile.type
                     },
                     body: selectedFile,
                 };

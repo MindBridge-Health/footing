@@ -9,6 +9,7 @@ import com.mindbridgehealth.footing.api.dto.addpipe.VideoRecordedEvent
 import com.mindbridgehealth.footing.configuration.ApplicationProperties
 import com.mindbridgehealth.footing.service.MediaService
 import com.mindbridgehealth.footing.service.S3UploadService
+import com.mindbridgehealth.footing.service.StoryService
 import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.util.Base36Encoder
 import com.mindbridgehealth.footing.service.util.PermissionValidator
@@ -34,7 +35,7 @@ import org.springframework.http.MediaType
 
 @RestController
 @RequestMapping("/api/v1/media")
-class MediaController(val mediaService: MediaService, val applicationProperties: ApplicationProperties, private val s3UploadService: S3UploadService) {
+class MediaController(val mediaService: MediaService, val applicationProperties: ApplicationProperties, private val storyService: StoryService) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
     @Value("\${spring.profiles.active}")
@@ -51,9 +52,7 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
     fun getAllMediaForStoryteller(@PathVariable id: String): Collection<Media> {
         val mediaByStorytellerId = mediaService.findMediaByStorytellerId(Base36Encoder.decodeAltId(id))
         mediaByStorytellerId.map {
-            if( it.location.toString().startsWith("s3")) {
-                it.location = URI.create("${getServiceUrl()}/api/v1/uploads/images/proxy/${it.location.toString().substringAfterLast('/')}")
-            }
+            mapMediaLocation(it)
         }
         return mediaByStorytellerId
     }
@@ -62,11 +61,33 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
     fun getAllMediaForSelf(@AuthenticationPrincipal principal: Jwt): Collection<Media> {
         val mediaByStorytellerId = mediaService.findMediaByStorytellerId(principal.subject)
         mediaByStorytellerId.map {
-            if( it.location.toString().startsWith("s3")) {
-                it.location = URI.create("${getServiceUrl()}/api/v1/uploads/images/proxy/${it.location.toString().substringAfterLast('/')}")
-            }
+            mapMediaLocation(it)
         }
         return mediaByStorytellerId
+    }
+
+    @GetMapping("/stories/{id}")
+    fun getAllMediaForStoryForSelf(@AuthenticationPrincipal principal: Jwt, @PathVariable id: String): Collection<Media> {
+        val story = storyService.findStoryByAltId(Base36Encoder.decodeAltId(id)).getOrElse { throw Exception("Story not found") }
+        if(Base36Encoder.decodeAltId(story.storyteller.id!!) == principal.subject) {
+            val media = mediaService.findMediaByStory(Base36Encoder.decodeAltId(story.id!!))
+            media.map {
+                mapMediaLocation(it)
+            }
+            return media
+        } else {
+            throw Exception("Story not found!") //ToDo: Remove '!'
+        }
+    }
+
+    private fun mapMediaLocation(it: Media) {
+        if (it.location.toString().startsWith("s3")) {
+            it.location = URI.create(
+                "${getServiceUrl()}/api/v1/uploads/images/proxy/${
+                    it.location.toString().substringAfterLast('/')
+                }"
+            )
+        }
     }
 
     @GetMapping("/storytellers/names/{name}/events")
@@ -91,7 +112,7 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
 
     @PostMapping("/storytellers/{id}")
     fun postToStoryteller(@RequestBody media: Media, @PathVariable id: String): String {
-        return mediaService.associateMediaWithStoryteller(media, id)
+        return mediaService.associateMediaWithStoryteller(media, id, null)
     }
 
     @PostMapping("/")

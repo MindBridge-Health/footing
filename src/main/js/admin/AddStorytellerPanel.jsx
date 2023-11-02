@@ -71,8 +71,10 @@ export function AddStorytellerPanel({handleNewStoryteller}) {
         <>
             <div className="collapsible">
                 <h2 className="collapsible-heading" onClick={handleToggleCollapsible}>Add Storyteller</h2>
+                {isCollapsed && (<div>click to expand</div>)}
                 {!isCollapsed && (
                     <div className="collapsible-content">
+                        <div>click again to collapse</div>
                         <div id="storytellerError"></div>
                         <form id="add-storyteller-form" onSubmit={handleSubmit}>
                             <label htmlFor="Auth0 ID">Auth0 ID</label>
