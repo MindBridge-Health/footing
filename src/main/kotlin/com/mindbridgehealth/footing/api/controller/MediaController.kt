@@ -1,5 +1,6 @@
 package com.mindbridgehealth.footing.api.controller
 
+import com.amazonaws.HttpMethod
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.mindbridgehealth.footing.api.dto.addpipe.AddPipeEvent
@@ -25,17 +26,16 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.net.URI
 import java.net.URL
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
-import org.springframework.http.MediaType
+import java.time.Duration
 
 
 @RestController
 @RequestMapping("/api/v1/media")
-class MediaController(val mediaService: MediaService, val applicationProperties: ApplicationProperties, private val storyService: StoryService) {
+class MediaController(val mediaService: MediaService, val applicationProperties: ApplicationProperties, private val storyService: StoryService, private val s3UploadService: S3UploadService) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
     @Value("\${spring.profiles.active}")
@@ -80,16 +80,6 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
         }
     }
 
-    private fun mapMediaLocation(it: Media) {
-        if (it.location.toString().startsWith("s3")) {
-            it.location = URI.create(
-                "${getServiceUrl()}/api/v1/uploads/images/proxy/${
-                    it.location.toString().substringAfterLast('/')
-                }"
-            )
-        }
-    }
-
     @GetMapping("/storytellers/names/{name}/events")
     fun getNewMediaForSelf(@AuthenticationPrincipal principal: Jwt, @PathVariable name: String): Media? {
 
@@ -98,9 +88,7 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
             val mediaByStorytellerId = mediaService.findMediaByStorytellerIdAndName(principal.subject, name.replace(".heic", ".jpg").replace(".HEIC", ".jpg"))
             if (mediaByStorytellerId.isPresent) {
                 val media = mediaByStorytellerId.get()
-                if (media.location.toString().startsWith("s3")) {
-                    media.location = URI.create("${getServiceUrl()}/api/v1/uploads/images/proxy/${media.location.toString().substringAfterLast('/')}")
-                }
+                mapMediaLocation(media)
                 return media
             }
             checks++
@@ -108,6 +96,12 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
         }
 
         return null
+    }
+
+    private fun mapMediaLocation(media: Media) {
+        if (media.location.toString().startsWith("s3")) {
+            media.location = URI.create(s3UploadService.generatePresignedUrlForObject(media.name, Duration.ofHours(1), HttpMethod.GET))
+        }
     }
 
     @PostMapping("/storytellers/{id}")
