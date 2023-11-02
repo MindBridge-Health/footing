@@ -47,11 +47,21 @@ class MediaService(
         return Optional.empty()
     }
 
-    fun associateMediaWithStoryteller(media: Media, storytellerId: String): String {
+    fun findMediaByStory(id: String): Collection<Media> {
+        val mediaEntities = db.findByStoryAltIdAndTypeNotIgnoreCase(id, "heic")
+        return mediaEntities.map{ mediaMapper.entityToModel(it) }
+    }
+
+    fun associateMediaWithStoryteller(media: Media, storytellerId: String, storyId: String?): String {
         val storyteller = storytellerService.findStorytellerEntityByAltId(storytellerId)
             .getOrElse { throw Exception("Could not find storyteller; unable to associate media") }
         val mediaEntity = mediaMapper.modelToEntity(media)
         mediaEntity.storyteller = storyteller
+
+        if(storyId != null) {
+            mediaEntity.story = storyService.findStoryEntityByAltId(storyId).orElse(null)
+        }
+
         val mediaEntries = db.findAllByLocationAndStorytellerId(mediaEntity.location!!, storyteller.id!!)
         if(!mediaEntries.isEmpty()) {
             throw Exception("Duplicate Entry")

@@ -2,8 +2,8 @@ package com.mindbridgehealth.footing.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mindbridgehealth.footing.configuration.ApplicationProperties
-import com.mindbridgehealth.footing.service.model.Media
 import com.mindbridgehealth.footing.service.util.Base36Encoder
+import com.mindbridgehealth.footing.service.model.*
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -16,7 +16,7 @@ import java.io.File
 import java.nio.file.Paths
 
 @Component
-class UploadAssociationService (private val mediaService: MediaService, private val storytellerService: StorytellerService, private val applicationProperties: ApplicationProperties, private val amazonS3: AmazonS3) {
+class UploadAssociationService (private val mediaService: MediaService, private val storytellerService: StorytellerService, private val storyService: StoryService, private val applicationProperties: ApplicationProperties, private val amazonS3: AmazonS3) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
     private val objectMapper = ObjectMapper()
@@ -42,15 +42,24 @@ class UploadAssociationService (private val mediaService: MediaService, private 
 
                     }
 
-                    val storytellerId = Base36Encoder.decodeAltId(objectKey.substringBefore("_"))
+                    val parts = objectKey.split('_')
+                    var storytellerId = if(parts[0] == "undefined") null else Base36Encoder.decodeAltId(parts[0])
+                    var storyId: String? = null
+                    if(parts.size >= 2 ) {
+                        storyId = if(parts[1] == "undefined") null else Base36Encoder.decodeAltId(parts[1])
+                        if(storytellerId == null && storyId != null) {
+                            storytellerId = Base36Encoder.decodeAltId(storyService.findStoryByAltId(storyId).get().storyteller.id!!)
+                        }
+                    }
+
                     val location = URI.create("${applicationProperties.uploadS3Uri}$objectKey")
-                    val storytellerOpt = storytellerService.findStorytellerByAltId(storytellerId)
+                    val storytellerOpt = storytellerService.findStorytellerByAltId(storytellerId!!)
                     if(storytellerOpt.isEmpty) {
                         logger.error("Unable to find storyteller with ID $storytellerId to associate upload $objectKey")
                     } else {
                         val media = Media(null, objectKey, null, location = location, type = type, storytellerOpt.get(), null, location) //ToDo: Add story ID to S3 object metadata? Generate Thumbnail
                         try {
-                            mediaService.associateMediaWithStoryteller(media, storytellerId)
+                            mediaService.associateMediaWithStoryteller(media, storytellerId, storyId)
                         } catch(e: Exception) {
                             logger.warn("Caught exception storing media", e)
                         }

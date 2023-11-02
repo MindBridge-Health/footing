@@ -6,7 +6,7 @@ import {Error} from "../Error";
 import {useAuth0} from "@auth0/auth0-react";
 import ImageUpload from "./ImageUpload";
 
-function Uploads({ storytellerId }) {
+function Uploads({ storytellerId, storyId }) {
     const { getAccessTokenSilently } = useAuth0();
     const [imageUrls, setImageUrls] = useState([]);
     const [loadingImages, setLoadingImages] = useState(true)
@@ -17,23 +17,44 @@ function Uploads({ storytellerId }) {
             try {
                 // Fetch image URLs from your backend API
                  const token = await getAccessTokenSilently();
-                    const response = await fetch(`/api/v1/media/storytellers/`,
-                        {
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${token}`,
-                            }
-                        });
-                    const data = await response.json();
+                 if(storyId) {
+                     const response = await fetch(`/api/v1/media/stories/${storyId}`,
+                         {
+                             headers: {
+                                 'Accept': 'application/json',
+                                 'Content-Type': 'application/json',
+                                 Authorization: `Bearer ${token}`,
+                             }
+                         });
+                     const data = await response.json();
 
-                    // Extract the 'location' field from each object to get image URLs
-                    const urls = data.map(item => ({
-                        url: `${item.location}`,
-                            type: `${item.type}`
-                    }));
-                    setImageUrls(urls);
-                    setLoadingImages(false);
+                     // Extract the 'location' field from each object to get image URLs
+                     const urls = data.map(item => ({
+                         url: `${item.location}`,
+                         type: `${item.type}`
+                     }));
+                     setImageUrls(urls);
+                     setLoadingImages(false);
+                 } else {
+                     const response = await fetch(`/api/v1/media/storytellers/`,
+                         {
+                             headers: {
+                                 'Accept': 'application/json',
+                                 'Content-Type': 'application/json',
+                                 Authorization: `Bearer ${token}`,
+                             }
+                         });
+                     const data = await response.json();
+
+                     // Extract the 'location' field from each object to get image URLs
+                     const urls = data.map(item => ({
+                         url: `${item.location}`,
+                         type: `${item.type}`
+                     }));
+                     setImageUrls(urls);
+                     setLoadingImages(false);
+                 }
+
 
             } catch (error) {
                 setErrorImages(error);
@@ -70,11 +91,21 @@ function Uploads({ storytellerId }) {
         return <Error message={errorImages.message}/>;
     }
 
+    const customRenderThumbs = (children) =>
+        children.map((item) => {
+            console.log(item.props)
+            if (item?.props?.children?.[0]?.props?.src !== undefined) {
+                return <img alt="thumb" src={item.props.children[0].props.src.replace("mp4", "jpg")} />;
+            } else {
+                return <img alt="thumb" src={item.props.src} />;
+            }
+        });
+
     return (
         <div>
             <h1>Images</h1>
             <h2>Uploaded Images</h2>
-            <Carousel>
+            <Carousel renderThumbs={customRenderThumbs}>
                 {imageUrls.map((media, index) => {
                     if (media.type === "mp4") {
                         return (
@@ -89,7 +120,7 @@ function Uploads({ storytellerId }) {
                 })}
             </Carousel>
             <h2>Upload New Image</h2>
-            <ImageUpload storytellerId={storytellerId} newImageCallback={checkForNewImage} />
+            <ImageUpload storytellerId={storytellerId} storyId={storyId} newImageCallback={checkForNewImage} />
         </div>
     );
 }

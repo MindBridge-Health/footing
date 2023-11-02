@@ -11,6 +11,7 @@ const StoryView = () => {
     const [error, setError] = useState(null);
     const [story, setStory] = useState(null);
     const [searchParams, setSearchParams] = useSearchParams();
+    const [storytellerId, setStorytellerId] = useState(null)
 
     const storyId = searchParams.get('storyId');
 
@@ -63,6 +64,7 @@ const StoryView = () => {
                     <label>Original Transcription:</label>
                     <span>{story.originalText}</span>
                 </div>
+                <Uploads storyId={storyId} />
             </div>
         </div>
     );
