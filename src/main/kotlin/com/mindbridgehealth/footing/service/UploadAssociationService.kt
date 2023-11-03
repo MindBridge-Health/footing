@@ -57,7 +57,7 @@ class UploadAssociationService (private val mediaService: MediaService, private 
                     if(storytellerOpt.isEmpty) {
                         logger.error("Unable to find storyteller with ID $storytellerId to associate upload $objectKey")
                     } else {
-                        val media = Media(null, objectKey, null, location = location, type = type, storytellerOpt.get(), null, location) //ToDo: Add story ID to S3 object metadata? Generate Thumbnail
+                        val media = Media(null, objectKey, null, location = location, type = type, storytellerOpt.get(), null, location, true) //ToDo: Add story ID to S3 object metadata? Generate Thumbnail
                         try {
                             mediaService.associateMediaWithStoryteller(media, storytellerId, storyId)
                         } catch(e: Exception) {

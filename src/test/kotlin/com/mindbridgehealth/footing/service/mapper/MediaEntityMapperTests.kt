@@ -14,7 +14,7 @@ import kotlin.test.assertEquals
 class MediaEntityMapperTests {
     @Test
     fun mediaToMediaEntity_validData_validData() {
-        val media = Media(Base36Encoder.encodeAltId("123"), "name", null, URI("http://localhost/somewhere"),"MP4", null, null, null)
+        val media = Media(Base36Encoder.encodeAltId("123"), "name", null, URI("http://localhost/somewhere"),"MP4", null, null, null, null)
 
         val userMapper = UserMapper()
         val organizationEntityMapperImpl = OrganizationEntityMapperImpl()

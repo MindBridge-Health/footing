@@ -119,13 +119,14 @@ CREATE TABLE IF NOT EXISTS media_status
 CREATE TABLE IF NOT EXISTS media
 (
     id MEDIUMINT PRIMARY KEY REFERENCES resource(id),
-    location VARCHAR(128) NOT NULL,
+    location VARCHAR(128) unique NOT NULL,
     type VARCHAR(128),
     storyteller_id MEDIUMINT,
     story_id MEDIUMINT,
     raw_json json,
     media_status_id MEDIUMINT,
     thumbnail VARCHAR(128),
+    verified BOOLEAN,
     FOREIGN KEY (storyteller_id) REFERENCES storyteller(id),
     FOREIGN KEY (story_id) REFERENCES story(id),
     FOREIGN KEY (media_status_id) REFERENCES media_status(id)

@@ -36,6 +36,10 @@ class MediaEntity: ResourceEntity() {
     @Column(name = "thumbnail")
     var thumbnail: String? = null
 
+    @Basic
+    @Column(name = "verified")
+    var verified: Boolean? = null
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
