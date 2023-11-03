@@ -160,7 +160,7 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
     private fun handleEventCommon(event: AddPipeEvent, id: String, payload: String, videoName: String, location: URL?, signature: String, thumbnail: URL?, verified: Boolean?) {
         val payloadMap: Map<String, String> = deserializeKeyValuePairs(payload.substring(1, payload.length - 1))
         val interviewQuestionId = Base36Encoder.decodeAltId(payloadMap["interview_question_id"] ?: throw Exception("Missing interview_question_id from payload"))
-        val media = Media(Base36Encoder.encodeAltId("AddPipe|$signature"), videoName, emptyList(), location?.toURI(), "type", null, null, thumbnail?.toURI(), verified)
+        val media = Media(Base36Encoder.encodeAltId("AddPipe|$signature"), videoName, emptyList(), location?.toURI(), "mp4", null, null, thumbnail?.toURI(), verified)
 
         mediaService.updateMediaStatus(media, interviewQuestionId, event)
     }
