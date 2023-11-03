@@ -121,15 +121,16 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
         var validationUrl = getServiceUrl() + request.requestURI
 
         val signature = SignatureGenerator.generateSignature(applicationProperties.addPipeKey, validationUrl, jsonString)
+        var verified: Boolean? = true
         if (xPipeSignature.isNullOrEmpty() || !xPipeSignature.equals(signature)) {
             logger.error("Sig Mismatch xPipe: $xPipeSignature, gen: $signature, url: $validationUrl, json: $jsonString")
-            throw Exception("Signature did not match!")
+            verified = null
         }
 
         return when (event) {
-            is VideoRecordedEvent -> handleVideoRecordedEvent(event, xPipeSignature)
-            is VideoConvertedEvent -> handleVideoConvertedEvent(event, xPipeSignature)
-            is VideoCopiedPipeS3Event -> handleVideoCopiedPipeS3Event(event, xPipeSignature)
+            is VideoRecordedEvent -> handleVideoRecordedEvent(event, xPipeSignature, verified)
+            is VideoConvertedEvent -> handleVideoConvertedEvent(event, xPipeSignature, verified)
+            is VideoCopiedPipeS3Event -> handleVideoCopiedPipeS3Event(event, xPipeSignature, verified)
             else -> handleUnknownEvent(event)
         }
     }
@@ -141,25 +142,25 @@ class MediaController(val mediaService: MediaService, val applicationProperties:
         mediaService.deleteMedia(Base36Encoder.decodeAltId(id))
     }
 
-    private fun handleVideoRecordedEvent(event: VideoRecordedEvent, signature: String): String {
-        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, null, signature, null)
+    private fun handleVideoRecordedEvent(event: VideoRecordedEvent, signature: String, verified: Boolean?): String {
+        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, null, signature, null, verified)
         return "videoRecorded"
     }
 
-    private fun handleVideoConvertedEvent(event: VideoConvertedEvent, signature: String): String {
-        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, null, signature, null)
+    private fun handleVideoConvertedEvent(event: VideoConvertedEvent, signature: String, verified: Boolean?): String {
+        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, null, signature, null, verified)
         return "videoConverted"
     }
 
-    private fun handleVideoCopiedPipeS3Event(event: VideoCopiedPipeS3Event, signature: String): String {
-        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, event.data.url, signature, event.data.snapshotUrl)
+    private fun handleVideoCopiedPipeS3Event(event: VideoCopiedPipeS3Event, signature: String, verified: Boolean?): String {
+        handleEventCommon(event, event.data.id, event.data.payload, event.data.videoName, event.data.url, signature, event.data.snapshotUrl, verified)
         return "videoCopied"
     }
 
-    private fun handleEventCommon(event: AddPipeEvent, id: String, payload: String, videoName: String, location: URL?, signature: String, thumbnail: URL?) {
+    private fun handleEventCommon(event: AddPipeEvent, id: String, payload: String, videoName: String, location: URL?, signature: String, thumbnail: URL?, verified: Boolean?) {
         val payloadMap: Map<String, String> = deserializeKeyValuePairs(payload.substring(1, payload.length - 1))
         val interviewQuestionId = Base36Encoder.decodeAltId(payloadMap["interview_question_id"] ?: throw Exception("Missing interview_question_id from payload"))
-        val media = Media(Base36Encoder.encodeAltId("AddPipe|$signature"), videoName, emptyList(), location?.toURI(), "type", null, null, thumbnail?.toURI())
+        val media = Media(Base36Encoder.encodeAltId("AddPipe|$signature"), videoName, emptyList(), location?.toURI(), "type", null, null, thumbnail?.toURI(), verified)
 
         mediaService.updateMediaStatus(media, interviewQuestionId, event)
     }
