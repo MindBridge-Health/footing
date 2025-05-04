@@ -32,7 +32,9 @@ The system is composed of multiple components working together to schedule and h
 - **Messaging Reliability**: SQS ensures all scheduled interviews and media uploads are processed without loss.
 - **Data Storage**: Metadata and schedules are stored in Aurora MySQL.
 
-📷 Architecture diagrams are included in this repo under `/docs/architecture` and showcase:
+![Footing Architecture](./docs/Architecture.jpg)
+
+📷 Additional architecture diagrams are included in this repo in `/docs/Architecture.pdf` and showcase:
 
 - Overall System Overview
 - Initial Interview Flow
